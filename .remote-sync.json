@@ -1,0 +1,15 @@
+{
+    "transport": "scp",
+    "hostname": "140.114.24.111",
+    "port": 22,
+    "username": "m103061608",
+    "password": "abcd5818033",
+    "keyfile": "~/m103061608/.ssh/known_hosts",
+    "target": "~/m103061608",
+    "ignore": [
+        ".remote-sync.json",
+        ".git/**"
+  ],
+    "uploadOnSave":"true"
+
+}
