@@ -1,0 +1,23 @@
+* "simulator" "HSPICE" 
+* "version" "B-2008.09 32-BIT"
+* "format" "HSP"
+* "rundate" "19:08:00 12/25/2015 "
+* "netlist" "c:\users\timer\documents\github\hspice\gm\classabgm\classabgm_b.sp "
+* "runtitle" "*classabgm_b"
+* time =    0.            
+* temperature =   25.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ ion =   0.4949        
++ iop =   0.4949        
++ sn =   2.9096        
++ sp =   2.9096        
++ vb =   0.5000        
++ vdd =   3.3000        
++ vinn =   2.2000        
++ vinp =   2.2000        
++ vss =   0.            
++ vx =   2.5878        
+***   END: Saved Operating Point ***                     

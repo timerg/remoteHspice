@@ -1,0 +1,260 @@
+Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice ClassABgm_b.sp
+ ****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: ClassABgm_b.sp                                                    
+ lic:  
+ lic: FLEXlm: v8.5b 
+ lic: USER:   m103061608           HOSTNAME: ws50 
+ lic: HOSTID: 6cae8b50b632         PID:      27575 
+ lic: Using FLEXlm license file: 
+ lic: 26585@lsnctu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 14-may-2016/2015.06 
+ lic: FLOATING license(s) on SERVER lsnctu 
+ lic:   
+ Init: read install configuration file: /usr/cad/synopsys/hspice/cur/hspice/meta.cfg
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ .option runlvl
+ .options abstol=1e-7 reltol=1e-7
+ + post=1 captab accurate=1 ingold=1
+
+ ***netlist***
+ m1 sn vx   vdd vdd pch w = 5u l = 0.4u m = 3
+ m3 vx vinp sn  sn  pch w = 12u  l = 0.4u m = 1
+ m2 sp vx   vdd vdd pch w = 5u l = 0.4u m = 3
+ m4 vx vinn sp  sp  pch w = 12u  l = 0.4u m = 1
+ mb  vx vb   vss vss nch w = 15u  l = 1u m = 3
+
+ min ion vinn sn sn pch  w = 2u l = 0.4u m = 1  *was 1.7u
+ mip iop vinp sp sp pch  w = 2u l = 0.4u m = 1
+
+ mc1 ion ion vss vss nch w = 1.1u l = 0.4u m = 6
+ mc2 iop iop vss vss nch w = 1.1u l = 0.4u m = 6
+
+ mc3 icn ion vss vss nch w = 1.1u l = 0.4u m = 1
+ mc4 icp iop vss vss nch w = 1.1u l = 0.4u m = 1
+ mc5 icn icn vdd vdd pch w = 1u l = 0.4u m = 1
+ mc6 icp icn vdd vdd pch w = 1u l = 0.4u m = 1
+
+ ***source***
+ vd vdd gnd dc = 3.3
+ vs vss gnd dc = 0
+ vbi vb   gnd dc = 0.5
+
+ .param diff = 0
+ vip vinp gnd dc = '2.2-diff'
+ vin vinn gnd dc = '2.2+diff'
+
+ *en icn gnd opamp vref icn
+ ep icp gnd opamp vref icp
+ .param rr = '3.3-1.65'
+ vr vref gnd dc = rr
+
+
+ ***
+ .op
+ .dc sweep diff -0.22 0.2 0.001 *sweep rr 0.6 1.6 0.2
+ .probe dc lx3(m3) lx3(m1) lx2(m3) lx2(m1) lx2(mip)
+ + i(ep) *i(en) idiff2 = par('i(ep)-i(en)')
+ + vdiff = par('v(iop) - v(ion)') i(mc1) i(mc2) idiff = par('i(mc2)-i(mc1)')
+ .end
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+ 
+
+ 
+      
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *classabgm_b
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:icn     =   2.5528  0:icp     =   1.6500  0:ion     =   0.5031 
+ +0:iop     =   0.5031  0:sn      =   2.9095  0:sp      =   2.9095 
+ +0:vb      =   0.5000  0:vdd     =   3.3000  0:vinn    =   2.2000 
+ +0:vinp    =   2.2000  0:vref    =   1.6500  0:vss     =   0.     
+ +0:vx      =   2.5847 
+
+
+ maximum nodal capacitance=   2.857E-13         on node     0:vss             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:icn     = 5.115e-15 0:icp     = 3.265e-15 0:ion     = 2.097e-14
+ +0:iop     = 2.097e-14 0:sn      = 9.147e-14 0:sp      = 9.147e-14
+ +0:vb      = 6.356e-14 0:vdd     = 1.656e-13 0:vinn    = 9.510e-15
+ +0:vinp    = 9.510e-15 0:vref    =   0.      0:vss     = 2.857e-13
+ +0:vx      = 1.030e-13
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vd       0:vs       0:vbi      0:vip      0:vin      0:vr      
+  volts      3.3000     0.         0.5000     2.2000     2.2000     1.6500 
+  current -5.094e-06  4.918e-06    0.         0.         0.         0.     
+  power    1.681e-05    0.         0.         0.         0.         0.     
+
+     total voltage source power dissipation=  1.681e-05       watts
+
+
+
+ **** voltage-controlled voltage sources
+
+
+ subckt             
+ element  0:ep      
+  volts      1.6500 
+  current  1.751e-07
+
+
+
+
+
+ **** mosfets
+
+
+ subckt                                                                    
+ element  0:m1       0:m3       0:m2       0:m4       0:mb       0:min     
+ model    0:pch.3    0:pch.3    0:pch.3    0:pch.3    0:nch.2    0:pch.3   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff   Saturati
+  id      -2.250e-06 -1.541e-06 -2.250e-06 -1.541e-06  3.077e-06 -7.092e-07
+  ibs      4.520e-19  3.049e-19  4.520e-19  3.049e-19 -4.532e-18  1.476e-19
+  ibd      1.428e-15  1.106e-15  1.428e-15  1.106e-15 -5.804e-09  1.655e-11
+  vgs       -0.7153    -0.7095    -0.7153    -0.7095     0.5000    -0.7095 
+  vds       -0.3905    -0.3248    -0.3905    -0.3248     2.5847    -2.4064 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth       -0.7255    -0.7213    -0.7255    -0.7213     0.5644    -0.6847 
+  vdsat   -7.268e-02 -6.939e-02 -7.268e-02 -6.939e-02  4.997e-02 -9.439e-02
+  vod      1.016e-02  1.177e-02  1.016e-02  1.177e-02 -6.444e-02 -2.479e-02
+  beta     1.847e-03  1.517e-03  1.847e-03  1.517e-03  1.015e-02  2.324e-04
+  gam eff    0.4553     0.4638     0.4553     0.4638     0.4730     0.4338 
+  gm       4.409e-05  3.160e-05  4.409e-05  3.160e-05  7.219e-05  1.141e-05
+  gds      1.485e-06  1.084e-06  1.485e-06  1.084e-06  4.190e-07  3.311e-07
+  gmb      9.428e-06  6.778e-06  9.428e-06  6.778e-06  2.143e-05  2.429e-06
+  cdtot    2.316e-14  1.791e-14  2.316e-14  1.791e-14  4.658e-14  2.359e-15
+  cgtot    1.031e-14  8.041e-15  1.031e-14  8.041e-15  6.356e-14  1.469e-15
+  cstot    2.688e-14  2.035e-14  2.688e-14  2.035e-14  6.333e-14  4.078e-15
+  cbtot    4.925e-14  3.748e-14  4.925e-14  3.748e-14  1.362e-13  6.405e-15
+  cgs      2.772e-15  2.205e-15  2.772e-15  2.205e-15  9.327e-15  3.751e-16
+  cgd      2.772e-15  2.205e-15  2.772e-15  2.205e-15  9.327e-15  3.751e-16
+
+
+
+ subckt                                                                    
+ element  0:mip      0:mc1      0:mc2      0:mc3      0:mc4      0:mc5     
+ model    0:pch.3    0:nch.6    0:nch.6    0:nch.6    0:nch.6    0:pch.6   
+ region     Saturati     Cutoff     Cutoff     Cutoff     Cutoff   Saturati
+  id      -7.092e-07  7.092e-07  7.092e-07  2.387e-07  1.779e-07 -2.398e-07
+  ibs      1.476e-19 -1.559e-18 -1.559e-18 -5.248e-19 -3.911e-19  5.252e-20
+  ibd      1.655e-11 -1.412e-14 -1.412e-14 -1.086e-09 -4.929e-12  1.159e-16
+  vgs       -0.7095     0.5031     0.5031     0.5031     0.5031    -0.7472 
+  vds       -2.4064     0.5031     0.5031     2.5528     1.6500    -0.7472 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth       -0.6847     0.5606     0.5606     0.5450     0.5519    -0.7461 
+  vdsat   -9.439e-02  4.812e-02  4.812e-02  5.074e-02  4.950e-02 -8.780e-02
+  vod     -2.479e-02 -5.753e-02 -5.753e-02 -4.196e-02 -4.882e-02 -1.106e-03
+  beta     2.324e-04  3.087e-03  3.087e-03  5.149e-04  5.147e-04  1.065e-04
+  gam eff    0.4338     0.5095     0.5095     0.5095     0.5095     0.4082 
+  gm       1.141e-05  1.767e-05  1.767e-05  5.667e-06  4.316e-06  3.830e-06
+  gds      3.311e-07  2.779e-07  2.779e-07  7.772e-08  5.940e-08  1.112e-07
+  gmb      2.429e-06  4.817e-06  4.817e-06  1.522e-06  1.167e-06  8.145e-07
+  cdtot    2.359e-15  1.142e-14  1.142e-14  1.586e-15  1.681e-15  1.908e-15
+  cgtot    1.469e-15  6.165e-15  6.165e-15  1.028e-15  1.028e-15  8.101e-16
+  cstot    4.078e-15  1.269e-14  1.269e-14  2.115e-15  2.115e-15  2.451e-15
+  cbtot    6.405e-15  2.449e-14  2.449e-14  3.764e-15  3.858e-15  4.400e-15
+  cgs      3.751e-16  1.448e-15  1.448e-15  2.414e-16  2.414e-16  1.922e-16
+  cgd      3.751e-16  1.448e-15  1.448e-15  2.414e-16  2.414e-16  1.922e-16
+
+
+
+ subckt             
+ element  0:mc6     
+ model    0:pch.6   
+ region     Saturati
+  id      -3.530e-07
+  ibs      7.732e-20
+  ibd      1.222e-13
+  vgs       -0.7472 
+  vds       -1.6500 
+  vbs        0.     
+  vth       -0.7241 
+  vdsat   -9.851e-02
+  vod     -2.308e-02
+  beta     1.070e-04
+  gam eff    0.4082 
+  gm       5.354e-06
+  gds      1.422e-07
+  gmb      1.133e-06
+  cdtot    1.584e-15
+  cgtot    8.101e-16
+  cstot    2.451e-15
+  cbtot    4.077e-15
+  cgs      1.922e-16
+  cgd      1.922e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *classabgm_b
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                            12
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      42  # elements   =      22
+  # resistors   =       0  # capacitors =       0  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       1
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       8
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      13  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1          37
+  dc sweep           0.08         421         874
+  readin             0.03
+  errchk             0.01
+  setup              0.00
+  output             0.00
+
+
+           total memory used          363  kbytes
+           total cpu time            0.12 seconds
+           total elapsed time        0.27 seconds
+           job started at     16:32:26 12/26/2015
+           job ended   at     16:32:26 12/26/2015
+
+
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ lic: Release hspice token(s) 
