@@ -6,24 +6,26 @@
 + POST=1 CAPTAB ACCURATE=1 INGOLD=1
 
 ***netlist***
-M1n sn vx   vdd vdd pch w = 10u l = 0.4u m = 2
-M3n vx vinp sn  sn  pch w = 8u  l = 0.4u m = 1
-M2n sp vx   vdd vdd pch w = 10u l = 0.4u m = 2
-M4n vx vinn sp  sp  pch w = 8u  l = 0.4u m = 1
-Mb  vx vb   vss vss nch w = 15u  l = 1u m = 2
-
-Min ion vinn sn sn pch  w = 1u l = 0.4u m = 2
-Mip iop vinp sp sp pch  w = 1u l = 0.4u m = 2
-*    ***Active Linearization****
-**Ma1 ion vinp iop iop pch w = 1u l = 1u m = 1
-**Ma2 iop vinn ion ion pch w = 1u l = 1u m = 1
-
+M1 sn vx1   vdd vdd pch w = 5u l = 0.4u m = 5
+M3 vx1 vinp sn  sn  pch w = 1u  l = 0.4u m = 1
+M2 sp vx2   vdd vdd pch w = 5u l = 0.4u m = 5
+M4 vx2 vinn sp  sp  pch w = 1u  l = 0.4u m = 1
+*Mb vx vb   vss vss nch w = 15u  l = 1u m = 3
+Mb1 vx1 vb   vss vss nch w = 3u  l = 1u m = 5
+Mb2 vx2 vb   vss vss nch w = 3u  l = 1u m = 5
 ***
+Mip iop vinp sp sp pch  w = 1u l = 0.4u m = 2
+Min ion vinn sn sn pch  w = 1u l = 0.4u m = 2
 
 En ion gnd OPAMP vref ion
 Ep iop gnd OPAMP vref iop
-.param rr = '1.65'
+.param rr = '1.6'
 Vr vref gnd dc = rr
+*    ***Active Linearization****
+*Ma1 sp vinp sn sn pch w = 1u l = 2u m = 1
+*Ma2 sn vinn sp sp pch w = 1u l = 2u m = 1
+
+
 
 ****one stage; one ouput mos***
 *Mop iop iop vss vss nch w = 0.8u   l = 0.4u m = 1
@@ -70,19 +72,24 @@ Vr vref gnd dc = rr
 ***source***
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
-Vbi vb   gnd dc = 0.5
+Vbi vb   gnd dc = 0.4
 
 .param diff = 0
-Vip vinp gnd dc = '2.2-diff'
-Vin vinn gnd dc = '2.2+diff'
+Vip vinp gnd dc = '2.3-diff'
+Vin vinn gnd dc = '2.3+diff'
 
 
 
 ***
 .op
-.dc sweep diff -0.22 0.2 0.001 *sweep rr 0.6 1.6 0.2
+.dc sweep diff -0.5 0.5 0.001 *sweep rr 0.6 1.6 0.2
 .probe dc lx3(M3) lx3(M1) lx2(M3) lx2(M1) lx2(mip)
++ I(m1) I(m2) I(mb1) I(mb2) I(mip) I(min)
 + I(en) I(ep) Idiff2 = par('I(ep)-I(en)')
 + Vdiff = par('V(iop) - V(ion)') I(mc1) I(mc2) Idiff = par('I(mc2)-I(mc1)')
 + I(mc5) Ino = par('I(mc3a)+I(mc3b)') Ipo = par('I(mc4b)+I(mc4a)')
++ I(ma1) I(ma2)
 .end
+
+ *adaptive problems: the range for input mos source voltage is too narrow to change alot.
+ *after it fail to change, the Vds of the bias current p,nmos will directly be effected 
