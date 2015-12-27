@@ -6,14 +6,24 @@
 + POST=1 CAPTAB ACCURATE=1 INGOLD=1
 
 ***netlist***
-M1 sn vx   vdd vdd pch w = 5u l = 0.4u m = 3
-M3 vx vinp sn  sn  pch w = 12u  l = 0.4u m = 1
-M2 sp vx   vdd vdd pch w = 5u l = 0.4u m = 3
-M4 vx vinn sp  sp  pch w = 12u  l = 0.4u m = 1
-Mb  vx vb   vss vss nch w = 15u  l = 1u m = 3
+M1n sn vx   vdd vdd pch w = 10u l = 0.4u m = 2
+M3n vx vinp sn  sn  pch w = 8u  l = 0.4u m = 1
+M2n sp vx   vdd vdd pch w = 10u l = 0.4u m = 2
+M4n vx vinn sp  sp  pch w = 8u  l = 0.4u m = 1
+Mb  vx vb   vss vss nch w = 15u  l = 1u m = 2
 
-Mip iop vinp sp sp pch  w = 1.7u l = 0.4u m = 1
-Min ion vinn sn sn pch  w = 1.7u l = 0.4u m = 1  *was 1.7u
+Min ion vinn sn sn pch  w = 1u l = 0.4u m = 2
+Mip iop vinp sp sp pch  w = 1u l = 0.4u m = 2
+*    ***Active Linearization****
+**Ma1 ion vinp iop iop pch w = 1u l = 1u m = 1
+**Ma2 iop vinn ion ion pch w = 1u l = 1u m = 1
+
+***
+
+En ion gnd OPAMP vref ion
+Ep iop gnd OPAMP vref iop
+.param rr = '1.65'
+Vr vref gnd dc = rr
 
 ****one stage; one ouput mos***
 *Mop iop iop vss vss nch w = 0.8u   l = 0.4u m = 1
@@ -39,10 +49,10 @@ Min ion vinn sn sn pch  w = 1.7u l = 0.4u m = 1  *was 1.7u
 *En  ion3 gnd OPAMP vref ion3
 *.param rr = '0.4737'
 *Vr vref gnd dc = rr
-****Two stage; current cancellation***
+***Two stage; current cancellation***
 *Mc2 iop iop vss vss nch w = 1.1u l = 0.4u m = 6
 *Mc1 ion ion vss vss nch w = 1.1u l = 0.4u m = 6
-
+*
 **Mc3 icn ion vss vss nch w = 1.1u l = 0.4u m = 1
 **Mc4 icp iop vss vss nch w = 1.1u l = 0.4u m = 1
 **Mc5 icn icn vdd vdd pch w = 1u l = 0.4u m = 1
@@ -54,7 +64,7 @@ Min ion vinn sn sn pch  w = 1.7u l = 0.4u m = 1  *was 1.7u
 *Mc5 icp icp vdd vdd pch w = 15u l = 0.4u m = 1
 *Mc6 icn icp vdd vdd pch w = 16u l = 0.4u m = 1
 *En icn gnd OPAMP vref icn
-*Ep icp gnd OPAMP vref icp
+**Ep icp gnd OPAMP vref icp
 *.param rr = '3.3-0.67'
 *Vr vref gnd dc = rr
 ***source***
