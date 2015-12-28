@@ -6,21 +6,21 @@
 + POST=1 CAPTAB ACCURATE=1 INGOLD=1
 
 ***netlist***
-M1 sn vx1   vdd vdd pch w = 5u l = 0.4u m = 5
-M3 vx1 vinp sn  sn  pch w = 1u  l = 0.4u m = 1
-M2 sp vx2   vdd vdd pch w = 5u l = 0.4u m = 5
-M4 vx2 vinn sp  sp  pch w = 1u  l = 0.4u m = 1
-*Mb vx vb   vss vss nch w = 15u  l = 1u m = 3
-Mb1 vx1 vb   vss vss nch w = 3u  l = 1u m = 5
-Mb2 vx2 vb   vss vss nch w = 3u  l = 1u m = 5
+M1 sn vx   vdd vdd pch w = 5u l = 0.4u m = 3
+M3 vx vinp sn  sn  pch w = 12u  l = 0.4u m = 1
+M2 sp vx   vdd vdd pch w = 5u l = 0.4u m = 3
+M4 vx vinn sp  sp  pch w = 12u  l = 0.4u m = 1
+Mb vx vb   vss vss nch w = 15u  l = 1u m = 3
+*Mb1 vx1 vb   vss vss nch w = 3u  l = 1u m = 5
+*Mb2 vx2 vb   vss vss nch w = 3u  l = 1u m = 5
 ***
-Mip iop vinp sp sp pch  w = 1u l = 0.4u m = 2
-Min ion vinn sn sn pch  w = 1u l = 0.4u m = 2
+Mip iop vinp sp sp pch  w = 2.8u l = 0.4u m = 1
+Min ion vinn sn sn pch  w = 2.8u l = 0.4u m = 1
 
-En ion gnd OPAMP vref ion
-Ep iop gnd OPAMP vref iop
-.param rr = '1.6'
-Vr vref gnd dc = rr
+*En ion gnd OPAMP vref ion
+*Ep iop gnd OPAMP vref iop
+*.param rr = '1.6'
+*Vr vref gnd dc = rr
 *    ***Active Linearization****
 *Ma1 sp vinp sn sn pch w = 1u l = 2u m = 1
 *Ma2 sn vinn sp sp pch w = 1u l = 2u m = 1
@@ -51,9 +51,18 @@ Vr vref gnd dc = rr
 *En  ion3 gnd OPAMP vref ion3
 *.param rr = '0.4737'
 *Vr vref gnd dc = rr
-***Two stage; current cancellation***
-*Mc2 iop iop vss vss nch w = 1.1u l = 0.4u m = 6
-*Mc1 ion ion vss vss nch w = 1.1u l = 0.4u m = 6
+***Two stage: stack laod***
+Mc2 iop iop vss vss nch w = 1.1u l = 0.4u m = 6
+Mc1 ion ion vss vss nch w = 1.1u l = 0.4u m = 6
+Mop1 iop2 iop vss vss nch w = 1.1u l = 0.4u m = 1
+Mon1 ion2 ion vss vss nch w = 1.1u l = 0.4u m = 1
+Mop2 iop3 iop iop2 iop2  nch w = 1.1u l = 0.4u m = 1
+Mon2 ion3 ion ion2 ion2  nch w = 1.1u l = 0.4u m = 1
+En ion3 gnd OPAMP vref ion3
+Ep iop3 gnd OPAMP vref iop3
+.param rr = '1.65'
+Vr vref gnd dc = rr
+***Two stage: current cancellation***
 *
 **Mc3 icn ion vss vss nch w = 1.1u l = 0.4u m = 1
 **Mc4 icp iop vss vss nch w = 1.1u l = 0.4u m = 1
@@ -72,11 +81,11 @@ Vr vref gnd dc = rr
 ***source***
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
-Vbi vb   gnd dc = 0.4
+Vbi vb   gnd dc = 0.5
 
 .param diff = 0
-Vip vinp gnd dc = '2.3-diff'
-Vin vinn gnd dc = '2.3+diff'
+Vip vinp gnd dc = '2.2-diff'
+Vin vinn gnd dc = '2.2+diff'
 
 
 
@@ -92,4 +101,4 @@ Vin vinn gnd dc = '2.3+diff'
 .end
 
  *adaptive problems: the range for input mos source voltage is too narrow to change alot.
- *after it fail to change, the Vds of the bias current p,nmos will directly be effected 
+ *after it fail to change, the Vds of the bias current p,nmos will directly be effected
