@@ -1,14 +1,14 @@
 {
-  "transport": "scp",
-  "hostname": "daisy.ee.nthu.edu.tw",
   "port": "22",
-  "username": "m103061608",
-  "password": "abcd5818033",
-  "target": "./remoteHspice/",
+  "uploadOnSave": false,
+  "deleteLocal": false,
+  "hostname": "daisy.ee.nthu.edu.tw",
+  "target": "./remoteHspice",
   "ignore": [
     ".remote-sync.json",
     ".git/**"
   ],
-  "uploadOnSave": true,
-  "deleteLocal": false
+  "transport": "scp",
+  "username": "m103061608",
+  "password": "abcd5818033"
 }

@@ -6,7 +6,7 @@
 + POST=1 CAPTAB ACCURATE=1 INGOLD=1
 
 ***netlist***
-M1 sn vx   vdd vdd pch w = 5u l = 0.4u m = 3
+M1 sn vx   vdd vdd pch w = 5u l = 0.4u m = 3  *uu
 M3 vx vinp sn  sn  pch w = 12u  l = 0.4u m = 1
 M2 sp vx   vdd vdd pch w = 5u l = 0.4u m = 3
 M4 vx vinn sp  sp  pch w = 12u  l = 0.4u m = 1
@@ -58,7 +58,7 @@ Mop1 iop2 iop vss vss nch w = 1.1u l = 0.4u m = 1
 Mon1 ion2 ion vss vss nch w = 1.1u l = 0.4u m = 1
 Mop2 iop3 iop iop2 iop2  nch w = 1.1u l = 0.4u m = 1
 Mon2 ion3 ion ion2 ion2  nch w = 1.1u l = 0.4u m = 1
-En ion3 gnd OPAMP vref ion3
+En ion3 gnd OPAMP vref ion3  
 Ep iop3 gnd OPAMP vref iop3
 .param rr = '1.65'
 Vr vref gnd dc = rr

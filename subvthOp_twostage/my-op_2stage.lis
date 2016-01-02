@@ -1,0 +1,280 @@
+Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2stage.sp
+ ****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: my-op_2stage.sp                                                   
+ lic:  
+ lic: FLEXlm: v8.5b 
+ lic: USER:   m103061608           HOSTNAME: ws48 
+ lic: HOSTID: e41f13ede70a         PID:      23722 
+ lic: Using FLEXlm license file: 
+ lic: 26585@lsnctu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 14-may-2016/2015.06 
+ lic: FLOATING license(s) on SERVER lsnctu 
+ lic:   
+ Init: read install configuration file: /usr/cad/synopsys/hspice/cur/hspice/meta.cfg
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ .option runlvl
+ .option post acout=0 accurate=1 dcon=1 converge=1 gmindc=1.0000e-12 captab=1 unwrap=1
+ *.option dccap=1 accurate=1 post
+
+ ***param***
+ .param
+ +comon		= 2
+ +bias		= 2.7
+ +bias2		= 0.45
+ +supplyp	= 3.3
+ +supplyn	= 0
+ +diff			= 0
+ ***netlist***
+ ***1st stage***
+ mb	b	b0	vdd	vdd	pch	w = 31u  l = 1u	  m = 2
+ m1	1	vinn	b		b		pch	w = 10u l = 0.4u m = 1
+ m2	2	vinp	b		b		pch	w = 10u l = 0.4u m = 1
+ m3	1	b1		vss	vss	nch	w = 8.3u l = 0.4u m = 1
+ m4	2	b1		vss	vss	nch	w = 8.3u l = 0.4u m = 1
+
+
+ ***2nd stage***
+ m1pa	voa	voa	vdd	vdd	pch	w = 11u l = 0.4u    m = 2
+ m1pb	von	von	voa	voa	pch	w = 11u l = 0.4u    m = 2
+ m2pa	vo2	voa	vdd	vdd	pch	w = 11u l = 0.4u    m = 2
+ m2pb	vop	von	vo2 vo2	pch	w = 11u l = 0.4u    m = 2
+ m3n	    von	1   vss vss nch w = 1.2u  l = 0.4u    m = 1
+ m4n	    vop	2   vss vss nch w = 1.2u  l = 0.4u    m = 1
+
+ ***compensation***
+ *
+ *c1	z1		von 400f
+ *rz1	z1		1   350k
+ *c2	2			vop 300f
+
+
+ ***source***
+ vd		vdd 	gnd dc supplyp
+ vs		vss 	gnd dc supplyn
+ vb 		b0		gnd dc bias
+ vb1		b1		gnd dc bias2
+
+
+ ***input***
+ vinp vinp gnd dc = 'comon-diff' ac = 1
+ vinn vinn gnd dc = 'comon+diff' ac = 1 180
+
+
+
+
+
+
+ ***test
+ *mt	vdt	vgt	vss	vss	nch	w = 2.7u   l = 0.5u m = 1
+ mt	vdt	vgt	vdd	vdd	pch w = 9.7u l = 0.5u m = 1
+
+ vtd	vdt	gnd dc = '1-499.7048m'
+ vtg	vgt	gnd dc = '1-397.6836m'
+
+ ***
+
+
+
+
+
+
+ .op
+
+ ***sweep***
+ .dc diff -0.5 0.5 0.01
+ ***probe&measuring***
+ .ac dec 1000 10 1g
+ *.tf v(1) vinp
+ *.pz v(vop) vinp
+ .probe dc i(m1) i(m2)	i(mt)
+ .probe ac cap(von)
+ +gain1st=par('vdb(2, 1)-vdb(vinp,vinn)')	par('i(m1)-i(m2)')	phase1st=par('vp(2,1)')
+ +gainall=par('vdb(vop)-vdb(vinp,vinn)')		phaseall=par('vp(vop)')
+ .meas ac gain max par('vdb(vop)-vdb(vinp,vinn)')
+ .meas ac gain1st max par('vdb(2, 1)-vdb(vinp,vinn)')
+ *.meas ac zerodb when par('vdb(vop)-vdb(vinp,vinn)') = 1
+ *.meas ac phaseatdb	find par('vp(vop)') when par('vdb(vop)-vdb(vinp,vinn)') = 1
+
+ *.noise v(1) vinn 10
+ .end
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+ 
+
+ 
+      
+  *** initial damped pseudo transient completed. ***
+  *** final try started ***
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ ***myop_2stage
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:1       = 475.3665m 0:2       = 475.3665m 0:b       =   2.5735 
+ +0:b0      =   2.7000  0:b1      = 450.0000m 0:vdd     =   3.3000 
+ +0:vdt     = 500.2952m 0:vgt     = 602.3164m 0:vinn    =   2.0000 
+ +0:vinp    =   2.0000  0:vo2     =   2.7402  0:voa     =   2.7402 
+ +0:von     =   2.1803  0:vop     =   2.1803  0:vss     =   0.     
+
+
+ maximum nodal capacitance=   5.795E-13         on node     0:vdd             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:1       =  22.1524f 0:2       =  22.1524f 0:b       = 168.1406f
+ +0:b0      =  72.8322f 0:b1      =  13.5780f 0:vdd     = 579.5019f
+ +0:vdt     =   9.1699f 0:vgt     =  17.0389f 0:vinn    =   6.9032f
+ +0:vinp    =   6.9032f 0:vo2     = 135.1413f 0:voa     = 165.5391f
+ +0:von     =  62.7381f 0:vop     =  32.3403f 0:vss     =  81.6468f
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vd       0:vs       0:vb       0:vb1      0:vinp     0:vinn    
+  volts      3.3000     0.         2.7000   450.0000m    2.0000     2.0000 
+  current   -1.2926m  637.1423n    0.         0.         0.         0.     
+  power      4.2655m    0.         0.         0.         0.         0.     
+
+ subckt                        
+ element  0:vtd      0:vtg     
+  volts    500.2952m  602.3164m
+  current    1.2919m    0.     
+  power   -646.3468u    0.     
+
+     total voltage source power dissipation=    3.6191m       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt                                                                    
+ element  0:mb       0:m1       0:m2       0:m3       0:m4       0:m1pa    
+ model    0:pch.11   0:pch.3    0:pch.3    0:nch.3    0:nch.3    0:pch.3   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -409.2806n -204.6360n -204.6360n  204.6408n  204.6408n -113.9273n
+  ibs      8.042e-20  4.058e-20  4.058e-20 -3.120e-19 -3.120e-19  2.256e-20
+  ibd        5.6318f    1.5518p    1.5518p  -11.0331f  -11.0331f    2.0318f
+  vgs     -600.0000m -573.4952m -573.4952m  450.0000m  450.0000m -559.8331m
+  vds     -726.5048m   -2.0981    -2.0981   475.3665m  475.3665m -559.8331m
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -749.0978m -674.4719m -674.4719m  570.7255m  570.7255m -715.3522m
+  vdsat    -52.6210m  -50.0181m  -50.0181m   44.2583m   44.2583m  -46.5696m
+  vod      149.0978m  100.9766m  100.9766m -120.7255m -120.7255m  155.5190m
+  beta       3.6745m    1.2820m    1.2820m    4.7680m    4.7680m    2.7932m
+  gam eff  391.6940m  462.5849m  462.5849m  563.3998m  563.3998m  463.2525m
+  gm         8.9816u    4.7118u    4.7118u    5.3537u    5.3537u    2.7639u
+  gds       82.6552n  131.8450n  131.8450n   87.5072n   87.5072n   84.6041n
+  gmb        2.0583u    1.0541u    1.0541u    1.5461u    1.5461u  642.9420n
+  cdtot     80.0673f   10.3011f   10.3011f   10.7418f   10.7418f   30.6167f
+  cgtot     72.8322f    6.9032f    6.9032f    6.7890f    6.7890f   15.1989f
+  cstot    102.5259f   17.0945f   17.0945f   11.9552f   11.9552f   37.4431f
+  cbtot    209.9682f   26.9422f   26.9422f   22.5791f   22.5791f   67.0815f
+  cgs       11.3643f    1.8391f    1.8391f    1.7267f    1.7267f    4.0443f
+  cgd       11.3643f    1.8391f    1.8391f    1.7267f    1.7267f    4.0443f
+
+
+
+ subckt                                                                    
+ element  0:m1pb     0:m2pa     0:m2pb     0:m3n      0:m4n      0:mt      
+ model    0:pch.3    0:pch.3    0:pch.3    0:nch.3    0:nch.3    0:pch.3   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff   Saturati
+  id      -113.9273n -113.9273n -113.9273n  113.8187n  113.8187n   -1.2919m
+  ibs      2.256e-20  2.256e-20  2.256e-20 -2.436e-19 -2.436e-19  222.9822a
+  ibd        2.0318f    2.0318f    2.0318f -106.4360p -106.4360p    6.3990p
+  vgs     -559.8331m -559.8331m -559.8331m  475.3665m  475.3665m   -2.6977 
+  vds     -559.8331m -559.8331m -559.8331m    2.1803     2.1803    -2.7997 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -715.3522m -715.3522m -715.3522m  546.8963m  546.8963m -690.9087m
+  vdsat    -46.5696m  -46.5696m  -46.5696m   46.1810m   46.1810m   -1.6224 
+  vod      155.5190m  155.5190m  155.5190m  -71.5298m  -71.5298m   -2.0068 
+  beta       2.7932m    2.7932m    2.7932m  561.5075u  561.5075u  735.0772u
+  gam eff  463.2525m  463.2525m  463.2525m  511.5324m  511.5324m  432.3028m
+  gm         2.7639u    2.7639u    2.7639u    2.8626u    2.8626u  924.0572u
+  gds       84.6041n   84.6041n   84.6041n   40.3709n   40.3709n   69.4653u
+  gmb      642.9420n  642.9420n  642.9420n  775.3023n  775.3023n  212.9463u
+  cdtot     30.6167f   30.6167f   30.6167f    1.7236f    1.7236f    9.1699f
+  cgtot     15.1989f   15.1989f   15.1989f    1.1095f    1.1095f   17.0389f
+  cstot     37.4431f   37.4431f   37.4431f    2.2520f    2.2520f   31.9539f
+  cbtot     67.0815f   67.0815f   67.0815f    4.0371f    4.0371f   26.0048f
+  cgs        4.0443f    4.0443f    4.0443f  262.0010a  262.0010a   14.2707f
+  cgd        4.0443f    4.0443f    4.0443f  262.0010a  262.0010a    1.7842f
+
+
+
+ ******  
+ ***myop_2stage
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   gain=  6.2908E+01    at=  7.6736E+01
+               from=  1.0000E+01    to=  1.0000E+09
+   gain1st=  2.6641E+01    at=  1.1940E+02
+               from=  1.0000E+01    to=  1.0000E+09
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ ***myop_2stage
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                            12
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      43  # elements   =      23
+  # resistors   =       0  # capacitors =       0  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      11
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      12  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1         103
+  dc sweep           0.03         101         354
+  ac analysis        0.14        8001        8001
+  readin             0.04
+  errchk             0.00
+  setup              0.00
+  output             0.00
+
+
+           total memory used          354  kbytes
+           total cpu time            0.21 seconds
+           total elapsed time        0.73 seconds
+           job started at     08:23:16 01/02/2016
+           job ended   at     08:23:17 01/02/2016
+
+
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ lic: Release hspice token(s) 

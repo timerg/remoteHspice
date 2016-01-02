@@ -1,0 +1,199 @@
+ ****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: c:\users\timer\documents\github\hspice\035lib\sizeandcurrent\curre
+ Init: read install configuration file: C:\synopsys\Hspice_B-2008.09\meta.cfg
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
+
+
+
+
+ .options abstol=1e-7 reltol=1e-7
+ + post=1 captab accurate=1 ingold=1
+ ***netlist***
+
+ .param wp = 31u lp = 1u
+ + wn = 5u ln = 0.4u
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(1.040, 20u/1u, 1, 1.3, 0.7)
+ *mp vss vbp vdp vdp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(1.035u, 21u/1u, 1, 0.9, 0.7)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(507n, 2.9/0.4u, 1, 1.2, 0.7)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(504n, 3.2u/0.4u, 1, 1, 0.7)
+ *mp vdp vbp vdp vdp pch w = wp l = lp m = 2  * (id, w/l, m, vds, vgs)=(496.8n, 2u/0.4u, 2, 0.7, 0.7)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 3  * (id, w/l, m, vds, vgs)=(493.8n, 15u/0.4u, 3, 0.3, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 2  * (id, w/l, m, vds, vgs)=(297n, 21u/1u, 2, 1.3, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(146.4n, 1.4u/0.4u, 1, , 0.2, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(145.3n, 5u/0.4u, 1, , 1.3, 0.5)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(148.7n, 4.7u/0.4u, 1, , 1.4, 0.5)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(148.7n, 4.7u/0.4u, 1, , 1.3, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(148.7n, 4.7u/0.4u, 1, , 1.4, 0.5)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(1.074, 10u/0.4u, 1, , 0.2, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(1.028, 8u/0.4u, 1, , 0.4, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 2  * (id, w/l, m, vds, vgs)=(1.93u, 10u/1u, 2, , 1.8, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 2  * (id, w/l, m, vds, vgs)=(401n, 30u/1u, 2, 0.8, 0.6)
+ mp  vdp vgp vsp vsp pch w = wp l = lp m = 2  * (id, w/l, m, vds, vgs)=(407.1n, 31u/1u, 2, 0.7, 0.6)
+ *mp  vdp vgp vsp vsp pch w = wp l = lp m = 1  * (id, w/l, m, vds, vgs)=(209.9n, 10u/0.4u, 1, 1.2, 0.6)
+
+
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 2  * (id, w/l, m, vds, vgs)=(495.2n, 2.7u/0.4u, 2, 0.5, 0.5)
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 1  * (id, w/l, m, vds, vgs)=(147.4n, 1.6u/0.4u, 1, 0.4, 0.4)
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 1  * (id, w/l, m, vds, vgs)=(147.4n, 1.6u/0.4u, 1, 0.4, 0.4)
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 6  * (id, w/l, m, vds, vgs)=(590.3, 1.1u/0.4u, 6, 0.6, 0.6)
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 4  * (id, w/l, m, vds, vgs)=(606.6, 1.6u/0.5u, 4, 0.4, 0.4)
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 1  * (id, w/l, m, vds, vgs)=(987.2n, 12u/0.4u, 2, 0.47, 0.47)
+ *mn  vgn vgn vsn vsn nch w = wn l = ln m = 1  * (id, w/l, m, vds, vgs)=(208.2n, 5u/0.4u, 1, 0.47, 0.47)
+ *mn  vgn vgn vsn gnd nch w = 10u l = ln m = 3  * (id, w/l, m, vds, vgs)=(208.2n, 5u/0.4u, 1, 0.47, 0.47)
+
+ mn  vdn vgn gnd gnd nch w = 2.8u l = ln m = 2  * (id, w/l, m, vds, vgs)=(208.2n, 5u/0.4u, 1, 0.47, 0.47)
+ vpd vdp gnd dc = 2.6
+ vps vsp gnd dc = 3.3
+ vpg vgp gnd dc = 2.7
+ vnd vdn gnd dc = 1.4
+ vns vsn gnd dc = 0
+ vng vgn gnd dc = 0.45
+
+ ***
+ .op
+ .dc wp 0.4u 3u 0.1u
+ .probe dc par('1/lx(mp)') par('-i(mp)') par('v(vdd)-v(vbp)') i(mn) i(mp)
+ *.print dc par('1/lx(mp)') par('-i(mp)')
+ .end
+ **warning** lx/lv conversion error     lx  
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+ 
+
+ **warning**  attempt to reference undefined node     0:vdd             
+  in the definition of v(vdd,0)
+   branch - output ignored
+
+ **warning**  attempt to reference undefined node     0:vbp             
+  in the definition of v(vbp,0)
+   branch - output ignored
+
+ 
+
+ **warning** the following singular supplies were terminated to 1 meg resistor 
+   supply       node1            node2
+  vns                     0:vsn              defined in subckt 0                     0:0                defined in subckt 0               
+      
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *current
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:vdn     =   1.4000  0:vdp     =   2.6000  0:vgn     =   0.4500 
+ +0:vgp     =   2.7000  0:vsn     =   0.      0:vsp     =   3.3000 
+
+
+ maximum nodal capacitance=   3.131E-13         on node     0:vsp             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:vdn     = 7.146e-15 0:vdp     = 8.063e-14 0:vgn     = 4.786e-15
+ +0:vgp     = 7.283e-14 0:vsn     =   0.      0:vsp     = 3.131e-13
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vpd      0:vps      0:vpg      0:vnd      0:vns      0:vng     
+  volts      2.6000     3.3000     2.7000     1.4000     0.         0.4500 
+  current  4.071e-07 -4.071e-07    0.      -2.029e-07    0.         0.     
+  power   -1.058e-06  1.343e-06    0.       2.841e-07    0.         0.     
+
+     total voltage source power dissipation=  5.690e-07       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt                        
+ element  0:mp       0:mn      
+ model    0:pch.11   0:nch.3   
+ region       Cutoff     Cutoff
+  id      -4.071e-07  2.029e-07
+  ibs      7.999e-20 -3.536e-19
+  ibd      5.632e-15 -4.707e-13
+  vgs       -0.6000     0.4500 
+  vds       -0.7000     1.4000 
+  vbs        0.         0.     
+  vth       -0.7493     0.5603 
+  vdsat   -5.261e-02  4.416e-02
+  vod        0.1493    -0.1103 
+  beta     3.674e-03  3.023e-03
+  gam eff    0.3917     0.5456 
+  gm       8.936e-06  5.286e-06
+  gds      8.282e-08  7.622e-08
+  gmb      2.048e-06  1.485e-06
+  cdtot    8.063e-14  7.146e-15
+  cgtot    7.283e-14  4.786e-15
+  cstot    1.025e-13  8.877e-15
+  cbtot    2.105e-13  1.607e-14
+  cgs      1.136e-14  1.184e-15
+  cgd      1.136e-14  1.184e-15
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *current
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             4
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      13  # elements   =      11
+  # resistors   =       1  # capacitors =       0  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       8
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =       2  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.01           1           4
+  dc sweep           0.01          27          56
+  readin             0.11
+  errchk             0.01
+  setup              0.05
+  output             0.00
+
+
+           total memory used          198  kbytes
+           total cpu time            0.22 seconds
+           total elapsed time           1 seconds
+           job started at     21:20:20 12/29/2015
+           job ended   at     21:20:20 12/29/2015
+
+
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini

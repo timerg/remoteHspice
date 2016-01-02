@@ -1,0 +1,89 @@
+pnlAddPane();
+nil
+1
+designOpen("c:\\users\\timer\\documents\\github\\hspice\\035lib\\researchtest.sp");
+"D0"
+t
+pnlAddCurve(1, node(D0,"A0","lx6(mp)"), node(D0,"A0","VOLTS"));
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlAddCurve(1, node(D0,"A0","lx8(mp)"), node(D0,"A0","VOLTS"));
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlAddPane();
+nil
+nil
+2
+pnlAddCurve(2, node(D0,"A0","par(1/lx8(mp))"), node(D0,"A0","par(1/lx8(mp))"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlDelCurve(2, node(D0,"A0","par(1/lx8(mp))"), node(D0,"A0","par(1/lx8(mp))"));
+nil
+pnlAddCurve(2, node(D0,"A0","par(1/lx8(mp))"), node(D0,"A0","VOLTS"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+updateAll();
+t
+pnlDelCurve(2, node(D0,"A0","par(1/lx8(mp))"), node(D0,"A0","VOLTS"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+updateAll();
+t
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+updateAll();
+t
+pnlAddCurve(2, node(D0,"A0","par(1/lx8(mp))"), node(D0,"A0","par(-i(mp))"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlDeletePane(2, 1);
+nil
+nil
+nil
+pnlDeletePane(1, 1);
+nil
+nil

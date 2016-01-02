@@ -1,0 +1,71 @@
+***** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******
+ Input File: c:\users\timer\documents\github\hspice\op\subvthop_twostage\trypole
+ lic:
+ lic: FLEXlm: v8.5b
+ lic: USER:   timer                HOSTNAME: timer-PC
+ lic: HOSTID: "00ffa0a8c308 902b349f3511" PID:      26384
+ lic: Using FLEXlm license file:
+ lic: C:\synopsys\Hspice_A-2008.03\Hspice_2007-09.lic
+ lic: Checkout 1 hspice
+ lic: License/Maintenance for hspice will expire on 31-dec-2020/2007.9
+ lic: NODE LOCKED license on hostid "00ffa0a8c308 902b349f3511"
+ lic:
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
+ init: begin read circuit files,  cpu clock=  1.19E-01
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\XILINX\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\TLINE\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\TI\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\SIGNET\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\PCI\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\LIN_TECH\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\FET\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\DIO\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\COMLINE\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\BURR_BRN\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\BJT\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
+       option post     =     2.00
+       option runlvl
+       option post
+       option acout    =     0.00
+       option accura   =     1.00
+       option dcon     =     1.00
+       option conver   =     1.00
+       option gmindc   =    1.000E-12
+       option captab   =     1.00
+       option unwrap   =     1.00
+ init: end read circuit files,  cpu clock=  2.36E-01 memory=    150 kb
+ init: begin check errors,  cpu clock=  2.36E-01
+ init: end check errors,  cpu clock=  2.58E-01 memory=    355 kb
+ init: begin setup matrix, pivot=    10 cpu clock=  2.58E-01
+       establish matrix -- done,  cpu clock=  2.65E-01 memory=    367 kb
+       re-order matrix -- done,  cpu clock=  2.68E-01 memory=    371 kb
+ init: end setup matrix,  cpu clock=  2.71E-01 memory=    392 kb
+ output: c:\users\timer\documents\github\hspice\op\subvthop_twostage\trypolezero
+ sweep: dc dc0    begin, #sweeps= 101 cpu clock=  2.77E-01
+ sweep: dc dc0    end,  cpu clock=  3.39E-01 memory=    392 kb
+ dcop: begin dcop,  cpu clock=  3.46E-01
+ dcop: begin pseudo transient
+ dcop: ...succeeded
+ dcop: end pseudo transient
+ dcop: end dcop,  cpu clock=  3.72E-01 memory=    393 kb  tot_iter=      72
+ output: c:\users\timer\documents\github\hspice\op\subvthop_twostage\trypolezero
+ sweep: ac ac0    begin, #sweeps=1101 cpu clock=  3.80E-01
+ ac: frequency=    1.02E-01
+ ac: frequency=    1.26E+00
+ ac: frequency=    1.58E+01
+ ac: frequency=    2.00E+02
+ ac: frequency=    2.51E+03
+ ac: frequency=    3.16E+04
+ ac: frequency=    3.98E+05
+ ac: frequency=    5.01E+06
+ ac: frequency=    6.31E+07
+ ac: frequency=    7.94E+08
+ ac: frequency=    1.00E+10
+ sweep: ac ac0    end,  cpu clock=  4.84E-01 memory=    704 kb
+>info:         ***** hspice job concluded
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
+ lic: Release hspice token(s)

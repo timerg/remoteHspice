@@ -1,0 +1,19 @@
+* "simulator" "HSPICE" 
+* "version" "B-2008.09 32-BIT"
+* "format" "HSP"
+* "rundate" "21:20:20 12/29/2015 "
+* "netlist" "c:\users\timer\documents\github\hspice\035lib\sizeandcurrent\current.sp "
+* "runtitle" "*current"
+* time =    0.            
+* temperature =   25.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ vdn =   1.4000        
++ vdp =   2.6000        
++ vgn =   0.4500        
++ vgp =   2.7000        
++ vsn =   0.            
++ vsp =   3.3000        
+***   END: Saved Operating Point ***                     
