@@ -1,2 +1,0 @@
-_vexPopHandler: corrupt stack:
-		call from undefined_tag: vevent.c, 3567 attempted to pop non-topmost handler: Terminated.
