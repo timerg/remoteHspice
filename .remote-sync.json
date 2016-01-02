@@ -1,6 +1,6 @@
 {
   "port": "22",
-  "uploadOnSave": false,
+  "uploadOnSave": true,
   "deleteLocal": false,
   "hostname": "daisy.ee.nthu.edu.tw",
   "target": "./remoteHspice",
