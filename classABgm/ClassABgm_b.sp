@@ -5,7 +5,7 @@
 .options ABSTOL=1e-7 RELTOL=1e-7
 + POST=1 CAPTAB ACCURATE=1 INGOLD=1
 
-***netlist***
+***netlisthhh***
 M1 sn vx   vdd vdd pch w = 5u l = 0.4u m = 3
 M3 vx vinp sn  sn  pch w = 12u  l = 0.4u m = 1
 M2 sp vx   vdd vdd pch w = 5u l = 0.4u m = 3
