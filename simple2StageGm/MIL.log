@@ -1,0 +1,359 @@
+pnlAddPane();
+nil
+1
+designOpen("c:\\users\\timer\\documents\\github\\hspice\\gm\\simple2stagegm\\my-gm.sp");
+"D0"
+t
+pnlAddCurve(1, node(D0,"A0","i(mo2)"), node(D0,"A0","diff"));
+nil
+pnlAddCurve(1, node(D0,"A0","i(mo1)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlAddPane();
+nil
+nil
+2
+pnlAddCurve(2, node(D0,"A0","v(ggn)"), node(D0,"A0","diff"));
+nil
+pnlAddCurve(2, node(D0,"A0","v(ggp)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlDelCurve(2, node(D0,"A0","v(ggp)"), node(D0,"A0","diff"));
+nil
+pnlDelCurve(2, node(D0,"A0","v(ggn)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+updateAll();
+t
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(1);
+nil
+Dmo2=(derivative(node(D0,"A0","i(mo2)")));
+dbObject
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlAddCurve(2, node(D0,"A0","Dmo2"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+updateAll();
+dbObject
+t
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(2);
+nil
+updateAll();
+dbObject
+t
+pnlAddPane();
+nil
+nil
+3
+pnlAddCurve(3, node(D0,"A0","i(e1)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(3, 0);
+nil
+pnlSelectPane(3);
+nil
+pnlAddPane();
+4
+De1=(derivative(node(D0,"A0","i(e1)")));
+dbObject
+pnlUnselectPane(3, 0);
+nil
+pnlSelectPane(3);
+nil
+pnlAddPane();
+5
+pnlShowPane(4, 1);
+nil
+pnlUnselectPane(3, 0);
+nil
+pnlSelectPane(4);
+nil
+pnlAddCurve(4, node(D0,"A0","De1"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(4, 0);
+nil
+pnlSelectPane(4);
+nil
+updateAll();
+dbObject
+dbObject
+t
+pnlUnselectPane(4, 0);
+nil
+pnlSelectPane(4);
+nil
+updateAll();
+dbObject
+dbObject
+t
+pnlUnselectPane(4, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlAddPane();
+nil
+nil
+6
+pnlAddCurve(6, node(D0,"A0","v(ggn)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(6, 0);
+nil
+pnlSelectPane(6);
+nil
+pnlAddCurve(6, node(D0,"A0","v(io2)"), node(D0,"A0","diff"));
+nil
+pnlDelCurve(6, node(D0,"A0","v(io2)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(6, 0);
+nil
+pnlSelectPane(6);
+nil
+Dvgn=(derivative(node(D0,"A0","v(ggn)")));
+dbObject
+pnlAddCurve(6, node(D0,"A0","Dvgn"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(6, 0);
+nil
+pnlSelectPane(6);
+nil
+Dvgn=nil;
+nil
+Dvgp=(derivative(node(D0,"A0","v(ggp)")));
+dbObject
+pnlAddCurve(6, node(D0,"A0","Dvgp"), node(D0,"A0","diff"));
+nil
+Dvgn=(derivative(node(D0,"A0","v(ggn)")));
+dbObject
+pnlAddCurve(6, node(D0,"A0","Dvgn"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(6, 0);
+nil
+pnlSelectPane(4);
+nil
+pnlUnselectPane(4, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlHidePane(1, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlShowPane(5, 1);
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(5);
+nil
+pnlDeletePane(5, 0);
+nil
+nil
+pnlSelectPane(2);
+nil
+pnlShowPane(1, 1);
+nil
+pnlUnselectPane(2, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlAddCurve(1, node(D0,"A0","i(mo4)"), node(D0,"A0","diff"));
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(3);
+nil
+pnlHidePane(3, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlHidePane(1, 0);
+nil
+pnlSelectPane(2);
+nil
+pnlHidePane(2, 0);
+nil
+pnlSelectPane(4);
+nil
+pnlHidePane(4, 0);
+nil
+pnlSelectPane(5);
+nil
+pnlUnselectPane(5, 0);
+nil
+pnlSelectPane(5);
+nil
+pnlUnselectPane(5, 0);
+nil
+pnlSelectPane(5);
+nil
+updateAll();
+dbObject
+dbObject
+dbObject
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+6
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+nil
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+dbObject
+dbObject
+dbObject
+dbObject
+t
+nil
+nil
+nil
+nil
+nil
+nil
+5
+nil
+nil
+nil
+dbObject
+nil
+nil
+nil
+nil
+nil
+nil
