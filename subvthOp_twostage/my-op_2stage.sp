@@ -1,5 +1,10 @@
 ***MyOp_2stage
 
+*TT corner
+    * at open loop without Rl, low gain=63db
+    * at open loop with Rl(500k), pm = 75db;
+    * at close loop(with Rl of course), BandWidth = ~50k
+
 .protect
 .lib 'mm0355v.l' tt
 .unprotect
@@ -33,18 +38,18 @@ m4n	    vop	2   vss vss nch w = 5u  l = 0.4u    m = 1
 
 ***compensation***
 *Ct	gnd		2   100f
-*Con	gnd	von 10p
-*Con1 1 von 350f
+*Con	gnd	von 50f
+*Con1 1 von 50f
 *Cop2 2 vop 300f
 *C1   1 gnd 100f  *flatten end
 *C2   2 gnd  200f
 *Cb   b gnd 10f         useless
 *Cvoa gnd voa 500f      *useless
 *Cvo2 gnd vo2 300f
-*Cvoavo2 voa vo2 800f
-Cvonvop von vop 100f
-*Rz1	z1		1   100k
-*Rl vop gnd 10x
+Cvoavo2 voa vo2 250f
+Cvonvop zon vop 220f
+Rz1	zon		von   1x
+Rl vop gnd 500k
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -54,8 +59,8 @@ vb1		b1		gnd dc bias2
 
 
 ***input***
-vinp vinp gnd dc = 'comon-diff' ac = 1
-vinn vinn gnd dc = 'comon+diff' *ac = 1 180
+vinp vinp gnd dc = 'comon-diff' *ac = 1
+vinn vinn gnd dc = 'comon+diff' ac = 1 *180
 *viac 2 gnd ac = 1
 *Lac 2 vac 1x
 ***current mirror***
@@ -73,8 +78,8 @@ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 *vtg	vgt	gnd dc = '1-397.6836m'
 
 ***feedback test***
-*Rf vop vinn 1x
-*If vdd vinn  dc = 10n
+Rf vop vinn 500k
+*If vdd vinn  dc = 10u
 
 
 
@@ -83,8 +88,8 @@ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 .op
 
 ***sweep***
-.dc diff -0.5 0.5 0.01
-*.dc If dec 100 1n 100n
+*.dc diff -0.5 0.5 0.01
+.dc If dec 100 1n 1u
 ***probe&measuring***
 .ac dec 1000 10 1g
 *.tf v(voa) vinp
