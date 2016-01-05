@@ -9,8 +9,8 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
   Input File: my-op_2stage.sp                                                   
  lic:  
  lic: FLEXlm: v8.5b 
- lic: USER:   m103061608           HOSTNAME: ws48 
- lic: HOSTID: e41f13ede70a         PID:      23722 
+ lic: USER:   m103061608           HOSTNAME: ws45 
+ lic: HOSTID: e41f13edf052         PID:      21341 
  lic: Using FLEXlm license file: 
  lic: 26585@lsnctu 
  lic: Checkout 1 hspice 
@@ -33,11 +33,11 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  +diff			= 0
  ***netlist***
  ***1st stage***
- mb	b	b0	vdd	vdd	pch	w = 31u  l = 1u	  m = 2
+ mb	b	cp	vdd	vdd	pch	w = 31u  l = 1u	  m = 2
  m1	1	vinn	b		b		pch	w = 10u l = 0.4u m = 1
  m2	2	vinp	b		b		pch	w = 10u l = 0.4u m = 1
- m3	1	b1		vss	vss	nch	w = 8.3u l = 0.4u m = 1
- m4	2	b1		vss	vss	nch	w = 8.3u l = 0.4u m = 1
+ m3	1	cn		vss	vss	nch	w = 4.2u l = 0.4u m = 2
+ m4	2	cn		vss	vss	nch	w = 4.2u l = 0.4u m = 2
 
 
  ***2nd stage***
@@ -45,15 +45,23 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  m1pb	von	von	voa	voa	pch	w = 11u l = 0.4u    m = 2
  m2pa	vo2	voa	vdd	vdd	pch	w = 11u l = 0.4u    m = 2
  m2pb	vop	von	vo2 vo2	pch	w = 11u l = 0.4u    m = 2
- m3n	    von	1   vss vss nch w = 1.2u  l = 0.4u    m = 1
- m4n	    vop	2   vss vss nch w = 1.2u  l = 0.4u    m = 1
+ m3n	    von	1   vss vss nch w = 5u  l = 0.4u    m = 1
+ m4n	    vop	2   vss vss nch w = 5u  l = 0.4u    m = 1
 
  ***compensation***
- *
- *c1	z1		von 400f
- *rz1	z1		1   350k
- *c2	2			vop 300f
-
+ *ct	gnd		2   100f
+ *con	gnd	von 50f
+ *con1 1 von 50f
+ *cop2 2 vop 300f
+ *c1   1 gnd 100f  *flatten end
+ *c2   2 gnd  200f
+ *cb   b gnd 10f         useless
+ *cvoa gnd voa 500f      *useless
+ *cvo2 gnd vo2 300f
+ cvoavo2 voa vo2 250f
+ cvonvop zon vop 220f
+ rz1	zon		von   1x
+ rl vop gnd 500k
 
  ***source***
  vd		vdd 	gnd dc supplyp
@@ -63,23 +71,27 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
 
 
  ***input***
- vinp vinp gnd dc = 'comon-diff' ac = 1
- vinn vinn gnd dc = 'comon+diff' ac = 1 180
-
-
-
-
-
+ vinp vinp gnd dc = 'comon-diff' *ac = 1
+ vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+ *viac 2 gnd ac = 1
+ *lac 2 vac 1x
+ ***current mirror***
+ iin cp vss dc = 500n
+ mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
+ mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
+ mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
+ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 
  ***test
  *mt	vdt	vgt	vss	vss	nch	w = 2.7u   l = 0.5u m = 1
- mt	vdt	vgt	vdd	vdd	pch w = 9.7u l = 0.5u m = 1
+ *mt	vdt	vgt	vdd	vdd	pch w = 9.7u l = 0.5u m = 1
 
- vtd	vdt	gnd dc = '1-499.7048m'
- vtg	vgt	gnd dc = '1-397.6836m'
+ *vtd	vdt	gnd dc = '1-499.7048m'
+ *vtg	vgt	gnd dc = '1-397.6836m'
 
- ***
-
+ ***feedback test***
+ rf vop vinn 500k
+ *if vdd vinn  dc = 10u
 
 
 
@@ -88,19 +100,21 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  .op
 
  ***sweep***
- .dc diff -0.5 0.5 0.01
+ *.dc diff -0.5 0.5 0.01
+ .dc if dec 100 1n 1u
  ***probe&measuring***
  .ac dec 1000 10 1g
- *.tf v(1) vinp
- *.pz v(vop) vinp
+ *.tf v(voa) vinp
+ .pz v(vop) vinp
+ *.pz v(vop) viac
  .probe dc i(m1) i(m2)	i(mt)
  .probe ac cap(von)
  +gain1st=par('vdb(2, 1)-vdb(vinp,vinn)')	par('i(m1)-i(m2)')	phase1st=par('vp(2,1)')
  +gainall=par('vdb(vop)-vdb(vinp,vinn)')		phaseall=par('vp(vop)')
  .meas ac gain max par('vdb(vop)-vdb(vinp,vinn)')
  .meas ac gain1st max par('vdb(2, 1)-vdb(vinp,vinn)')
- *.meas ac zerodb when par('vdb(vop)-vdb(vinp,vinn)') = 1
- *.meas ac phaseatdb	find par('vp(vop)') when par('vdb(vop)-vdb(vinp,vinn)') = 1
+ .meas ac zerodb when par('vdb(vop)-vdb(vinp,vinn)') = 0
+ .meas ac phaseatdb	find par('vp(vop)') when par('vdb(vop)-vdb(vinp,vinn)') = 0
 
  *.noise v(1) vinn 10
  .end
@@ -112,9 +126,19 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
      ft= 200.00m relmos=  10.00m
  (used for FFT control ) fft_accurate= 1
- 
+
+   **warning** cannot find any usefulness of parameter sweeping:if               just create it anyway
 
  
+
+ **warning** could not find branch element     0:mt              
+      branch - output ignored
+ 
+
+ **warning** the following singular supplies were terminated to 1 meg resistor 
+   supply       node1            node2
+  vb                      0:b0               defined in subckt 0                     0:0                defined in subckt 0               
+  vb1                     0:b1               defined in subckt 0                     0:0                defined in subckt 0               
       
   *** initial damped pseudo transient completed. ***
   *** final try started ***
@@ -126,24 +150,26 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  ***** operating point status is all       simulation time is     0.     
     node    =voltage      node    =voltage      node    =voltage
 
- +0:1       = 475.3665m 0:2       = 475.3665m 0:b       =   2.5735 
- +0:b0      =   2.7000  0:b1      = 450.0000m 0:vdd     =   3.3000 
- +0:vdt     = 500.2952m 0:vgt     = 602.3164m 0:vinn    =   2.0000 
- +0:vinp    =   2.0000  0:vo2     =   2.7402  0:voa     =   2.7402 
- +0:von     =   2.1803  0:vop     =   2.1803  0:vss     =   0.     
+ +0:1       = 397.5550m 0:2       = 397.5550m 0:b       =   2.5708 
+ +0:b0      =   2.7000  0:b1      = 450.0000m 0:c0      =   1.2252 
+ +0:cn      = 449.9268m 0:cp      =   2.7007  0:vdd     =   3.3000 
+ +0:vinn    =   2.0000  0:vinp    =   2.0000  0:vo2     =   2.7318 
+ +0:voa     =   2.7652  0:von     =   2.2305  0:vop     =   1.0060 
+ +0:vss     =   0.      0:zon     =   2.2305 
 
 
- maximum nodal capacitance=   5.795E-13         on node     0:vdd             
+ maximum nodal capacitance=   7.430E-13         on node     0:vdd             
 
     nodal  capacitance table 
 
     node    =    cap      node    =    cap      node    =    cap
 
- +0:1       =  22.1524f 0:2       =  22.1524f 0:b       = 168.1406f
- +0:b0      =  72.8322f 0:b1      =  13.5780f 0:vdd     = 579.5019f
- +0:vdt     =   9.1699f 0:vgt     =  17.0389f 0:vinn    =   6.9032f
- +0:vinp    =   6.9032f 0:vo2     = 135.1413f 0:voa     = 165.5391f
- +0:von     =  62.7381f 0:vop     =  32.3403f 0:vss     =  81.6468f
+ +0:1       =  25.9711f 0:2       =  25.9711f 0:b       = 167.8779f
+ +0:b0      =   0.      0:b1      =   0.      0:c0      =  17.9291f
+ +0:cn      =  50.1498f 0:cp      = 155.1721f 0:vdd     = 742.9689f
+ +0:vinn    =   6.9071f 0:vinp    =   6.9071f 0:vo2     = 378.5075f
+ +0:voa     = 416.2314f 0:von     =  67.1265f 0:vop     = 250.0833f
+ +0:vss     = 181.4992f 0:zon     = 220.0000f
 
  
 
@@ -152,17 +178,32 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  subckt                                                                    
  element  0:vd       0:vs       0:vb       0:vb1      0:vinp     0:vinn    
   volts      3.3000     0.         2.7000   450.0000m    2.0000     2.0000 
-  current   -1.2926m  637.1423n    0.         0.         0.         0.     
-  power      4.2655m    0.         0.         0.         0.         0.     
+  current   -1.4007u    1.3767u   -2.7000u -450.0000n    0.        -1.9880u
+  power      4.6222u    0.         7.2900u  202.5000n    0.         3.9760u
 
- subckt                        
- element  0:vtd      0:vtg     
-  volts    500.2952m  602.3164m
-  current    1.2919m    0.     
-  power   -646.3468u    0.     
+     total voltage source power dissipation=   16.0907u       watts
 
-     total voltage source power dissipation=    3.6191m       watts
 
+
+ ***** current sources
+
+ subckt             
+ element  0:iin     
+  volts      2.7007 
+  current  500.0000n
+  power     -1.3503u
+
+
+     total current source power dissipation=  -1.3503u       watts
+
+ **** resistors
+
+ subckt                                   
+ element  0:rz1      0:rl       0:rf      
+  r value    1.0000x  500.0000k  500.0000k
+  v drop     0.         1.0060  -993.9939m
+  current    0.         2.0120u   -1.9880u
+  power      0.         2.0241u    1.9760u
 
 
 
@@ -173,64 +214,219 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
  element  0:mb       0:m1       0:m2       0:m3       0:m4       0:m1pa    
  model    0:pch.11   0:pch.3    0:pch.3    0:nch.3    0:nch.3    0:pch.3   
  region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
-  id      -409.2806n -204.6360n -204.6360n  204.6408n  204.6408n -113.9273n
-  ibs      8.042e-20  4.058e-20  4.058e-20 -3.120e-19 -3.120e-19  2.256e-20
-  ibd        5.6318f    1.5518p    1.5518p  -11.0331f  -11.0331f    2.0318f
-  vgs     -600.0000m -573.4952m -573.4952m  450.0000m  450.0000m -559.8331m
-  vds     -726.5048m   -2.0981    -2.0981   475.3665m  475.3665m -559.8331m
+  id      -403.4566n -201.7232n -201.7232n  201.7281n  201.7281n  -60.4640n
+  ibs      7.928e-20  4.000e-20  4.000e-20 -3.298e-19 -3.298e-19  1.197e-20
+  ibd        5.6318f    2.1640p    2.1640p  -12.1810f  -12.1810f    2.0318f
+  vgs     -599.3222m -570.7729m -570.7729m  449.9268m  449.9268m -534.7699m
+  vds     -729.2271m   -2.1732    -2.1732   397.5550m  397.5550m -534.7699m
   vbs        0.         0.         0.         0.         0.         0.     
-  vth     -749.0978m -674.4719m -674.4719m  570.7255m  570.7255m -715.3522m
-  vdsat    -52.6210m  -50.0181m  -50.0181m   44.2583m   44.2583m  -46.5696m
-  vod      149.0978m  100.9766m  100.9766m -120.7255m -120.7255m  155.5190m
-  beta       3.6745m    1.2820m    1.2820m    4.7680m    4.7680m    2.7932m
-  gam eff  391.6940m  462.5849m  462.5849m  563.3998m  563.3998m  463.2525m
-  gm         8.9816u    4.7118u    4.7118u    5.3537u    5.3537u    2.7639u
-  gds       82.6552n  131.8450n  131.8450n   87.5072n   87.5072n   84.6041n
-  gmb        2.0583u    1.0541u    1.0541u    1.5461u    1.5461u  642.9420n
-  cdtot     80.0673f   10.3011f   10.3011f   10.7418f   10.7418f   30.6167f
-  cgtot     72.8322f    6.9032f    6.9032f    6.7890f    6.7890f   15.1989f
-  cstot    102.5259f   17.0945f   17.0945f   11.9552f   11.9552f   37.4431f
-  cbtot    209.9682f   26.9422f   26.9422f   22.5791f   22.5791f   67.0815f
-  cgs       11.3643f    1.8391f    1.8391f    1.7267f    1.7267f    4.0443f
-  cgd       11.3643f    1.8391f    1.8391f    1.7267f    1.7267f    4.0443f
+  vth     -749.0780m -672.4537m -672.4537m  569.6802m  569.6802m -716.0253m
+  vdsat    -52.5699m  -49.9464m  -49.9464m   44.0336m   44.0336m  -45.9185m
+  vod      149.7558m  101.6808m  101.6808m -119.7534m -119.7534m  181.2553m
+  beta       3.6745m    1.2828m    1.2828m    4.6792m    4.6792m    2.7930m
+  gam eff  391.6940m  462.5849m  462.5849m  554.4915m  554.4915m  463.2525m
+  gm         8.8639u    4.6478u    4.6478u    5.2995u    5.2995u    1.4984u
+  gds       81.4947n  129.8991n  129.8991n   89.1687n   89.1687n   45.9736n
+  gmb        2.0316u    1.0402u    1.0402u    1.5206u    1.5206u  355.4877n
+  cdtot     80.0105f   10.1943f   10.1943f   11.5857f   11.5857f   30.8415f
+  cgtot     72.8482f    6.9071f    6.9071f    7.0242f    7.0242f   15.2798f
+  cstot    102.5259f   17.0945f   17.0945f   12.7039f   12.7039f   37.4431f
+  cbtot    209.9274f   26.8393f   26.8393f   24.2665f   24.2665f   67.3872f
+  cgs       11.3643f    1.8391f    1.8391f    1.7618f    1.7618f    4.0443f
+  cgd       11.3643f    1.8391f    1.8391f    1.7618f    1.7618f    4.0443f
 
 
 
  subckt                                                                    
- element  0:m1pb     0:m2pa     0:m2pb     0:m3n      0:m4n      0:mt      
+ element  0:m1pb     0:m2pa     0:m2pb     0:m3n      0:m4n      0:mc0     
  model    0:pch.3    0:pch.3    0:pch.3    0:nch.3    0:nch.3    0:pch.3   
- region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff   Saturati
-  id      -113.9273n -113.9273n -113.9273n  113.8187n  113.8187n   -1.2919m
-  ibs      2.256e-20  2.256e-20  2.256e-20 -2.436e-19 -2.436e-19  222.9822a
-  ibd        2.0318f    2.0318f    2.0318f -106.4360p -106.4360p    6.3990p
-  vgs     -559.8331m -559.8331m -559.8331m  475.3665m  475.3665m   -2.6977 
-  vds     -559.8331m -559.8331m -559.8331m    2.1803     2.1803    -2.7997 
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       -60.4640n  -62.0146n  -62.0102n   60.3886n   37.9900n -499.9916n
+  ibs      1.197e-20  1.228e-20  1.228e-20 -9.661e-20 -6.077e-20  1.004e-19
+  ibd        2.0318f    2.0318f   58.2322f  -73.2077p   -7.1766f    3.3314f
+  vgs     -534.7699m -534.7699m -501.3447m  397.5550m  397.5550m -599.3222m
+  vds     -534.7699m -568.1952m   -1.7258     2.2305     1.0060  -599.3222m
   vbs        0.         0.         0.         0.         0.         0.     
-  vth     -715.3522m -715.3522m -715.3522m  546.8963m  546.8963m -690.9087m
-  vdsat    -46.5696m  -46.5696m  -46.5696m   46.1810m   46.1810m   -1.6224 
-  vod      155.5190m  155.5190m  155.5190m  -71.5298m  -71.5298m   -2.0068 
-  beta       2.7932m    2.7932m    2.7932m  561.5075u  561.5075u  735.0772u
-  gam eff  463.2525m  463.2525m  463.2525m  511.5324m  511.5324m  432.3028m
-  gm         2.7639u    2.7639u    2.7639u    2.8626u    2.8626u  924.0572u
-  gds       84.6041n   84.6041n   84.6041n   40.3709n   40.3709n   69.4653u
-  gmb      642.9420n  642.9420n  642.9420n  775.3023n  775.3023n  212.9463u
-  cdtot     30.6167f   30.6167f   30.6167f    1.7236f    1.7236f    9.1699f
-  cgtot     15.1989f   15.1989f   15.1989f    1.1095f    1.1095f   17.0389f
-  cstot     37.4431f   37.4431f   37.4431f    2.2520f    2.2520f   31.9539f
-  cbtot     67.0815f   67.0815f   67.0815f    4.0371f    4.0371f   26.0048f
-  cgs        4.0443f    4.0443f    4.0443f  262.0010a  262.0010a   14.2707f
-  cgd        4.0443f    4.0443f    4.0443f  262.0010a  262.0010a    1.7842f
+  vth     -716.0253m -715.1275m -684.0364m  556.5021m  565.6535m -719.8247m
+  vdsat    -45.9185m  -45.9353m  -45.8896m   43.2164m   43.1081m  -48.9331m
+  vod      181.2553m  180.3576m  182.6917m -158.9471m -168.0985m  120.5025m
+  beta       2.7930m    2.7937m    2.8198m    2.8183m    2.8152m    4.3353m
+  gam eff  463.2525m  463.2525m  463.2525m  557.3611m  557.3611m  455.2807m
+  gm         1.4984u    1.5357u    1.5384u    1.6308u    1.0339u   11.5078u
+  gds       45.9736n   46.8118n   43.2132n   21.9976n   15.2208n  354.1031n
+  gmb      355.4877n  364.0984n  365.3924n  466.2449n  301.4173n    2.5757u
+  cdtot     30.8415f   30.5429f   23.8632f    5.6128f    6.2200f   50.7212f
+  cgtot     15.2798f   15.2798f   15.3924f    4.1911f    4.1911f   24.5798f
+  cstot     37.4431f   37.4431f   37.4431f    7.4453f    7.4453f   62.7138f
+  cbtot     67.3872f   67.0886f   60.5215f   13.0654f   13.6727f  112.1386f
+  cgs        4.0443f    4.0443f    4.0443f    1.0459f    1.0459f    6.4691f
+  cgd        4.0443f    4.0443f    4.0443f    1.0459f    1.0459f    6.4691f
 
 
 
+ subckt                                   
+ element  0:mc1      0:mc2      0:mc3     
+ model    0:pch.3    0:pch.6    0:nch.3   
+ region       Cutoff   Saturati     Cutoff
+  id      -374.7296n -374.7388n  374.7377n
+  ibs      7.527e-20  8.207e-20 -5.981e-19
+  ibd        2.4938p  115.9258a  -21.5264f
+  vgs     -599.3222m -775.2674m  449.9268m
+  vds       -2.0748  -775.2674m  449.9268m
+  vbs        0.         0.         0.     
+  vth     -679.8662m -745.3677m  569.8638m
+  vdsat    -53.6544m -102.1390m   44.1177m
+  vod       80.5440m  -29.8997m -119.9370m
+  beta       1.2523m  106.3096u    8.6184m
+  gam eff  455.2808m  408.2469m  557.6573m
+  gm         8.2520u    5.5740u    9.8278u
+  gds      233.0318n  163.2106n  161.9936n
+  gmb        1.8089u    1.1767u    2.8253u
+  cdtot     10.8352f    1.8946f   20.5427f
+  cgtot      7.0228f  969.8884a   12.6943f
+  cstot     17.9182f    2.6998f   22.7458f
+  cbtot     28.3830f    4.3941f   43.1839f
+  cgs        1.8483f  388.9027a    3.1997f
+  cgd        1.8483f  192.1500a    3.1997f
+
+
+
+ ***************************************************
+   ******   pole/zero analysis  
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ 
+ 
+    input =  0:vinp          output = v(vop)
+ 
+       poles (rad/sec)                 poles ( hertz)
+ real            imag            real            imag            
+ -1.53421x       0.              -244.176k       0.              
+ -2.81715x       0.              -448.364k       0.              
+ -4.30202x       0.              -684.687k       0.              
+ -8.33317x       0.              -1.32627x       0.              
+ -44.9793x       8.64008x        -7.15867x       1.37511x        
+ -44.9793x       -8.64008x       -7.15867x       -1.37511x       
+ -58.1644x       0.              -9.25716x       0.              
+ -93.7477x       0.              -14.9204x       0.              
+ -194.819x       0.              -31.0065x       0.              
+ -208.391x       0.              -33.1665x       0.              
+ -600.466x       0.              -95.5672x       0.              
+ 
+       zeros (rad/sec)                 zeros ( hertz)
+ real            imag            real            imag            
+ -2.81766x       0.              -448.444k       0.              
+ -5.22981x       -808.834k       -832.351k       -128.730k       
+ -5.22995x       808.324k        -832.373k       128.649k        
+ -27.2541x       0.              -4.33762x       0.              
+ -44.9300x       19.6028x        -7.15082x       3.11987x        
+ -44.9300x       -19.6027x       -7.15083x       -3.11987x       
+ -75.7033x       0.              -12.0485x       0.              
+ -203.805x       0.              -32.4366x       0.              
+ -595.704x       0.              -94.8093x       0.              
+ 903.344x        0.              143.772x        0.              
+ 1.73691g        0.              276.438x        0.              
+ 
+  ***** constant factor = 36.8912u
  ******  
  ***myop_2stage
 
   ******  ac analysis tnom=  25.000 temp=  25.000 *****
-   gain=  6.2908E+01    at=  7.6736E+01
+   gain=  1.6328E+01    at=  3.6392E+01
                from=  1.0000E+01    to=  1.0000E+09
-   gain1st=  2.6641E+01    at=  1.1940E+02
+   gain1st=  2.6533E+01    at=  3.1696E+02
                from=  1.0000E+01    to=  1.0000E+09
+   zerodb=  2.4894E+06
+   phaseatdb=  5.5814E+01
 
           ***** job concluded
 1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
@@ -247,12 +443,12 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
 
 
   ******  Circuit Statistics  ******
-  # nodes       =      43  # elements   =      23
-  # resistors   =       0  # capacitors =       0  # inductors   =       0
+  # nodes       =      50  # elements   =      31
+  # resistors   =       5  # capacitors =       2  # inductors   =       0
   # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
-  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      11
-  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
-  # jfets       =       0  # mosfets    =      12  # U elements  =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       8
+  # curr_srcs   =       1  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      15  # U elements  =       0
   # T elements  =       0  # W elements =       0  # B elements  =       0
   # S elements  =       0  # P elements =       0  # va device   =       0
 
@@ -260,20 +456,20 @@ Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice my-op_2
   ******  Runtime Statistics (seconds)  ******
 
   analysis           time    # points   tot. iter  conv.iter
-  op point           0.00           1         103
-  dc sweep           0.03         101         354
-  ac analysis        0.14        8001        8001
+  op point           0.01           1         135
+  dc sweep           0.07         301         667
+  ac analysis        0.17        8001        8001
   readin             0.04
-  errchk             0.00
+  errchk             0.01
   setup              0.00
   output             0.00
 
 
-           total memory used          354  kbytes
-           total cpu time            0.21 seconds
-           total elapsed time        0.73 seconds
-           job started at     08:23:16 01/02/2016
-           job ended   at     08:23:17 01/02/2016
+           total memory used          495  kbytes
+           total cpu time            0.30 seconds
+           total elapsed time        0.56 seconds
+           job started at     16:33:47 01/04/2016
+           job ended   at     16:33:47 01/04/2016
 
 
  Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini

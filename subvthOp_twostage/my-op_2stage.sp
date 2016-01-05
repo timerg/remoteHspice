@@ -2,8 +2,8 @@
 
 *TT corner
     * at open loop without Rl, low gain=63db
-    * at open loop with Rl(500k), pm = 75db;
-    * at close loop(with Rl of course), BandWidth = ~50k
+    * at open loop with Rl(100k), pm = 75db;
+    * at close loop(with Rl of course), BandWidth = ~100k, ItoV = 426
 
 .protect
 .lib 'mm0355v.l' tt
@@ -46,10 +46,10 @@ m4n	    vop	2   vss vss nch w = 5u  l = 0.4u    m = 1
 *Cb   b gnd 10f         useless
 *Cvoa gnd voa 500f      *useless
 *Cvo2 gnd vo2 300f
-Cvoavo2 voa vo2 250f
-Cvonvop zon vop 220f
-Rz1	zon		von   1x
-Rl vop gnd 500k
+*Cvoavo2 voa vo2 250f
+*Cvonvop zon vop 220f
+Rz1	zon		von   100k
+
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -60,7 +60,7 @@ vb1		b1		gnd dc bias2
 
 ***input***
 vinp vinp gnd dc = 'comon-diff' *ac = 1
-vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+*vinn vinn gnd dc = 'comon+diff' ac = 1 *180
 *viac 2 gnd ac = 1
 *Lac 2 vac 1x
 ***current mirror***
@@ -70,28 +70,35 @@ mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
 mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
 mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 
-***test
-*mt	vdt	vgt	vss	vss	nch	w = 2.7u   l = 0.5u m = 1
+***test***
+*mt	vgt	vgt	vss	vss	nch	w = 2.7u   l = 0.5u m = 1
 *mt	vdt	vgt	vdd	vdd	pch w = 9.7u l = 0.5u m = 1
 
 *vtd	vdt	gnd dc = '1-499.7048m'
-*vtg	vgt	gnd dc = '1-397.6836m'
+*vtg	vgt	gnd dc = 1
 
 ***feedback test***
-Rf vop vinn 500k
-*If vdd vinn  dc = 10u
+Rf vop vinn 100k
+If vdd vinn  dc = 10u ac = 1
+*.dc If dec 100 1n 1u
 
-
+****Mos Resistor***
+**mrp	vinn vref vop  pch w = 3u l = 3u m = 1
+**mrp2 vop vref vinn vinn  pch w = 3u l = 3u m = 1
+*If vdd vinn  dc = 1n ac = 1
+*vr vref gnd dc = 1.5
+*.dc If -500n 500n 1n
+*.probe Zr = par('v(vop)-v(vinn)')
 
 
 
 .op
 
 ***sweep***
-*.dc diff -0.5 0.5 0.01
-.dc If dec 100 1n 1u
+.dc diff -0.5 0.5 0.01
+.probe ac I(if)
 ***probe&measuring***
-.ac dec 1000 10 1g
+.ac dec 1000 10 1t
 *.tf v(voa) vinp
 .pz v(vop) vinp
 *.pz v(vop) viac
