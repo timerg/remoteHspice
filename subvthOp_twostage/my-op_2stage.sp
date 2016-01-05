@@ -47,8 +47,11 @@ m4n	    vop	2   vss vss nch w = 5u  l = 0.4u    m = 1
 *Cvoa gnd voa 500f      *useless
 *Cvo2 gnd vo2 300f
 *Cvoavo2 voa vo2 250f
-*Cvonvop zon vop 220f
-Rz1	zon		von   100k
+Cvonvop zon vop 220f
+******
+*Rz1	zon		von   1x
+vvb zb gnd dc = 2
+mz1 zon zb von von pch w = 1u l = 1u
 
 
 ***source***
@@ -72,15 +75,24 @@ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 
 ***test***
 *mt	vgt	vgt	vss	vss	nch	w = 2.7u   l = 0.5u m = 1
-*mt	vdt	vgt	vdd	vdd	pch w = 9.7u l = 0.5u m = 1
+*mt	vdt	vgt	vst	vst	pch w = 1u l = 1u m = 1
+*
+*vtd	vdt	gnd dc = 1.9
+*vtg	vgt	gnd dc = 2
+*vts vst gnd dc = 2.23
+*.dc vts 2 2.8 0.001
 
-*vtd	vdt	gnd dc = '1-499.7048m'
-*vtg	vgt	gnd dc = 1
+***Open loop wi loading Test***
+*Rol vop gnd 100k
+*Ril vinn oi 100k
+*Vot oi gnd dc = 'comon' ac = 1
+*.probe ac gainOpWirl = par('Vdb(vop)-Vdb(vinp,vinn)')
 
-***feedback test***
+***cloase loop feedback test***
 Rf vop vinn 100k
-If vdd vinn  dc = 10u ac = 1
-*.dc If dec 100 1n 1u
+If vdd vinn  dc = 10n ac = 1
+.dc If -1u 1u 1n
+
 
 ****Mos Resistor***
 **mrp	vinn vref vop  pch w = 3u l = 3u m = 1
@@ -95,7 +107,7 @@ If vdd vinn  dc = 10u ac = 1
 .op
 
 ***sweep***
-.dc diff -0.5 0.5 0.01
+*.dc diff -0.5 0.5 0.01
 .probe ac I(if)
 ***probe&measuring***
 .ac dec 1000 10 1t
