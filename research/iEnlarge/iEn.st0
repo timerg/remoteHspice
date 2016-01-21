@@ -1,0 +1,57 @@
+***** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******
+ Input File: iEn.sp
+ lic:
+ lic: FLEXlm: v8.5b
+ lic: USER:   m103061608           HOSTNAME: ws43
+ lic: HOSTID: 5cf3fcb5e0d8         PID:      19520
+ lic: Using FLEXlm license file:
+ lic: 26585@lsnctu
+ lic: Checkout 1 hspice
+ lic: License/Maintenance for hspice will expire on 14-may-2016/2015.06
+ lic: FLOATING license(s) on SERVER lsnctu
+ lic:
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.in
+ init: begin read circuit files,  cpu clock=  3.00E-02
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/ad
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/behave
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/bjt
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/burr_b
+                         rn
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/comlin
+                         ear
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/dio
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/fet
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/lin_te
+                         ch
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/pci
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/signet
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/ti
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/tline
+       option search   = /usr/cad/synopsys/hspice/cur/hspice/parts/xilinx
+       option runlvl
+       option post
+       option acout    =     0.00
+       option accura   =     1.00
+       option dcon     =     1.00
+       option conver   =     1.00
+       option gmindc   =    1.000E-12
+       option captab   =     1.00
+       option unwrap   =     1.00
+ init: end read circuit files,  cpu clock=  4.00E-02 memory=    146 kb
+ init: begin check errors,  cpu clock=  4.00E-02
+ init: end check errors,  cpu clock=  5.00E-02 memory=    454 kb
+ init: begin setup matrix, pivot=    10 cpu clock=  5.00E-02
+       establish matrix -- done,  cpu clock=  5.00E-02 memory=    483 kb
+       re-order matrix -- done,  cpu clock=  5.00E-02 memory=    491 kb
+ init: end setup matrix,  cpu clock=  5.00E-02 memory=    533 kb
+ output: iEn.sw0
+ sweep: dc dc0    begin, #sweeps= 401 cpu clock=  5.00E-02
+ sweep: dc dc0    end,  cpu clock=  1.40E-01 memory=    533 kb
+ dcop: begin dcop,  cpu clock=  1.40E-01
+ dcop: begin pseudo transient
+ dcop: ...succeeded
+ dcop: end pseudo transient
+ dcop: end dcop,  cpu clock=  2.20E-01 memory=    533 kb  tot_iter=     816
+>info:         ***** hspice job concluded
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.in
+ lic: Release hspice token(s)

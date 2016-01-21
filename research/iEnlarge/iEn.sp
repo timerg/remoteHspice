@@ -23,9 +23,10 @@ m3n	    von	1   vss vss nch w = 15u   l = 0.4u    m = 2
 m4n	    vop	2   vss vss nch w = 15u   l = 0.4u    m = 2
 
 ******Compensation***
-Cvonvop zon vop 220f
-vvb zb gnd dc = 2
-mz1 zon zb von von pch w = 1u l = 1u
+Cvonvop zon vop 1p
+*vvb zb gnd dc = 2
+*mz1 zon zb von von pch w = 1u l = 1u
+Rz zon von 100k
 .ends
 
 ******current mirror***
@@ -40,7 +41,7 @@ XOP1 vdd vss vinn vinp cp cn vop OP
 vinp vinp gnd dc = 'comon-diff' *ac = 1
 *vinn vinn gnd dc = 'comon+diff' ac = 1 *180
 .param
-+comon		= 2
++comon		= 1.7
 +diff		= 0
 ********************
 ********************
@@ -60,7 +61,7 @@ Iin vdd vinn dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
 
 ******OP by Design***
 XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
-vinp2 vinp2 gnd dc = 2.2
+vinp2 vinp2 gnd dc = 1.7
 Ro vout vop2 0
 .probe dc i(ro)
 
@@ -77,11 +78,12 @@ It vst vdd dc = 1u
 vtg vgt gnd dc = 2v
 
 .op
-.dc Iin dec 100 1n 1u
+.dc Iin dec 100 1n 10u
 *.dc It dec 100 1n 1u
 .probe dc i(me1) i(me2)
 +lx3(me1) lx3(me2) lx7(me1) lx7(me2)
-
++I(xop1.m4n)
+*.print rds=par('v(vinn)/I(iin)')
 *.ac dec 100 1 1g
 *.noise i(ro) Iin
 

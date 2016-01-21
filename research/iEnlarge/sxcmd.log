@@ -1,0 +1,9 @@
+### CustomExplorer log file, revision C-2009.09 (build 0909) ###
+### created at 23:14:45 on Wed Jan 20 2016 (Linux AMD64) ###
+# (0) running in waveview only mode
+# (0) SW_SX_PERL_LIB defined
+# (0) SW_SX_TCL_LIB defined
+# (0) HOME defined
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/home/m103/m103061608/remoteHspice/research/iEnlarge/iEn.sw0"

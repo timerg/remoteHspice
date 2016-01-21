@@ -47,11 +47,11 @@ m4n	    vop	2   vss vss nch w = 15u   l = 0.4u    m = 2
 *Cvoa gnd voa 500f      *useless
 *Cvo2 gnd vo2 300f
 *Cvoavo2 voa vo2 250f
-Cvonvop zon vop 220f
+Cvonvop zon vop 1p
 ******
-*Rz1	zon		von   1x
-vvb zb gnd dc = 2
-mz1 zon zb von von pch w = 1u l = 1u
+Rz1	zon		von   100k
+*vvb zb gnd dc = 2
+*mz1 zon zb von von pch w = 1u l = 1u
 
 
 ***source***

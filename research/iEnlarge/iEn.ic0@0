@@ -1,0 +1,33 @@
+* "simulator" "HSPICE" 
+* "version" "B-2008.09-SP1 32-BIT"
+* "format" "HSP"
+* "rundate" "16:42:09 01/20/2016 "
+* "netlist" "iEn.sp "
+* "runtitle" "*current enlargge: use an op and two mos with source connecting to opo"
+* time =    0.            
+* temperature =   25.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc=   1.0000p       
+.nodeset
++ 1 = 224.4379m       
++ 2 = 566.4486m       
++ b =   2.5784        
++ c0 =   1.2252        
++ cn = 449.9268m       
++ cp =   2.7007        
++ ref =   2.2000        
++ vdd =   3.3000        
++ vgt =   2.0000        
++ vinn =   2.0162        
++ vinp =   2.0000        
++ vo2 =   2.7904        
++ voa =   2.8445        
++ von =   2.3890        
++ vop = 406.3169m       
++ vout =   2.2000        
++ vss =   0.            
++ vst = 742.7867m       
++ zb =   2.0000        
++ zon =   2.3890        
+***   END: Saved Operating Point ***                     
