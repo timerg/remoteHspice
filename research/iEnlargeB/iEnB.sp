@@ -1,4 +1,4 @@
-*Current Enlargge: Use an OP and two mos with source connecting to OPoutput
+*Current Enlargge: Use an OP and two mos of current mirror
 .protect
 .lib 'mm0355v.l' tt
 .unprotect
@@ -37,9 +37,10 @@ mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
 mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 
 XOP1 vdd vss vinn vinp cp cn vop OP
+*Ei vop gnd OPAMP vinp vinn 100
 ******OPTEST_open***
-vinp vinp gnd dc = 'comon-diff' *ac = 1
-*vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+*vinp vinp gnd dc = 'comon-diff' *ac = 1
+vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
 .param
 +comon		= 1.7
 +diff		= 0
@@ -47,17 +48,31 @@ vinp vinp gnd dc = 'comon-diff' *ac = 1
 ********************
 
 ***enlargement Mos***
-Me1 vinn vinn vop vop pch w = 0.6u l = 0.4u
-Me2 vout vout vop vop pch w = 0.6u l = 0.4u m = 100
-*Me1 vinn vinn vop vss nch w = 0.6u l = 0.4u
-*Me2 vout vout vop vss nch w = 0.6u l = 0.4u m = 10
+*******Pinput*******
+*Me1 vinp vop vdd vdd pch w = 5u l = 0.4u
+*Me2 vout vop vdd vdd pch w = 5u l = 0.4u m = 100
+*Me1b vinp eb vss vss nch w = 2u l = 0.4u            *decide by noise:
+*Me2b vout eb vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
+*veb eb gnd dc = 0.6
+*******Ninput*******
+Me1b vinp eb vdd vdd pch w = 8u l = 0.4u
+Me2b vout eb vdd vdd pch w = 8u l = 0.4u m = 100
+Me1 vinp vop vss vss nch w = 2u l = 0.4u            *decide by noise:
+Me2 vout vop vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
+veb eb gnd dc = '3.3-0.7'
+***
+
 ***input***
-Iin vdd vinn dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
+*******Source Input*******
+Iin vinp vdd dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
+*Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
+*******Mos Input*******
+
 ***output***
 ******E element***
 *eo vout gnd OPAMP ref vout
-*vr ref gnd dc = 2.2
-*.probe i(eo)
+*vr ref gnd dc = 1.7
+*.probe dc i(eo)
 
 ******OP by Design***
 XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
@@ -65,6 +80,7 @@ vinp2 vinp2 gnd dc = 1.7
 Ro vout vop2 0
 .probe dc i(ro)
 
+***
 ***source***
 vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
@@ -73,19 +89,20 @@ vs		vss 	gnd dc supplyn
 +supplyn	= 0
 
 ***Test***
-Mt vgt vgt vst vst pch w = 1u l = 1u
-It vst vdd dc = 1u
+Mt  vdt vgt vst vst pch w = 5u l = 0.4u
+It  vdd vst dc = 1u
 vtg vgt gnd dc = 2v
+vtd vdt gnd dc = 1v
 
 .op
-.dc Iin dec 100 1n 10u
+.dc Iin dec 10 1n 10u
 *.dc It dec 100 1n 1u
 .probe dc i(me1) i(me2)
 +lx3(me1) lx3(me2) lx7(me1) lx7(me2)
 +I(xop1.m4n)
 *.print rds=par('v(vinn)/I(iin)')
-*.ac dec 100 1 1g
-*.noise i(ro) Iin
+.ac dec 100 1 1g
+.noise i(ro) Iin
 
 *.tran 100ns 2ms
 *.probe tran i(me1) i(me2)

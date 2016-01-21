@@ -1,0 +1,405 @@
+Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice iEn.sp
+ ****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: iEn.sp                                                            
+ lic:  
+ lic: FLEXlm: v8.5b 
+ lic: USER:   m103061608           HOSTNAME: ws44 
+ lic: HOSTID: e41f13bf3ba4         PID:      20840 
+ lic: Using FLEXlm license file: 
+ lic: 26585@lscic 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 14-may-2016/2015.06 
+ lic: FLOATING license(s) on SERVER lscic 
+ lic:   
+ Init: read install configuration file: /usr/cad/synopsys/hspice/cur/hspice/meta.cfg
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ .option runlvl
+ .option post acout=0 accurate=1 dcon=1 converge=1 gmindc=1.0000e-12 captab=1 unwrap=1
+
+ ***op include***
+
+
+ ******netlist***
+ .subckt op vdd vss vinn vinp cp cn vop
+ mb	b	cp	vdd	vdd	pch	w = 31u  l = 1u	  m = 2
+ m1	1	vinn	b		b		pch	w = 10u l = 0.4u m = 1
+ m2	2	vinp	b		b		pch	w = 10u l = 0.4u m = 1
+ m3	1	cn		vss	vss	nch	w = 4.2u l = 0.4u m = 2
+ m4	2	cn		vss	vss	nch	w = 4.2u l = 0.4u m = 2
+
+ m1pa	voa	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
+ m1pb	von	von	voa	voa	pch	w = 4u l = 0.4u    m = 2
+ m2pa	vo2	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
+ m2pb	vop	von	vo2 vo2	pch	w = 4u l = 0.4u    m = 2
+ m3n	    von	1   vss vss nch w = 15u   l = 0.4u    m = 2
+ m4n	    vop	2   vss vss nch w = 15u   l = 0.4u    m = 2
+
+ ******compensation***
+ cvonvop zon vop 1p
+ *vvb zb gnd dc = 2
+ *mz1 zon zb von von pch w = 1u l = 1u
+ rz zon von 100k
+ .ends
+
+ ******current mirror***
+ ic  cp vss dc = 500n
+ mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
+ mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
+ mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
+ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
+
+ xop1 vdd vss vinn vinp cp cn vop op
+ *ei vop gnd opamp vinp vinn 1000
+ ******optest_open***
+ vinp vinp gnd dc = 'comon-diff' *ac = 1
+ *vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+ .param
+ +comon		= 1.7
+ +diff		= 0
+ ********************
+ ********************
+
+ ***enlargement mos***
+ me1 vinn vinn vop vop pch w = 0.6u l = 0.4u
+ me2 vout vout vop vop pch w = 0.6u l = 0.4u m = 100
+ *me1 vinn vinn vop vss nch w = 0.6u l = 0.4u
+ *me2 vout vout vop vss nch w = 0.6u l = 0.4u m = 10
+ ***input***
+ iin vinn vdd dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
+ ***output***
+ ******e element***
+ *eo vout gnd opamp ref vout
+ *vr ref gnd dc = 2.2
+ *.probe dc i(eo)
+
+ ******op by design***
+ xop2 vdd vss vop2 vinp2 cp cn vop2 op
+ vinp2 vinp2 gnd dc = 1.7
+ ro vout vop2 0
+ .probe dc i(ro)
+
+ ***source***
+ vd		vdd 	gnd dc supplyp
+ vs		vss 	gnd dc supplyn
+ .param
+ +supplyp	= 3.3
+ +supplyn	= 0
+
+ ***test***
+ mt vgt vgt vst vst pch w = 1u l = 1u
+ it vst vdd dc = 1u
+ vtg vgt gnd dc = 2v
+
+ .op
+ .dc iin dec 100 1n 10u
+ *.dc it dec 100 1n 1u
+ .probe dc i(me1) i(me2)
+ +lx3(me1) lx3(me2) lx7(me1) lx7(me2)
+ +i(xop1.m4n)
+ *.print rds=par('v(vinn)/i(iin)')
+ .ac dec 100 1 1g
+ .noise i(ro) iin
+
+ *.tran 100ns 2ms
+ *.probe tran i(me1) i(me2)
+ .end
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *current enlargge: use an op and two mos with source connecting to opoutput
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xop1.                           op                 1.00 
+        2 xop2.                           op                 1.00 
+ **warning**     0:ro              defined in subckt 0                resistance limited to   1.000E-05
+
+ 
+
+ 
+      
+  Opening plot unit= 15
+ file=iEn.pa0                                                                  
+
+  *** initial damped pseudo transient completed. ***
+  *** final try started ***
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *current enlargge: use an op and two mos with source connecting to opoutput
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:c0      =   1.2252  0:cn      = 449.9268m 0:cp      =   2.7007 
+ +0:vdd     =   3.3000  0:vgt     =   2.0000  0:vinn    =   1.6993 
+ +0:vinp    =   1.7000  0:vinp2   =   1.7000  0:vop     =   2.3125 
+ +0:vop2    =   1.7002  0:vout    =   1.7002  0:vss     =   0.     
+ +0:vst     = 742.7867m 1:1       = 534.6680m 1:2       = 519.9660m
+ +1:b       =   2.2845  1:vo2     =   2.4956  1:voa     =   2.4701 
+ +1:von     =   1.6403  1:zon     =   1.6403  2:1       = 524.6564m
+ +2:2       = 529.5926m 2:b       =   2.2850  2:vo2     =   2.4879 
+ +2:voa     =   2.4871  2:von     =   1.6741  2:zon     =   1.6741 
+
+
+ maximum nodal capacitance=   1.565E-12         on node     0:vop             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:c0      =  17.9291f 0:cn      =  64.1981f 0:cp      = 228.0203f
+ +0:vdd     =   1.0291p 0:vgt     =   9.0075f 0:vinn    =   8.9090f
+ +0:vinp    =   6.8877f 0:vinp2   =   6.8871f 0:vop     =   1.5650p
+ +0:vop2    =   1.0511p 0:vout    = 202.2635f 0:vss     = 677.5582f
+ +0:vst     =  13.1406f 1:1       =  46.1023f 1:2       =  46.1632f
+ +1:b       = 163.8133f 1:vo2     =  63.0381f 1:voa     =  81.3512f
+ +1:von     =  66.1369f 1:zon     =   1.0000p 2:1       =  46.1428f
+ +2:2       =  46.1224f 2:b       = 163.8184f 2:vo2     =  59.4191f
+ +2:voa     =  79.9737f 2:von     =  64.9101f 2:zon     =   1.0000p
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                         
+ element  0:vinp     0:vinp2    0:vd       0:vs       0:vtg     
+  volts      1.7000     1.7000     3.3000     0.         2.0000 
+  current    0.         0.       -33.8990u   34.8990u   -1.0000u
+  power      0.         0.       111.8668u    0.         2.0000u
+
+     total voltage source power dissipation=  113.8668u       watts
+
+
+
+ ***** current sources
+
+ subckt                                   
+ element  0:ic       0:iin      0:it      
+  volts      2.7007    -1.6007    -2.5572 
+  current  500.0000n   10.0000n    1.0000u
+  power     -1.3503u   16.0068n    2.5572u
+
+
+     total current source power dissipation=   1.2229u       watts
+
+ **** resistors
+
+ subckt              xop1       xop2      
+ element  0:ro       1:rz       2:rz      
+  r value   10.0000u  100.0000k  100.0000k
+  v drop     9.7997p    0.         0.     
+  current  979.9717n    0.         0.     
+  power      9.6034a    0.         0.     
+
+
+
+ **** mosfets
+
+
+ subckt                                                                    
+ element  0:mc0      0:mc1      0:mc2      0:mc3      0:me1      0:me2     
+ model    0:pch.3    0:pch.3    0:pch.6    0:nch.3    0:pch.9    0:pch.9   
+ region       Cutoff     Cutoff   Saturati     Cutoff     Cutoff     Cutoff
+  id      -499.9916n -374.7296n -374.7388n  374.7377n   -9.9988n -979.8350n
+  ibs      1.004e-19  7.527e-20  8.207e-20 -5.981e-19  2.316e-21  2.269e-19
+  ibd        3.3314f    2.4938p  115.9258a  -21.5264f   79.9100a    7.9910f
+  vgs     -599.3222m -599.3222m -775.2674m  449.9268m -613.1985m -612.2840m
+  vds     -599.3222m   -2.0748  -775.2674m  449.9268m -613.1985m -612.2840m
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -719.8247m -679.8662m -745.3677m  569.8638m -747.7483m -747.7643m
+  vdsat    -48.9331m  -53.6544m -102.1390m   44.1177m  -51.4328m  -51.3476m
+  vod      120.5025m   80.5440m  -29.8997m -119.9370m  134.5498m  135.4804m
+  beta       4.3353m    1.2523m  106.3096u    8.6184m   69.3906u    6.9391m
+  gam eff  455.2807m  455.2808m  408.2469m  557.6573m  404.9685m  404.9685m
+  gm        11.5078u    8.2520u    5.5740u    9.8278u  216.4678n   21.2417u
+  gds      354.1031n  233.0318n  163.2106n  161.9936n    4.7705n  468.1011n
+  gmb        2.5757u    1.8089u    1.1767u    2.8253u   46.5116n    4.5654u
+  cdtot     50.7212f   10.8352f    1.8946f   20.5427f    1.4537f  145.4101f
+  cgtot     24.5798f    7.0228f  969.8884a   12.6943f  568.4543a   56.8534f
+  cstot     62.7138f   17.9182f    2.6998f   22.7458f    1.8000f  179.9996f
+  cbtot    112.1386f   28.3830f    4.3941f   43.1839f    3.3464f  334.6831f
+  cgs        6.4691f    1.8483f  388.9027a    3.1997f  118.9500a   11.8950f
+  cgd        6.4691f    1.8483f  192.1500a    3.1997f  118.9500a   11.8950f
+
+
+
+ subckt              xop1       xop1       xop1       xop1       xop1      
+ element  0:mt       1:mb       1:m1       1:m2       1:m3       1:m4      
+ model    0:pch.5    0:pch.11   0:pch.3    0:pch.3    0:nch.3    0:nch.3   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       319.4493f -426.6836n -214.0029n -212.6773n  214.0045n  212.6790n
+  ibs      1.192e-21  8.384e-20  4.243e-20  4.217e-20 -3.499e-19 -3.477e-19
+  ibd     -999.9972n    5.6589f  223.1093f  244.8570f  -12.1810f  -12.1810f
+  vgs        1.2572  -599.3222m -585.2185m -584.5338m  449.9268m  449.9268m
+  vds        1.2572    -1.0155    -1.7499    -1.7646   534.6680m  519.9660m
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -626.6463m -746.9933m -683.8321m -683.4370m  568.6474m  568.7582m
+  vdsat    -44.8822m  -52.7336m  -50.2658m  -50.2349m   44.0708m   44.0668m
+  vod        1.8839   147.6710m   98.6136m   98.9031m -118.7206m -118.8313m
+  beta      51.2669u    3.6767m    1.2784m    1.2786m    4.6798m    4.6797m
+  gam eff  387.2201m  391.6940m  462.5849m  462.5849m  554.4915m  554.4915m
+  gm         7.2181p    9.3404u    4.9166u    4.8875u    5.6138u    5.5799u
+  gds       52.0864f   81.1524n  138.5539n  137.6829n   90.2643n   90.0571n
+  gmb      946.4168f    2.1407u    1.0982u    1.0919u    1.6075u    1.5982u
+  cdtot      3.8270f   74.6938f   10.8529f   10.8275f   11.3160f   11.3430f
+  cgtot      5.1806f   72.8482f    6.8868f    6.8877f    7.0242f    7.0242f
+  cstot      2.4508f  102.5259f   17.0945f   17.0945f   12.7039f   12.7039f
+  cbtot     10.6898f  204.6107f   27.4775f   27.4531f   23.9968f   24.0239f
+  cgs      192.1500a   11.3643f    1.8391f    1.8391f    1.7618f    1.7618f
+  cgd      192.1500a   11.3643f    1.8391f    1.8391f    1.7618f    1.7618f
+
+
+
+ subckt   xop1       xop1       xop1       xop1       xop1       xop1      
+ element  1:m1pa     1:m1pb     1:m2pa     1:m2pb     1:m3n      1:m4n     
+ model    0:pch.3    0:pch.3    0:pch.3    0:pch.3    0:nch.3    0:nch.3   
+ region     Saturati   Saturati   Saturati   Saturati     Cutoff     Cutoff
+  id        -9.2417u   -9.2417u   -9.1471u   -9.1470u    9.2415u    8.1434u
+  ibs        1.8657a    1.8657a    1.8466a    1.8466a  -13.6104a  -11.9933a
+  ibd      772.3955a  772.3955a  772.0234a  771.1986a -225.3870p  -13.8403n
+  vgs     -829.8538m -829.8538m -829.8538m -855.3246m  534.6680m  519.9660m
+  vds     -829.8538m -829.8538m -804.3830m -183.1032m    1.6403     2.3125 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -716.0908m -716.0908m -716.7830m -733.6716m  563.0175m  558.1319m
+  vdsat   -147.6559m -147.6559m -147.1391m -153.6256m   54.2955m   52.2715m
+  vod     -113.7629m -113.7629m -113.0707m -121.6530m  -28.3495m  -38.1659m
+  beta     964.6708u  964.6708u  964.5563u  958.4471u   17.4762m   17.4901m
+  gam eff  451.6568m  451.6568m  451.6568m  451.6568m  567.5247m  567.5246m
+  gm       113.4494u  113.4494u  112.6120u  104.1682u  214.0104u  189.8870u
+  gds        3.7215u    3.7215u    3.7139u   10.0718u    2.9887u    2.6068u
+  gmb       23.9784u   23.9784u   23.8016u   22.0612u   58.7134u   51.7517u
+  cdtot     11.1645f   11.1645f   11.2350f   13.5919f   33.1029f   31.5593f
+  cgtot     10.7349f   10.7349f   10.7350f   11.1345f   23.9334f   23.9926f
+  cstot     22.9371f   22.9371f   22.9371f   23.5734f   42.2232f   42.2232f
+  cbtot     25.7797f   25.7797f   25.8502f   28.2297f   74.3880f   72.9037f
+  cgs        7.9094f    7.9094f    7.9094f    8.4074f    6.2179f    6.2179f
+  cgd        1.4823f    1.4823f    1.4823f    1.4823f    6.2179f    6.2179f
+
+
+
+ subckt   xop2       xop2       xop2       xop2       xop2       xop2      
+ element  2:mb       2:m1       2:m2       2:m3       2:m4       2:m1pa    
+ model    0:pch.11   0:pch.3    0:pch.3    0:nch.3    0:nch.3    0:pch.3   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff   Saturati
+  id      -426.6482n -213.0999n -213.5449n  213.1015n  213.5465n   -7.3976u
+  ibs      8.383e-20  4.225e-20  4.234e-20 -3.484e-19 -3.492e-19    1.4938a
+  ibd        5.6587f  238.4370f  231.1113f  -12.1810f  -12.1810f  772.2073a
+  vgs     -599.3222m -584.7401m -584.9699m  449.9268m  449.9268m -812.9350m
+  vds       -1.0150    -1.7603    -1.7554   524.6564m  529.5926m -812.9350m
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -746.9964m -683.5513m -683.6840m  568.7228m  568.6856m -716.5474m
+  vdsat    -52.7334m  -50.2447m  -50.2551m   44.0680m   44.0694m -134.9104m
+  vod      147.6742m   98.8112m   98.7140m -118.7960m -118.7588m  -96.3876m
+  beta       3.6767m    1.2785m    1.2785m    4.6797m    4.6798m  966.7352u
+  gam eff  391.6940m  462.5849m  462.5849m  554.4915m  554.4915m  451.6566m
+  gm         9.3397u    4.8968u    4.9065u    5.5907u    5.6021u   97.9083u
+  gds       81.1515n  137.9590n  138.2514n   90.1216n   90.1911n    3.1750u
+  gmb        2.1405u    1.0940u    1.0961u    1.6011u    1.6043u   20.6986u
+  cdtot     74.7010f   10.8348f   10.8434f   11.3344f   11.3253f   11.2111f
+  cgtot     72.8482f    6.8874f    6.8871f    7.0242f    7.0242f   10.3323f
+  cstot    102.5259f   17.0945f   17.0945f   12.7039f   12.7039f   22.2959f
+  cbtot    204.6180f   27.4601f   27.4683f   24.0152f   24.0061f   25.8021f
+  cgs       11.3643f    1.8391f    1.8391f    1.7618f    1.7618f    7.4092f
+  cgd       11.3643f    1.8391f    1.8391f    1.7618f    1.7618f    1.4823f
+
+
+
+ subckt   xop2       xop2       xop2       xop2       xop2      
+ element  2:m1pb     2:m2pa     2:m2pb     2:m3n      2:m4n     
+ model    0:pch.3    0:pch.3    0:pch.3    0:nch.3    0:nch.3   
+ region     Saturati   Saturati   Saturati     Cutoff     Cutoff
+  id        -7.3976u   -7.3951u   -7.3951u    7.3974u    8.3748u
+  ibs        1.4938a    1.4933a    1.4933a  -10.8949a  -12.3341a
+  ibd      772.2073a  772.1952a  771.9539a -246.1224p -343.6144p
+  vgs     -812.9350m -812.9350m -813.7320m  524.6564m  529.5926m
+  vds     -812.9350m -812.1380m -787.6321m    1.6741     1.7002 
+  vbs        0.         0.         0.         0.         0.     
+  vth     -716.5474m -716.5690m -717.2352m  562.7710m  562.5816m
+  vdsat   -134.9104m -134.8949m -134.9893m   52.2825m   53.2992m
+  vod      -96.3876m  -96.3660m  -96.4968m  -38.1146m  -32.9890m
+  beta     966.7352u  966.7315u  966.5194u   17.4796m   17.4786m
+  gam eff  451.6566m  451.6566m  451.6566m  567.5246m  567.5247m
+  gm        97.9083u   97.8836u   97.8166u  173.9564u  195.2597u
+  gds        3.1750u    3.1747u    3.1903u    2.4317u    2.7204u
+  gmb       20.6986u   20.6934u   20.6792u   47.8709u   53.6109u
+  cdtot     11.2111f   11.2133f   11.2821f   33.0122f   32.9434f
+  cgtot     10.3323f   10.3323f   10.3545f   23.9736f   23.9537f
+  cstot     22.2959f   22.2959f   22.3313f   42.2232f   42.2232f
+  cbtot     25.8021f   25.8043f   25.8745f   74.3375f   74.2488f
+  cgs        7.4092f    7.4092f    7.4367f    6.2179f    6.2179f
+  cgd        1.4823f    1.4823f    1.4823f    6.2179f    6.2179f
+
+
+
+
+
+
+ **** the results of the sqrt of integral (I**2 / freq)
+      using more points from fstart to fstop 
+      results in more accurate total noise values.
+
+ **** total output noise current   =   25.8331n       amps
+ **** total equivalent input noise =  213.9212n      
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *current enlargge: use an op and two mos with source connecting to opoutput
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      90  # elements   =      46
+  # resistors   =       3  # capacitors =       2  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       9
+  # curr_srcs   =       3  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      29  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.06           1         743
+  dc sweep           0.08         401         907
+  ac analysis        0.05         901         901
+  readin             0.04
+  errchk             0.01
+  setup              0.00
+  output             0.00
+
+
+           total memory used          555  kbytes
+           total cpu time            0.24 seconds
+           total elapsed time        0.58 seconds
+           job started at     21:03:30 01/21/2016
+           job ended   at     21:03:30 01/21/2016
+
+
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ lic: Release hspice token(s) 

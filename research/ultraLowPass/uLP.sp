@@ -38,33 +38,36 @@ mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
 mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
 mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 
+***use OP_open***
 XOP1 vdd vss vinn vinp cp cn vop OP
-******OPTEST_open***
+***use ideal OP***
+*E1 vop gnd OPAMP vinp vinn 1000
+
 vinp vinp gnd dc = 'comon-diff' *ac = 1
-*vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+vinn vinn gnd dc = 'comon+diff' ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
+
+
 ********************
 ********************
-
-***LowPass***
-Rf vinn   vop 1000k
-Cf vinn vop 1p
-
-***input***
-Iin vdd vinn dc = 100n  ac = 1u  *sin(1u 10n 1k 1ns)
-Cin vinn gnd 3p
+***Low Pass***
+******Without mos***
+*Rf inn vop 10k
+*Cf inn vop 1p
+*v00 inn vinn dc = 0
+******With mos***
+*Rf inn   vop 10k
+*Cf vinn vop 1p
+*Me1 inn vbe vinn vinn nch w = 0.6u l = 0.4u
+*Me2 inn vbe vinp vinp nch w = 0.6u l = 0.4u
+*vbe vbe gnd dc = 1v
+****input***
+*Iin vdd inn dc = 100n  ac = 1u  *sin(1u 10n 1k 1ns)
+*Cin vinn gnd 3p
 ***output***
-******E element***
-eo vout gnd OPAMP ref vout
-vr ref gnd dc = 2.2
-.probe i(eo)
-******OP by Design***
-*XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
-*vinp2 vinp2 gnd dc = 2
-*Ro vout vop2 0
-*.probe dc i(ro)
+
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -79,7 +82,7 @@ It vst vdd dc = 1u
 vtg vgt gnd dc = 2v
 
 .op
-*.dc Iin dec 100 1n 10u
+.dc Iin dec 100 1n 10u
 *.dc It dec 100 1n 1u
 *.probe dc i(me1) i(me2)
 *+lx3(me1) lx3(me2) lx7(me1) lx7(me2)
