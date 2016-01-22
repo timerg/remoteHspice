@@ -3,6 +3,7 @@
 .lib 'mm0355v.l' tt
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
++ ingold=2
 
 ***OP include***
 
@@ -59,7 +60,7 @@ Me1b vinp eb vdd vdd pch w = 8u l = 0.4u
 Me2b vout eb vdd vdd pch w = 8u l = 0.4u m = 100
 Me1 vinp vop vss vss nch w = 2u l = 0.4u            *decide by noise:
 Me2 vout vop vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
-veb eb gnd dc = '3.3-0.7'
+veb eb gnd dc = '3.3-0.57'
 ***
 
 ***input***
@@ -90,20 +91,26 @@ vs		vss 	gnd dc supplyn
 
 ***Test***
 Mt  vdt vgt vst vst pch w = 5u l = 0.4u
-It  vdd vst dc = 1u
+It  vdd vst dc = 100n
 vtg vgt gnd dc = 2v
 vtd vdt gnd dc = 1v
 
 .op
-.dc Iin dec 10 1n 10u
+
+******Iinput*******
+.dc Iin dec 100 1n 10u
 *.dc It dec 100 1n 1u
-.probe dc i(me1) i(me2)
-+lx3(me1) lx3(me2) lx7(me1) lx7(me2)
-+I(xop1.m4n)
-*.print rds=par('v(vinn)/I(iin)')
+*.probe dc i(me1) i(me2)
+*+lx3(me1) lx3(me2) lx7(me1) lx7(me2)
+*+I(xop1.m4n)
+*********input impedance*********
+*.print zin=par('v(vinp)/I(iin)') Id=par('I(iin)')
+
+******AC*******
 .ac dec 100 1 1g
 .noise i(ro) Iin
 
+******Trans******
 *.tran 100ns 2ms
 *.probe tran i(me1) i(me2)
 .end
