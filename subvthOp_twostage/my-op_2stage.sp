@@ -62,8 +62,8 @@ vb1		b1		gnd dc bias2
 
 
 ***input***
-vinp vinp gnd dc = 'comon-diff' *ac = 1
-*vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+vinp vinp gnd dc = 'comon-diff' ac = 1
+vinn vinn gnd dc = 'comon+diff' ac = 1 180
 *viac 2 gnd ac = 1
 *Lac 2 vac 1x
 ***current mirror***
@@ -89,9 +89,9 @@ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 *.probe ac gainOpWirl = par('Vdb(vop)-Vdb(vinp,vinn)')
 
 ***cloase loop feedback test***
-Rf vop vinn 100k
-If vdd vinn  dc = 10n ac = 1
-.dc If -10u 10u 1n
+*Rf vop vinn 100k
+*If vdd vinn  dc = 10n ac = 1
+*.dc If -10u 10u 1n
 
 
 ****Mos Resistor***
@@ -110,7 +110,7 @@ If vdd vinn  dc = 10n ac = 1
 *.dc diff -0.5 0.5 0.01
 .probe ac I(if)
 ***probe&measuring***
-.ac dec 1000 10 1t
+.ac dec 1000 1 1g
 *.tf v(voa) vinp
 .pz v(vop) vinp
 *.pz v(vop) viac
@@ -123,7 +123,8 @@ If vdd vinn  dc = 10n ac = 1
 .meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 .meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
-*.noise v(1) vinn 10
+.noise v(vop) vinp 100
+
 .end
 *Vop: C=23.8f       R = 42.2Meg     1/RC = 9.94e5
 *Von: C=1.58f       R = 1.26Meg     1/RC = 5.0189e8

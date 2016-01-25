@@ -2,7 +2,7 @@
 .protect
 .lib 'mm0355v.l' tt
 .unprotect
-.option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
+.option post acout=0 accurate=1 dcon=1 CONVERGE=0 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=2
 
 ***OP include***
@@ -29,21 +29,30 @@ Cvonvop zon vop 1p
 *mz1 zon zb von von pch w = 1u l = 1u
 Rz zon von 100k
 .ends
-
+.subckt OP_a vdd vss vinn vinp cz 2
+Mb	b	cz	 vdd vdd pch W = 12u  L = 5u  m = 1
+M1	1	Vinp b	 b	 pch W = 6u   L = 5u  m = 1
+M2	2	Vinn b	 b	 pch W = 6u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
+M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
+.ends
 ******current mirror***
 Ic  cp vss dc = 500n
 mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
 mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
 mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
 mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
+mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
+mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 
-XOP1 vdd vss vinn vinp cp cn vop OP
+*XOP1 vdd vss vinn vinp cp cn vop OP
+XOP1 vdd vss vinn vinp cz vop OP_a
 *Ei vop gnd OPAMP vinp vinn 100
 ******OPTEST_open***
 *vinp vinp gnd dc = 'comon-diff' *ac = 1
 vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
 .param
-+comon		= 1.7
++comon		= 2
 +diff		= 0
 ********************
 ********************
@@ -56,17 +65,20 @@ vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
 *Me2b vout eb vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
 *veb eb gnd dc = 0.6
 *******Ninput*******
-Me1b vinp eb vdd vdd pch w = 8u l = 0.4u
-Me2b vout eb vdd vdd pch w = 8u l = 0.4u m = 100
+Me1b vinp eb vdd vdd pch w = 10u l = 0.4u
+Me2b vout eb vdd vdd pch w = 10u l = 0.4u m = 100
 Me1 vinp vop vss vss nch w = 2u l = 0.4u            *decide by noise:
 Me2 vout vop vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
-veb eb gnd dc = '3.3-0.57'
+*veb eb gnd dc = '3.3-0.5'      *10n
+*veb eb gnd dc = '3.3-0.58'      *100n
+*veb eb gnd dc = '3.3-0.7'      *1u
+veb eb gnd dc = '3.3-0.85'      *10u
 ***
 
 ***input***
 *******Source Input*******
-Iin vinp vdd dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
-*Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
+*Iin vinp vdd dc = 1n  ac = 1  sin(1u 10n 1k 1ns)
+Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
 *******Mos Input*******
 
 ***output***
@@ -76,8 +88,9 @@ Iin vinp vdd dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
 *.probe dc i(eo)
 
 ******OP by Design***
-XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
-vinp2 vinp2 gnd dc = 1.7
+*XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
+Eout vop2 gnd OPAMP vinp2 vop2
+vinp2 vinp2 gnd dc = comon
 Ro vout vop2 0
 .probe dc i(ro)
 
@@ -91,14 +104,14 @@ vs		vss 	gnd dc supplyn
 
 ***Test***
 Mt  vdt vgt vst vst pch w = 5u l = 0.4u
-It  vdd vst dc = 100n
+It  vdd vst dc = 10n
 vtg vgt gnd dc = 2v
 vtd vdt gnd dc = 1v
 
 .op
 
 ******Iinput*******
-.dc Iin dec 100 1n 10u
+.dc Iin dec 100 1n 100u
 *.dc It dec 100 1n 1u
 *.probe dc i(me1) i(me2)
 *+lx3(me1) lx3(me2) lx7(me1) lx7(me2)

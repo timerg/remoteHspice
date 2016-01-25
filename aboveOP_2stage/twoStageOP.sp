@@ -7,7 +7,7 @@
 
 ***param***
 .param
-+comon		= 2
++comon		= 1.7
 +bias		= 2.4
 +bias2		= 0.45
 +supplyp	= 3.3
@@ -15,7 +15,7 @@
 +diff			= 0
 ***netlist***
 ***1st stage***
-Mb	b	b0	 vdd vdd pch W = 12u  L = 5u  m = 1
+Mb	b	cz	 vdd vdd pch W = 12u  L = 5u  m = 1
 M1	1	Vinp b	 b	 pch W = 6u   L = 5u  m = 1
 M2	2	Vinn b	 b	 pch W = 6u   L = 5u  m = 1
 M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
@@ -23,18 +23,19 @@ M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
 
 
 ***2nd stage***
-*m1pa	voa	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
-*m1pb	von	von	voa	voa	pch	w = 4u l = 0.4u    m = 2
-*m2pa	vo2	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
-*m2pb	vop	von	vo2 vo2	pch	w = 4u l = 0.4u    m = 2
-*m3n	    von	1   vss vss nch w = 15u   l = 0.4u    m = 2
-*m4n	    vop	2   vss vss nch w = 15u   l = 0.4u    m = 2
 
 ***compensation***
 
 ******
 
-
+***current mirror***
+Iin cp vss dc = 200n
+mc0 cp cp vdd vdd pch w = 16u l = 1u m = 2
+mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
+mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
+mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
+mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
+mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -46,13 +47,6 @@ vb1		b1		gnd dc bias2
 ***input***
 vinp vinp gnd dc = 'comon-diff' ac = 1
 vinn vinn gnd dc = 'comon+diff' *ac = 1 180
-
-***current mirror***
-*Iin cp vss dc = 500n
-*mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
-*mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-*mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-*mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 
 ***test***
 mt	vgt	vgt	vss	vss	nch	w = 3u   l = 5u m = 1
@@ -81,20 +75,19 @@ vts vst gnd dc = 3.3
 .dc diff -0.5 0.5 0.01
 
 ***probe&measuring***
-.ac dec 1000 1 1g
+.ac dec 1000 0.1 1g
 *.tf v(voa) vinp
-.pz v(2) vinp
-*.pz v(vop) viac
+*.pz v(2) vinp
 .probe dc I(m1) I(m2)	I(mt)
 .probe ac cap(von)
 +gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')
 *+gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
-.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
+*.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
 .meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
-.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
+*.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
+*.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
-.noise v(2) vinn 100
+.noise v(2) vinp 100
 
 *.alter
 *.protect
