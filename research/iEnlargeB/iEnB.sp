@@ -34,7 +34,7 @@ Mb	b	cz	 vdd vdd pch W = 12u  L = 5u  m = 1
 M1	1	Vinp b	 b	 pch W = 6u   L = 5u  m = 1
 M2	2	Vinn b	 b	 pch W = 6u   L = 5u  m = 1
 M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
+M4	2	1	 vss vss nch W = 3u   L = 5u    m = 1
 .ends
 ******current mirror***
 Ic  cp vss dc = 500n
@@ -73,12 +73,17 @@ Me2 vout vop vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
 *veb eb gnd dc = '3.3-0.58'      *100n
 *veb eb gnd dc = '3.3-0.7'      *1u
 veb eb gnd dc = '3.3-0.85'      *10u
-***
+
+
+***Compensation***
+.param xx = 1p
+Cc  vinp vop xx
+
 
 ***input***
 *******Source Input*******
 *Iin vinp vdd dc = 1n  ac = 1  sin(1u 10n 1k 1ns)
-Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
+Iin vdd vinp dc = 1000n  ac = 1000n  sin(1u 10n 1k 1ns)
 *******Mos Input*******
 
 ***output***
@@ -89,9 +94,9 @@ Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
 
 ******OP by Design***
 *XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
-Eout vop2 gnd OPAMP vinp2 vop2
+Eout vop2 gnd OPAMP vinp2 vout
 vinp2 vinp2 gnd dc = comon
-Ro vout vop2 0
+Ro vout vop2 20k
 .probe dc i(ro)
 
 ***
@@ -120,10 +125,38 @@ vtd vdt gnd dc = 1v
 *.print zin=par('v(vinp)/I(iin)') Id=par('I(iin)')
 
 ******AC*******
-.ac dec 100 1 1g
-.noise i(ro) Iin
+.ac dec 100 1 1g *sweep cc 100f 1p 100f
+.probe ac i(ro) vp(vop2)
+.pz v(vop2) iin
+*.noise i(ro) Iin
 
 ******Trans******
 *.tran 100ns 2ms
 *.probe tran i(me1) i(me2)
 .end
+
+
+
+*output = v(vop2)
+*           poles ( hertz)
+*     real            imag
+*     911.700k        -8.56193x
+*     911.700k        8.56193x
+*     -4.38735x       0.
+*     -5.31034x       0.
+*     -17.3329x       0.
+*     -19.1465x       0.
+*     -22.6105x       0.
+*     -28.5118x       0.
+*     -85.7586x       0.
+*           zeros ( hertz)
+*     real            imag
+*     -4.39355x       0.
+*     -5.31034x       0.
+*     -17.6133x       0.
+*     -19.1546x       0.
+*     -28.5156x       0.
+*     -63.4604x       0.
+*     -85.7553x       0.
+*     -259.342x       0.
+*     1.14751g        0.
