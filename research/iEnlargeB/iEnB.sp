@@ -83,7 +83,7 @@ Cc  vinp vop xx
 ***input***
 *******Source Input*******
 *Iin vinp vdd dc = 1n  ac = 1  sin(1u 10n 1k 1ns)
-Iin vdd vinp dc = 1000n  ac = 1000n  sin(1u 10n 1k 1ns)
+Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
 *******Mos Input*******
 
 ***output***
@@ -127,12 +127,13 @@ vtd vdt gnd dc = 1v
 ******AC*******
 .ac dec 100 1 1g *sweep cc 100f 1p 100f
 .probe ac i(ro) vp(vop2)
-.pz v(vop2) iin
+.pz i(ro) iin
 *.noise i(ro) Iin
 
 ******Trans******
 *.tran 100ns 2ms
 *.probe tran i(me1) i(me2)
+
 .end
 
 
