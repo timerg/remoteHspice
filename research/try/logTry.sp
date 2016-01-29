@@ -17,7 +17,7 @@ Eo  out gnd OPAMP ref out
 vr ref gnd 2v
 ***
 .op
-.dc iin dec 1000 1n 1u
+.dc iin dec 1000 2n 2u
 .probe dc i(eo)
 
 .end
