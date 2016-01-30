@@ -41,14 +41,14 @@
 .subckt gm vdd vss inp inn vb io2
 .subckt gmx vdd vss in bd gg id sd
 Ms  sd  sd bd  bd  pch  w = 2u    l = 2u m = 1
-Min id  id  sd  in  pch w = 6u    l = 2u m = 1
+Min id  id  sd  in  pch w = 3u    l = 2u m = 1
 Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
 .ends
 .subckt gm2nd vdd vss ggp ggn io2
-Mo3a io1 io1 vdd vdd pch w = 5.2u l = 5u m = 1
-Mo4a io2 io1 vdd vdd pch w = 5.2u l = 5u m = 1
-Mo1  io1 ggp vss vss nch w = 5.2u l = 1u m = 1
-Mo2  io2 ggn vss vss nch w = 5.2u l = 1u m = 1
+Mo3a io1 io1 vdd vdd pch w = 5.7u l = 5u m = 1
+Mo4a io2 io1 vdd vdd pch w = 5.7u l = 5u m = 1
+Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
+Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
 .ends
 Mb  bd  vb  vdd vdd pch w = 5u l = 1u   m = 1
 X1  vdd vss inp bd  ggp idp sdp gmx
@@ -125,7 +125,7 @@ vts vst gnd dc = 3.3
 *******
 .op
 *.dc va -2 2 0.01
-.dc diff -1 1 0.01 *sweep vr 1.8 2.2 0.2
+.dc diff -0.4 0.4 0.001 *sweep vr 1.8 2.2 0.2
 .probe dc I(vc) v(tr_out)
 .meas dc diout_0 DERIVATIVE i(vc) AT 0
 .meas dc diout_0.4 DERIVATIVE i(vc) AT 0.4

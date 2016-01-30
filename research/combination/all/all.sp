@@ -39,7 +39,7 @@ RL   vop    vinn rld
 .subckt gm vdd vss inp inn io2  vb
 .subckt gmx vdd vss in bd gg id sd
 Ms  sd  sd bd  bd  pch  w = 2u    l = 2u m = 1
-Min id  id  sd  in  pch w = 6u    l = 2u m = 1
+Min id  id  sd  in  pch w = 3u    l = 2u m = 1
 Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
 .ends
 .subckt gm2nd vdd vss ggp ggn io2

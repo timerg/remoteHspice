@@ -12,7 +12,7 @@
 *******SUBCKT************
 .subckt gmx vdd vss in bd gg id sd
 Ms  sd  sd bd  bd  pch  w = 2u    l = 2u m = 1
-Min id  id  sd  in  pch w = 6u    l = 2u m = 1
+Min id  id  sd  in  pch w = 3u    l = 2u m = 1
 Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
 .ends
 
@@ -35,10 +35,10 @@ V1  idn ggn dc = 0
 *Mb2  bump ggn  vss  vss  nch w = 6u l = 0.4u m = 4
 
 ******Second Stage*****
-Mo3a io1 io1 vdd vdd pch w = 5.2u l = 5u m = 1
-Mo4a io2 io1 vdd vdd pch w = 5.2u l = 5u m = 1
-Mo1  io1 ggp vss vss nch w = 5.2u l = 1u m = 1
-Mo2  io2 ggn vss vss nch w = 5.2u l = 1u m = 1
+Mo3a io1 io1 vdd vdd pch w = 5.7u l = 5u m = 1
+Mo4a io2 io1 vdd vdd pch w = 5.7u l = 5u m = 1
+Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
+Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
 E1  io2 gnd OPAMP ref io2
 Vr ref gnd dc = 2
 *******Output Load**************
