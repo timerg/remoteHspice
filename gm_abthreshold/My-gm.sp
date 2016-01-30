@@ -76,7 +76,7 @@ vs      vss gnd dc = 0
 *.MODEL NW_DIO D (                                   LEVEL  = 3
 *+ IS     = 1.2E-5          RS     = 1.8E-7          N      = 1.35
 *+ BV     = 22              IBV    = 0.03            IK     = 1E20
-*+ IKR    = 1E10            JSW    = 2.554E-11       AREA   = 7.6104E-8
+*+ IKR    = 1E10            JSW    = 2.554E-11       ARwv --wvEA   = 7.6104E-8
 *+ PJ     = 1.108E-3        CJ     = 1.02413E-4      PB     = 0.5540683
 *+ MJ     = 0.3574083       CJSW   = 4.84677E-10     PHP    = 0.5540683
 *+ MJSW   = 0.2837341       TLEV   = 1               EG     = 1.17
@@ -98,5 +98,6 @@ vs      vss gnd dc = 0
 .meas dc diout_0.5 DERIVATIVE i(e1) AT 0.5
 .ac dec 1000 1 1g
 .probe ac I(e1)
-*.noise I(e1) vinp 1000
+.noise I(e1) vinp 1000
+.meas ac noiset find onoise at 10
 .end
