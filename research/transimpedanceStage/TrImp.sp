@@ -31,8 +31,8 @@ C1  2 vop 600f   *100f=~60db for RL added; but should be 600f for iEn added to g
 ******
 
 ***current mirror***
-Iic cp vss dc = 200n
-mc0 cp cp vdd vdd pch w = 16u l = 1u m = 2
+Ic  cp vss dc = 500n
+mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
 mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
 mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
 mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3

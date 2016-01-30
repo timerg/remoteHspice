@@ -1,0 +1,298 @@
+ ****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: c:\users\timer\documents\github\remotehspice\research\try\logtry.s
+ Init: read install configuration file: C:\synopsys\Hspice_B-2008.09\meta.cfg
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
+
+
+
+
+ .option post acout=0 accurate=1 dcon=1 converge=1 gmindc=1.0000e-12 captab=1 unwrap=1
+ + ingold=2
+
+ ***netlist***
+ .subckt logc vss in v2 v1 v1o out  wa = 3u
+ mbi in  v2  v1  vss  nch w = wa l = 0.4u m = 5
+ mai v1  v1  vss vss nch w = 3u l = 1u m = 2
+ mbo out v2  v1o vss nch w = wa l = 0.4u m = 5
+ mao v1o v1o vss vss nch w = 3u l = 1u m = 2
+ .ends
+
+ xlc1  vss in vo1 v1 v1o out logc wa = 3u
+ xop1  vdd vss vinn in vo1 cz op_a
+ *xlc2  vss in vo2 v1 v1o out logc wa = 1u
+ *xop2  vdd vss vinn in vo2 cz op_a
+ *xlc3  vss in vo3 v1 v1o out logc wa = 2u
+ *xop3  vdd vss vinn in vo3 cz op_a
+ *xlc4  vss in vo4  out logc wa = 4u
+ *xop4  vdd vss vinn in vo4 cz op_a
+ *xlc5  vss in vo5  out logc wa = 1u
+ *xop5  vdd vss vinn in vo5 cz op_a
+ ***op***
+ .subckt op_a vdd vss vinn vinp 2 cz
+ mb	b	cz	 vdd vdd pch w = 12u  l = 5u  m = 1
+ m1	1	vinp b	 b	 pch w = 6u   l = 5u  m = 1
+ m2	2	vinn b	 b	 pch w = 6u   l = 5u  m = 1
+ m3	1	1	 vss vss nch w = 3u   l = 5u  m = 1
+ m4	2	1	 vss vss nch w = 3u   l = 5u    m = 1
+ .ends
+
+ iic cp vss dc = 200n
+ mc0 cp cp vdd vdd pch w = 16u l = 1u m = 2
+ mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
+ mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
+ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
+ mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
+ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
+
+
+ iin vdd in dc = 100n
+ eo  out gnd opamp ref out
+ vr ref gnd 2v
+ ***
+ vd vdd gnd dc = 3.3
+ vs vss gnd dc = 0
+ vb vinn gnd dc = 2
+ ***
+ .op
+ .dc iin dec 1000 2n 2u
+ .probe dc i(eo) *avgv = par('(v(vo1)*v(vo2)*v(vo3))^(1/3)')
+ .meas dc vo_1u find v(vo1) at 1u
+ .meas dc vo_100n find v(vo1) at 100n
+ .meas dc vo_10n find v(vo1) at 10n
+ *.meas dc 100n_1u param = 'vo_1u-vo_100n'
+ *.meas dc 10n_100n param = 'vo_100n-vo_10n'
+
+ .end
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *try logarithm circuits
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xlc1.                           logc               1.00 
+        2 xop1.                           op_a               1.00 
+ 
+
+ 
+      
+  Opening plot unit= 79
+ file=c:\users\timer\documents\github\remotehspice\research\try\logtry.pa0     
+
+ ******  
+ *try logarithm circuits
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+   vo_1u=  1.1470E+00
+   vo_100n=  9.4376E-01
+   vo_10n=  7.5627E-01
+  *** initial damped pseudo transient completed. ***
+  *** final try started ***
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *try logarithm circuits
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:c0      = 1.228e+00 0:cn      = 4.510e-01 0:cp      = 2.699e+00
+ +0:cz      = 2.391e+00 0:in      = 2.001e+00 0:out     = 2.000e+00
+ +0:ref     = 2.000e+00 0:v1      = 4.452e-01 0:v1o     = 4.452e-01
+ +0:vdd     = 3.300e+00 0:vinn    = 2.000e+00 0:vo1     = 9.438e-01
+ +0:vss     =   0.      2:1       = 6.730e-01 2:b       = 2.911e+00
+
+
+ maximum nodal capacitance=   5.474E-13         on node     0:vdd             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:c0      = 1.797e-14 0:cn      = 7.946e-14 0:cp      = 8.862e-14
+ +0:cz      = 2.269e-13 0:in      = 1.141e-13 0:out     = 1.809e-14
+ +0:ref     =   0.      0:v1      = 3.911e-14 0:v1o     = 3.911e-14
+ +0:vdd     = 5.474e-13 0:vinn    = 9.608e-14 0:vo1     = 3.429e-14
+ +0:vss     = 5.173e-13 2:1       = 1.119e-13 2:b       = 3.410e-13
+
+ 
+
+ ****  voltage sources
+
+ subckt                                              
+ element  0:vr       0:vd       0:vs       0:vb      
+  volts    2.000e+00  3.300e+00    0.       2.000e+00
+  current    0.      -4.000e-06  4.100e-06    0.     
+  power      0.       1.320e-05    0.         0.     
+
+     total voltage source power dissipation=  1.320e-05       watts
+
+
+
+ ***** current sources
+
+ subckt                        
+ element  0:iic      0:iin     
+  volts    2.699e+00  1.299e+00
+  current  2.000e-07  1.000e-07
+  power   -5.399e-07 -1.299e-07
+
+
+     total current source power dissipation=-6.698e-07       watts
+
+ **** voltage-controlled voltage sources
+
+
+ subckt             
+ element  0:eo      
+  volts    2.000e+00
+  current -9.998e-08
+
+
+
+
+
+ **** mosfets
+
+
+ subckt                                                                    
+ element  0:mc0      0:mc1      0:mc2      0:mc3      0:mcx      0:mcz     
+ model    0:pch.2    0:pch.3    0:pch.6    0:nch.3    0:pch.5    0:nch.2   
+ region       Cutoff     Cutoff   Saturati     Cutoff   Saturati     Cutoff
+  id      -2.000e-07 -3.856e-07 -3.856e-07  3.856e-07 -6.232e-07  6.226e-07
+  ibs      3.946e-20  7.745e-20  8.444e-20 -6.154e-19  1.365e-19 -9.372e-19
+  ibd      2.932e-15  2.527e-12  1.159e-16 -2.153e-14  1.160e-16 -5.675e-10
+  vgs     -6.007e-01 -6.007e-01 -7.771e-01  4.510e-01 -9.082e-01  4.510e-01
+  vds     -6.007e-01 -2.071e+00 -7.771e-01  4.510e-01 -9.082e-01  2.391e+00
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth     -7.542e-01 -6.799e-01 -7.453e-01  5.699e-01 -7.777e-01  5.636e-01
+  vdsat   -5.250e-02 -5.387e-02 -1.032e-01  4.416e-02 -1.766e-01  4.471e-02
+  vod      1.534e-01  7.924e-02 -3.181e-02 -1.189e-01 -1.305e-01 -1.126e-01
+  beta     1.891e-03  1.252e-03  1.063e-04  8.618e-03  4.823e-05  6.708e-03
+  gam eff  3.953e-01  4.553e-01  4.082e-01  5.577e-01  3.889e-01  4.720e-01
+  gm       4.356e-06  8.478e-06  5.705e-06  1.010e-05  6.636e-06  1.564e-05
+  gds      3.944e-08  2.394e-07  1.672e-07  1.665e-07  6.281e-08  8.596e-08
+  gmb      9.940e-07  1.857e-06  1.204e-06  2.903e-06  1.438e-06  4.707e-06
+  cdtot    4.341e-14  1.084e-14  1.894e-15  2.054e-14  1.834e-15  3.189e-14
+  cgtot    3.819e-14  7.021e-15  9.940e-16  1.269e-14  3.695e-15  4.334e-14
+  cstot    5.371e-14  1.792e-14  2.737e-15  2.275e-14  5.705e-15  4.284e-14
+  cbtot    1.118e-13  2.839e-14  4.395e-15  4.318e-14  5.203e-15  9.314e-14
+  cgs      5.874e-15  1.848e-15  4.182e-16  3.200e-15  2.774e-15  6.232e-15
+  cgd      5.874e-15  1.848e-15  1.922e-16  3.200e-15  1.922e-16  6.232e-15
+
+
+
+ subckt   xlc1       xlc1       xlc1       xlc1       xop1       xop1      
+ element  1:mbi      1:mai      1:mbo      1:mao      2:mb       2:m1      
+ model    0:nch.3    0:nch.2    0:nch.3    0:nch.2    0:pch.1    0:pch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff   Saturati   Saturati
+  id       9.998e-08  9.998e-08  9.996e-08  9.997e-08 -2.692e-06 -1.343e-06
+  ibs     -2.322e-14 -1.721e-19 -2.322e-14 -1.721e-19  5.324e-19  2.686e-19
+  ibd     -1.248e-12 -9.288e-15 -1.236e-12 -9.288e-15  1.106e-15  6.518e-13
+  vgs      4.985e-01  4.452e-01  4.985e-01  4.452e-01 -9.082e-01 -9.102e-01
+  vds      1.555e+00  4.452e-01  1.554e+00  4.452e-01 -3.888e-01 -2.238e+00
+  vbs     -4.452e-01    0.      -4.452e-01    0.         0.         0.     
+  vth      6.691e-01  5.586e-01  6.691e-01  5.586e-01 -7.452e-01 -7.471e-01
+  vdsat    4.391e-02  4.453e-02  4.391e-02  4.453e-02 -2.011e-01 -2.003e-01
+  vod     -1.706e-01 -1.134e-01 -1.706e-01 -1.134e-01 -1.630e-01 -1.631e-01
+  beta     8.070e-03  1.256e-03  8.070e-03  1.256e-03  1.577e-04  7.759e-05
+  gam eff  5.502e-01  4.656e-01  5.502e-01  4.656e-01  4.181e-01  4.121e-01
+  gm       2.860e-06  2.523e-06  2.860e-06  2.523e-06  2.514e-05  1.255e-05
+  gds      4.339e-08  1.448e-08  4.338e-08  1.447e-08  1.515e-07  2.632e-08
+  gmb      6.559e-07  7.556e-07  6.558e-07  7.555e-07  5.945e-06  2.952e-06
+  cdtot    1.808e-14  8.528e-15  1.809e-14  8.528e-15  1.754e-14  6.258e-15
+  cgtot    1.191e-14  9.256e-15  1.191e-14  9.256e-15  1.895e-13  9.602e-14
+  cstot    2.132e-14  9.424e-15  2.132e-14  9.424e-15  2.306e-13  1.157e-13
+  cbtot    3.865e-14  2.214e-14  3.865e-14  2.214e-14  9.408e-14  4.587e-14
+  cgs      3.167e-15  1.267e-15  3.167e-15  1.267e-15  1.663e-13  8.330e-14
+  cgd      3.167e-15  1.267e-15  3.167e-15  1.267e-15  2.205e-15  1.107e-15
+
+
+
+ subckt   xop1       xop1       xop1      
+ element  2:m2       2:m3       2:m4      
+ model    0:pch.1    0:nch.1    0:nch.1   
+ region     Saturati   Saturati   Saturati
+  id      -1.348e-06  1.343e-06  1.348e-06
+  ibs      2.697e-19 -2.312e-18 -2.321e-18
+  ibd      1.469e-13 -4.644e-15 -4.646e-15
+  vgs     -9.112e-01  6.730e-01  6.730e-01
+  vds     -1.967e+00  6.730e-01  9.438e-01
+  vbs        0.         0.         0.     
+  vth     -7.475e-01  5.345e-01  5.342e-01
+  vdsat   -2.008e-01  1.604e-01  1.606e-01
+  vod     -1.637e-01  1.385e-01  1.387e-01
+  beta     7.758e-05  1.166e-04  1.166e-04
+  gam eff  4.121e-01  4.547e-01  4.547e-01
+  gm       1.258e-05  1.474e-05  1.478e-05
+  gds      2.709e-08  2.084e-08  1.912e-08
+  gmb      2.957e-06  4.346e-06  4.358e-06
+  cdtot    6.501e-15  4.114e-15  3.973e-15
+  cgtot    9.608e-14  5.078e-14  5.078e-14
+  cstot    1.158e-13  6.032e-14  6.032e-14
+  cbtot    4.611e-14  2.725e-14  2.711e-14
+  cgs      8.337e-14  4.237e-14  4.237e-14
+  cgd      1.107e-15  6.333e-16  6.333e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *try logarithm circuits
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             4
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      46  # elements   =      22
+  # resistors   =       0  # capacitors =       0  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       1
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       4
+  # curr_srcs   =       2  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      15  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.03           1         176
+  dc sweep           0.30        3001        6118
+  readin             0.12
+  errchk             0.02
+  setup              0.02
+  output             0.02
+
+
+           total memory used          404  kbytes
+           total cpu time            0.55 seconds
+           total elapsed time           1 seconds
+           job started at     23:14:26 01/29/2016
+           job ended   at     23:14:27 01/29/2016
+
+
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini

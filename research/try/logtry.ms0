@@ -1,0 +1,6 @@
+$DATA1 SOURCE='HSPICE' VERSION='B-2008.09 32-BIT'
+.TITLE '*try logarithm circuits'
+ vo_1u            vo_100n          vo_10n           temper            
+ alter#            
+    1.1470           0.9438           0.7563          25.0000         
+    1.0000         
