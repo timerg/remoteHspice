@@ -4,7 +4,7 @@
 *.lib 'rf018.l' TT
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7
-+ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2 CONVERGE=1 dcon=1
++ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2 CONVERGE=1 dcon=2
 
 ***subckt***
 ******iEnlarge******
@@ -79,12 +79,13 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=100k
 Xgm  vdd vss gm_in gm_out gm_out  cz  gm
 XTro vdd vss opb to_in to_out  cz  Trx
-Cg  gm_out gnd 10p
+Cg  gm_out gnd 1p
 
 ***NW Input Stage***
-.param pbI = 10u
-Ip vdd out dc = pbI   pulse(653.7n 1.6537u 200ns 1ns 1ns 3u 4u)
-vpg vgp gnd dc = 2.3      * 1.178u
+.param pbI = 1u
+*Ip vdd out dc = pbI
+Mp  out vgp vdd vdd pch w = 6u l = 1u m = 1
+vpg vgp gnd dc = 2.6    * 1.178u
 Mc  out vgn nwd vss nch w = 10u  l = 0.4u m = 1
 vng vgn gnd dc = 1.8
 .param wx = 6u
@@ -96,10 +97,9 @@ vc3 ti_out  gm_in dc = 0
 vc4 gm_out  to_in dc = 0
 
 
-vfc to_out vnw dc = 1.5
+vfc to_out vnw dc = 1.5 ac = 1 sin(1.5 0.1 1k 1ns)
 .param in = 100n
 
-*ins vdd nwd dc = in
 
 vopbias opb gnd dc = 'comon+diff' *ac = 1 *180
 .param
@@ -128,7 +128,7 @@ vtd vdt gnd dc = 1.2v
 *.ac dec 1000 1 1g
 *.probe ac vp(to_out)
 *.noise
-.tran 1ns 5us
+.tran 1us 5ms
 .ic i(mnw) = pbI
 .probe tran I(ins) I(mnw) I(ip)
 .end
