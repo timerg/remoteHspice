@@ -76,37 +76,26 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 
 
 ***netlist***
-XTri vdd vss opb ti_in ti_out  cz     Tr rld=20k
-*XiEn vdd vss opb iE_in iE_out  cz veb iEn
-ve veb gnd dc = 0.72
-Xgm  vdd vss gm_in opb gm_out  cz     gm
-XTro vdd vss opb to_in to_out  cz     Tr rld=100k
-*Ero to_out gnd OPAMP opb to_in 100
-*Rro to_in to_out 1000k
-*XTr3 vdd vss t3_in opb t3_out  cz     Trx
-***subckt Probe***
-.probe dc xiEn.i(Me1p) xiEn.i(Me1n)
-.probe tran i(xien.Me1p) par('-i(xien.Me1n)')
+XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
+*Xgm  vdd vss gm_in gm_out gm_out  cz  gm
+XTro vdd vss to_in opb to_out  cz  Trx
+*Cg  gm_out gnd 10p
+
 ***NW Input Stage***
-*Mp  out vgp vdd vdd pch w = 2u l = 1u m = 1
-Ip vdd out dc = 500n   pulse(0 500n 200ns 1ns 1ns 3u 4u)
+Ip vdd out dc = 653.7n   pulse(653.7n 1.6537u 200ns 1ns 1ns 3u 4u)
 vpg vgp gnd dc = 2.3      * 1.178u
-*Mc  out vgn nwd vss nch w = 3u  l = 0.4u m = 1
-*vng vgn gnd dc = 1.8
-Mnw out vnw vss vss nch w = 6u l = 6u m = 1
-*vnw vnw gnd dc = 0.7v ac = 1
+Mc  out vgn nwd vss nch w = 3u  l = 0.4u m = 1
+vng vgn gnd dc = 1.8
+.param wx = 6u
+Mnw nwd vnw vss vss nch w = wx l = 0.4u m = 1
+*vnw vnw gnd dc = 0.5v ac = 1
 
-**vc1 out     iE_in dc = 0
-*Eb  bo gnd OPAMP opb out
-*Rb  bo out 1x
-*Rbo bo iE_in 1x
 vc2 out  ti_in dc = 0
-vc3 ti_out  gm_in dc = 0
-vc4 gm_out  to_in dc = 0
-*vc5 to_out  t3_in dc = 0
+vc3 ti_out  to_in dc = 0
+*vc4 gm_out  to_in dc = 0
 
-vfc to_out vnw dc = 1.5
-.ic i(vc1) = 0
+
+vfc to_out vnw dc = 0
 
 vopbias opb gnd dc = 'comon+diff' *ac = 1 *180
 .param
@@ -114,15 +103,12 @@ vopbias opb gnd dc = 'comon+diff' *ac = 1 *180
 +diff		= 0
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
-*Vns vsn gnd dc = 1
-Ins vdd out dc = 10n  pulse(0 100n 500ns 1ns 1ns 500ns 1u)
-*Ins nwd gnd dc = 1u
 
 ***Output Stage**
 ***TEST***
-Mt vdt vgt vst vst nch w = 6u l = 0.4u m = 1
-vtg vgt gnd dc = 0.52
-vtd vdt gnd dc = 2v
+Mt vdt vgt vst vst nch w = 8u l = 0.4u m = 1
+vtg vgt gnd dc = 0.635
+vtd vdt gnd dc = 1v
 vts vst gnd dc = 0
 
 
@@ -130,11 +116,11 @@ vts vst gnd dc = 0
 .op
 
 *.dc vpg 3.3 2.6 0.001
-.dc ins dec 100 1n 100n *sweep ip
+.dc wx 1u 20u 0.01u
 .probe dc I(mp) I(mnw) I(ip) I(mc)
 *.ac dec 1000 1 1g
 *.probe ac vp(to_out)
 *.noise
-.tran 1ns 1us
+.tran 1ns 5us
 .probe tran I(ins) I(mnw) I(ip)
 .end

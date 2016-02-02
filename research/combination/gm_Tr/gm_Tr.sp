@@ -80,14 +80,14 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 
 ***netlist***
 ******Gm******
-Xgm vdd vss inp inn cz io2 gm
+Xgm vdd vss opb inn cz io2 gm
 ******Tr******
 XTr  vdd vss opb tr_in  tr_out  cz   Tr
 *********OP_Bias*********
-vopbias opb gnd dc = 'comon+diff' *ac = 1 *180
+vopbias opb gnd dc = 'comon' *ac = 1 *180
 .param
 +comon		= 2
-+diff		= 0
+
 *********connection*********
 Vc tr_in io2 dc = 0
 
@@ -103,8 +103,8 @@ Vc tr_in io2 dc = 0
 
 ***Input***
 .param diff = 0 cm = 2
-Vinp inp  gnd dc = 'cm-diff'  ac=1
-Vinn inn  gnd dc = 'cm+diff'
+*Vinp inp  gnd dc = 'cm-diff'  ac=1
+Vinn inn  gnd dc = 'cm+diff'   ac = 1
 
 ***OP TEST***
 *Iin tr_in vdd 1u
