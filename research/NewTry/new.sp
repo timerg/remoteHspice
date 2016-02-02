@@ -53,14 +53,14 @@ Min id  id  sd  in  pch w = 3u    l = 2u m = 1
 Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
 .ends
 .subckt gm2nd vdd vss ggp ggn io2
-Mo3a io1 io1 vdd vdd pch w = 5.7u l = 5u m = 1
-Mo4a io2 io1 vdd vdd pch w = 5.7u l = 5u m = 1
+Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
+Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
 Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
 Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
 .ends
 Mb  bd  vb  vdd vdd pch w = 5u l = 1u   m = 1
-X1  vdd vss inp bd  ggp idp sdp gmx
-X2  vdd vss inn bd  ggn idn sdn gmx
+X1  vdd vss inn bd  ggp idp sdp gmx
+X2  vdd vss inp bd  ggn idn sdn gmx
 X2d vdd vss ggp ggn io2 gm2nd
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
@@ -76,26 +76,30 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 
 
 ***netlist***
-XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
-*Xgm  vdd vss gm_in gm_out gm_out  cz  gm
-XTro vdd vss to_in opb to_out  cz  Trx
-*Cg  gm_out gnd 10p
+XTri vdd vss opb ti_in ti_out  cz  Tr rld=100k
+Xgm  vdd vss gm_in gm_out gm_out  cz  gm
+XTro vdd vss opb to_in to_out  cz  Trx
+Cg  gm_out gnd 10p
 
 ***NW Input Stage***
-Ip vdd out dc = 653.7n   pulse(653.7n 1.6537u 200ns 1ns 1ns 3u 4u)
+.param pbI = 10u
+Ip vdd out dc = pbI   pulse(653.7n 1.6537u 200ns 1ns 1ns 3u 4u)
 vpg vgp gnd dc = 2.3      * 1.178u
-Mc  out vgn nwd vss nch w = 3u  l = 0.4u m = 1
+Mc  out vgn nwd vss nch w = 10u  l = 0.4u m = 1
 vng vgn gnd dc = 1.8
 .param wx = 6u
 Mnw nwd vnw vss vss nch w = wx l = 0.4u m = 1
 *vnw vnw gnd dc = 0.5v ac = 1
 
 vc2 out  ti_in dc = 0
-vc3 ti_out  to_in dc = 0
-*vc4 gm_out  to_in dc = 0
+vc3 ti_out  gm_in dc = 0
+vc4 gm_out  to_in dc = 0
 
 
-vfc to_out vnw dc = 0
+vfc to_out vnw dc = 1.5
+.param in = 100n
+
+*ins vdd nwd dc = in
 
 vopbias opb gnd dc = 'comon+diff' *ac = 1 *180
 .param
@@ -106,21 +110,25 @@ Vs vss gnd dc = 0
 
 ***Output Stage**
 ***TEST***
-Mt vdt vgt vst vst nch w = 8u l = 0.4u m = 1
-vtg vgt gnd dc = 0.635
-vtd vdt gnd dc = 1v
-vts vst gnd dc = 0
+Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
+It vst vss dc = 'pbI'
+vtg vgt gnd dc = 0.6
+vtd vdt gnd dc = 1.2v
+.probe dc lx2(mt)
+*vts vst gnd dc = 0
 
 
 
 .op
-
+*.dc in dec 1000 1n 10n
 *.dc vpg 3.3 2.6 0.001
-.dc wx 1u 20u 0.01u
-.probe dc I(mp) I(mnw) I(ip) I(mc)
+.dc wx 0.4u 20u 0.01u
+
+.probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
 *.ac dec 1000 1 1g
 *.probe ac vp(to_out)
 *.noise
 .tran 1ns 5us
+.ic i(mnw) = pbI
 .probe tran I(ins) I(mnw) I(ip)
 .end
