@@ -19,8 +19,8 @@ Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
 *******Circuits**********
 .param wb = 5u
 Mb  bd  vb  vdd vdd pch w = wb l = 1u   m = 1
-X1  vdd vss inp bd ggp idp sdp gmx
-X2  vdd vss inn bd ggn idn sdn gmx
+X1  vdd vss inn bd ggp idp sdp gmx
+X2  vdd vss inp bd ggn idn sdn gmx
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 *******ActiveLinearization*******
@@ -48,8 +48,8 @@ Vr ref gnd dc = 2
 
 *******Input******************
 .param diff = 0 cm = 2
-Vinp inp  gnd dc = 'cm-diff'  ac=1
-Vinn inn  gnd dc = 'cm+diff'
+Vinp inp  gnd dc = 'cm+diff'  ac=1
+Vinn inn  gnd dc = 'cm-diff'
 
 ********Bias**************
 Vbias   vb  gnd dc = 2.4
@@ -98,6 +98,17 @@ vs      vss gnd dc = 0
 .meas dc diout_0.5 DERIVATIVE i(e1) AT 0.5
 .ac dec 1000 1 1g
 .probe ac I(e1)
-.noise I(e1) vinp 1000
+*.noise I(e1) vinp 1000
 .meas ac noiset find onoise at 10
+
+
+.alter   *use gm as low pass filter
+Vinn inn  io2 dc = 0
+Cl io2 gnd 1000p
+E1  gnd gnd OPAMP gnd gnd
+*Vr ref gnd dc = 2
+Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
+Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
+Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
+Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
 .end
