@@ -24,7 +24,7 @@ M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
 
 ***2nd stage***
 ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
+ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2   *use 21u when in new model
 ***compensation***
 *C1  2 vop 20f   *~ 60db
 C1  2 vop 600f   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
@@ -78,11 +78,11 @@ vts vst gnd dc = 3.3
 *.meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
 *.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 *.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-*
+
 *.noise v(vop) vinn 100
 **
 ****Open loop wi loading Test***
-*.alter TrImp_Ol_wiload
+****.alter TrImp_Ol_wiload
 *vinp vinp gnd dc = 'comon-diff' *ac = 1
 *vinn in gnd dc = 'comon+diff' ac = 1 180
 *Rin  in vinn 20k
@@ -106,7 +106,7 @@ vts vst gnd dc = 3.3
 vinp vinp gnd  dc = 'comon' *ac = 1
 Iin  vdd vinn dc = 10u ac = 1
 *Rin  vinp vss 100g
-RL   vop    vinn 1000k
+RL   vop    vinn 20k
 .dc sweep Iin dec 50 1n 100u
 *.dc Iin 100n 1000n 10n
 .probe i(ma1)

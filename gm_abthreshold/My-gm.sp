@@ -52,7 +52,7 @@ Vinp inp  gnd dc = 'cm+diff'  ac=1
 Vinn inn  gnd dc = 'cm-diff'
 
 ********Bias**************
-Vbias   vb  gnd dc = 2.4
+Vbias   vb  gnd dc = 2.394
 *Vbias2  vb2 gnd dc = 1.4
 Vd      vdd gnd dc = 3.3
 vs      vss gnd dc = 0
@@ -104,11 +104,23 @@ vs      vss gnd dc = 0
 
 .alter   *use gm as low pass filter
 Vinn inn  io2 dc = 0
-Cl io2 gnd 1000p
+Cl io2 gnd 10p
 E1  gnd gnd OPAMP gnd gnd
 *Vr ref gnd dc = 2
 Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
 Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
 Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
 Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
+.probe ac i(cl)
+
+.alter   * use gm as op
+Vinp inp  gnd dc = 2
+Vinn inn  gnd dc = 'diff + 2.022' ac = 1
+Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
+Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
+Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
+Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
+E1  gnd gnd OPAMP ref gnd
+Vr ref gnd dc = 2
+Cl ref gnd 10p
 .end
