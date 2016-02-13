@@ -78,30 +78,27 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
 Xgm  vdd vss gm_in gm_out gm_out  cz  gm
-*XTro vdd vss opb to_in to_out  cz  Trx
 XTro vdd vss opb to_in to_out  cz  gm       *use gm as op
 Cg  gm_out gnd 10p
+XiEn vdd vss opb   iEn_in iEn_out cz  eb iEn
+veb eb gnd dc = 0.8
 
 ***NW Input Stage***
 .param pbI = 3.5u
-*Ip vdd out dc = pbI
-Mp  out vgp vdd vdd pch w = 5u l = 1u m = 1
-vpg vgp gnd dc = 2.3      * 1.178u
+Ip vdd out dc = pbI
 Mc  out vgn nwd vss nch w = 10u  l = 0.4u m = 1
 vng vgn gnd dc = 1.8
 .param wx = 6u
 Mnw nwd vnw vss vsn nch w = wx l = 0.4u m = 1
-*vnw vnw gnd dc = 0.63v ac = 1 sin(0.63 0.01 1k 1ns)
-vsn vsn gnd dc = 0  sin(0 0.1 10k 1ns) *ac = 1
-*.ic v(to_in) = opb
-vc2 out  ti_in dc = 0
-vc3 ti_out  gm_in dc = 0
-vc4 gm_out  to_in dc = 0
+vsn vsn gnd dc = 0
+
+vc1 out     iEn_in dc = 0
+vc2 iEn_out ti_in  dc = 0
+vc3 ti_out  gm_in  dc = 0
+vc4 gm_out  to_in  dc = 0
 
 
-vfc to_out vnw dc = 1.5 ac = 1 *sin(1.5 0.1 1k 1ns)
-.param ins_ = 0
-ins nwd gnd dc = ins_ *ac = 1
+
 
 
 vopbias opb gnd dc = 2 *ac = 1 *180
@@ -111,62 +108,53 @@ vopbias opb gnd dc = 2 *ac = 1 *180
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 
-***AC Stage**
-.param cc = 0.1p
-Cl vnw nwd cc
+
 ***TEST***
-Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
-It vst vss dc = 'pbI-ins_'
-vtg vgt gnd dc = 0.6
-vtd vdt gnd dc = 1.2v
-.probe dc lx2(mt)
-*vts vst gnd dc = 0
 
 
-
-.op
-.dc ins_ dec 1000 100n 10u
-*.dc vsn -3 3 0.001
-*.dc vpg 3.3 2.6 0.001
-*.dc wx 0.4u 20u 0.1u
 
 .probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
 + par'lx7(mc)/lx8(mc)/lx8(mnw)'
-.ac dec 1000 1 1g *sweep cc dec 1 10f 100p
-*.ac wx 0.4u 20u 0.1u
-*.probe ac vp(to_out)
-*.pz v(out) vnw
-*.noise
-*.tran 1us 5ms
-**.ic i(mnw) = pbI
-*.probe tran I(ins) I(mnw) I(ip)
-**.ic v(vnw) = 0.5
-*.meas tran out_max max v(ti_out)
-*.meas tran out_min min v(ti_out)
-*.meas tran amp param = '(out_max - out_min)/2'
+
+.op
+
+***cloase loop test***
+.alter  *Ins    #0
+.lib 'Test.l' Ins
+
+
+.alter  *wx     #1
+.del lib 'Test.l' Ins
+.lib 'Test.l' wx
+
+.alter  *vsn(sweep v on bulk)       #2
+.del lib 'Test.l' wx
+.lib 'Test.l' vsn
+
 ***Single block Test***
-.alter *Tri
-XTri vdd vss opb ti_inx ti_outx  cz  Tr rld=20k
-vc2 ti_inx inx dc = 0
-ins vdd inx dc = ins_ ac = 1
+.alter *Tri     #3
+.del lib 'Test.l' vsn
+.lib 'Test.l' Tri
 
-.alter *GM-C
-Xgm  vdd vss gm_inx gm_outx gm_outx  cz  gm
-vc3 gm_inx gnd dc = 'comon' ac = 1
-Cg  gm_outx gnd 10p
-vc4 to_in gnd dc = 0
-ins nwd vss dc = ins_ ac = 1
+.alter *GM-C        #4
+.del lib 'Test.l' Tri
+.lib 'Test.l' GMC
 
-.alter * inputStage
-XTri vdd vss opb ti_inx ti_outx  cz  Tr rld=20k
-vnw vnw gnd dc = 0.63v ac = 1 sin(0.63 0.01 1k 1ns)
-vc2 out  ti_inx dc = 0
-vc3 gnd gm_in dc = 0
-vfc to_out gnd dc = 0
 
-.alter *OPout
-XTro vdd vss opb to_inx to_outx  cz  gm
-vc4 to_inx gnd dc = 2 ac = 1
-vfc to_out gnd dc = 0
-ins nwd vss dc = ins_ ac = 1
+.alter * inputStage     #5
+.del lib 'Test.l' GMC
+.lib 'Test.l' InS
+
+
+.alter *OPout       #6
+.del lib 'Test.l' Ins
+.lib 'Test.l' OPout
+
+.alter *iEn
+.del lib 'Test.l' OPout
+.lib 'Test.l' Ien
+
+*.alter *Tran
+*.del lib 'Test.l' Ien
+*.lib 'Test.l' Tran
 .end
