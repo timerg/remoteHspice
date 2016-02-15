@@ -15,10 +15,10 @@ M2	vop	Vinn b	 b	 pch W = 6u   L = 5u  m = 1
 M3	von	von	 vss vss nch W = 3u   L = 5u  m = 1
 M4	vop	von	 vss vss nch W = 3u   L = 5u    m = 1
 
-Me1p vinp vop vdd vdd pch w = 10u l = 0.4u
-Me2p vout vop vdd vdd pch w = 10u l = 0.4u m = 10
-Me1n vinp eb vss vss nch  w = 2u l = 0.4u            *decide by noise:
-Me2n vout eb vss vss nch  w = 2u l = 0.4u m = 10    *Id ~45n, In~0.8n
+Me1p vinp eb vdd vdd pch w = 10u l = 0.4u
+Me2p vout eb vdd vdd pch w = 10u l = 0.4u m = 10
+Me1n vinp vop vss vss nch  w = 2u l = 0.4u           
+Me2n vout vop vss vss nch  w = 2u l = 0.4u m = 10
 *Rc  xx   vop 100k
 Cc  vinp vop  1p
 *Ct  vout gnd 300f
@@ -80,15 +80,15 @@ Xgm  vdd vss gm_in gm_out gm_out  cz  gm
 XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
 Cg  gm_out gnd 10p
 XiEn vdd vss opb iEn_in iEn_out cz  eb iEn
-veb eb gnd dc = 0.8
+veb eb gnd dc = 2.5
 
 ***NW Input Stage***
-.param pbI = 3.5u
+.param pbI = 1u
 Ip vdd out dc = pbI
 Mc  out vgn nwd vss nch w = 10u  l = 0.4u m = 1
 vng vgn gnd dc = 1.8
 .param wx = 6u
-Mnw nwd vnw vss vsn nch w = wx l = 0.4u m = 1
+Mnw nwd vnw vss vss nch w = wx l = 0.4u m = 1
 .param ins = 0
 
 

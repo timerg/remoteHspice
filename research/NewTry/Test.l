@@ -1,9 +1,8 @@
 
-.lib ins
-    vfc to_out vnw dc = 1.5
+.lib inw
     .param ins_ = 0
     ins nwd vss dc = ins_  ac = 1
-    .dc ins_ dec 1000 100n 10u
+    .dc ins_ dec 1000 100n 1u
     .ac dec 1000 1 1g
 
     Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
@@ -62,13 +61,13 @@
 .endl
 
 .lib InS
-    XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
-    vnw vnw gnd dc = 0.63v ac = 1 sin(0.63 0.01 1k 1ns)
-    vc1 iEn_in  gnd dc = 0
-    vc2 ti_in   out dc = 0
-    vc3 gm_in   gnd dc = 0
-    .dc vnw 0.3 1.3 0.01
+    vfc vnw gnd dc = 0.63v ac = 1 sin(0.63 0.01 1k 1ns)
+    vc1 iEn_in gnd dc = 0
+    Ro out ro 20
+    Ex ro gnd OPAMP opb ro
+    .dc vfc 0.3 1.3 0.01
     .ac dec 1000 1 1g
+    .probe I(ex)
 .endl
 
 .lib OPout
