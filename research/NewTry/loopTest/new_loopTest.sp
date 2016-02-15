@@ -1,4 +1,4 @@
-*inputStage
+*new_loopTest
 .protect
 .lib 'mm0355v.l' TT
 *.lib 'rf018.l' TT
@@ -17,7 +17,7 @@ M4	vop	von	 vss vss nch W = 3u   L = 5u    m = 1
 
 Me1p vinp eb vdd vdd pch w = 10u l = 0.4u
 Me2p vout eb vdd vdd pch w = 10u l = 0.4u m = 10
-Me1n vinp vop vss vss nch  w = 2u l = 0.4u           
+Me1n vinp vop vss vss nch  w = 2u l = 0.4u
 Me2n vout vop vss vss nch  w = 2u l = 0.4u m = 10
 *Rc  xx   vop 100k
 Cc  vinp vop  1p
@@ -35,15 +35,15 @@ ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
 C1  2  vop 1p
 RL   vop    vinn rld
 .ends
-.subckt Trx vdd vss vinp vinn vop cz
+.subckt Trx vdd vss vinp vinn 2 cz
 Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
 M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
 M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
-ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
-C1  2  vop 1p
+*ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
+*ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
+*C1  2  vop 1p
 .ends
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
@@ -76,9 +76,9 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
 Xgm  vdd vss gm_in gm_out gm_out  cz  gm
-*XTro vdd vss opb to_in to_out  cz  Trx
-XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-Cg  gm_out gnd 10p
+XTro vdd vss opb to_in to_out  cz  Trx
+*XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
+Cg  gm_out gnd 1000p
 XiEn vdd vss opb iEn_in iEn_out cz  eb iEn
 veb eb gnd dc = 2.5
 
@@ -98,7 +98,7 @@ vc1 out     iEn_in dc = 0
 vc2 iEn_out ti_in  dc = 0
 vc3 ti_out  gm_in  dc = 0
 vc4 gm_out  to_in  dc = 0
-vfc to_out  vnw    dc = 1.5
+vfc to_out  vnw    dc = 0
 
 
 vopbias opb gnd dc = 2 *ac = 1 *180
