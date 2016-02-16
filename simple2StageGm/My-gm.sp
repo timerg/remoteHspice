@@ -31,12 +31,12 @@ Mb1  bd   ggp  bump vss nch w = 3.5u l = 2u m = 1   *slightly adjust bump center
 Mb2  bump ggn  vss  vss  nch w = 4u l = 2u m = 1
 
 ******Second Stage*****
-Mo1  io1 ggp vss vss nch w = 2u l = 2u m = 4
-Mo2  io2 ggn vss vss nch w = 2u l = 2u m = 4
-Mo3a x   io1 vdd vdd pch w = 1u l = 5u m = 1
-Mo3  io1 io1 x   x   pch w = 1u l = 5u m = 1
-Mo4a y   io1 vdd vdd pch w = 1u l = 5u m = 1
-Mo4  io2 io1 y   y   pch w = 1u l = 5u m = 1
+Mo1  io1  ggp  vss  vss  nch w = 2u l = 2u m = 1
+Mo2  io2  ggn  vss  vss  nch w = 2u l = 2u m = 1
+Mo3a io1a io1a vdd  vdd  pch w = 2u l = 2u m = 1
+Mo3  io1  io1  io1a io1a pch w = 2u l = 2u m = 1
+Mo4a io2a io1a vdd  vdd  pch w = 2u l = 2u m = 1
+Mo4  io2  io1  io2a io2a pch w = 2u l = 2u m = 1
 E1   io2 gnd OPAMP ref io2
 Vr ref gnd dc = 2
 *******Output Load**************
@@ -50,7 +50,7 @@ Vinp inp  gnd dc = 'cm-diff'   ac = 1
 Vinn inn  gnd dc = 'cm+diff'
 
 ********Bias**************
-Vbias   vb  gnd dc = 2.6
+Vbias   vb  gnd dc = 2.7
 *Vbias2  vb2 gnd dc = 1.4
 Vd      vdd gnd dc = 3.3
 vs      vss gnd dc = 0
