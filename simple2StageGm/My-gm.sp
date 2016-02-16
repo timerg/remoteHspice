@@ -8,13 +8,13 @@
 
 *******SUBCKT************
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch w = 15u    l = 0.4u m = 1
-Min id  id  sd  in  pch w = 25u    l = 0.4u m = 1
-Mn  id  gg  vss vss nch w = 5u    l = 0.4u m = 2
+Ms  sd  sd bd  bd  pch w = 10u    l = 1u m = 2
+Min id  id  sd  in  pch w = 1u    l = 5u m = 1
+Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
 
 *******Circuits**********
-Mb  bd  vb  vdd vdd pch w = 25u l = 1u   m = 2
+Mb  bd  vb  vdd vdd pch w = 4u l = 2u   m = 1
 X1  vdd vss inp bd ggp idp sdp gmx
 X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
@@ -27,30 +27,30 @@ V1  idn ggn dc = 0
 *Mb2  vss   sdp    bump   bump   pch    w = 10u    l = 0.4u m = 1
 *Vx bd x dc = 0
 ********
-Mb1  bd   ggp  bump vss nch w = 3.1u l = 0.4u m = 4   *slightly adjust bump centerization
-Mb2  bump ggn  vss  vss  nch w = 6u l = 0.4u m = 4
+Mb1  bd   ggp  bump vss nch w = 3.5u l = 2u m = 1   *slightly adjust bump centerization
+Mb2  bump ggn  vss  vss  nch w = 4u l = 2u m = 1
 
 ******Second Stage*****
-Mo1 io1 ggp vss vss nch w = 8u l = 0.4u m = 2
-Mo2 io2 ggn vss vss nch w = 8u l = 0.4u m = 2
-Mo3a io1a io1a vdd vdd pch w = 8u l = 0.4u m = 2
-Mo4a io2a io1a vdd vdd pch w = 8u l = 0.4u m = 2
-Mo3b io1 io1 io1a io1a pch w = 8u l = 0.4u m = 2
-Mo4b io2 io1 io2a io2a pch w = 8u l = 0.4u m = 2
-E1  io2 gnd OPAMP ref io2
-Vr ref gnd dc = 1.65
+Mo1  io1 ggp vss vss nch w = 2u l = 2u m = 4
+Mo2  io2 ggn vss vss nch w = 2u l = 2u m = 4
+Mo3a x   io1 vdd vdd pch w = 1u l = 5u m = 1
+Mo3  io1 io1 x   x   pch w = 1u l = 5u m = 1
+Mo4a y   io1 vdd vdd pch w = 1u l = 5u m = 1
+Mo4  io2 io1 y   y   pch w = 1u l = 5u m = 1
+E1   io2 gnd OPAMP ref io2
+Vr ref gnd dc = 2
 *******Output Load**************
 *E1 idn gnd OPAMP ref idn
 *Vr ref gnd dc = 0.383
 *RL idn gnd 5k
 
 *******Input******************
-.param diff = 0 cm = 1.4
-Vinp inp  gnd dc = 'cm-diff'
+.param diff = 0 cm = 2
+Vinp inp  gnd dc = 'cm-diff'   ac = 1
 Vinn inn  gnd dc = 'cm+diff'
 
 ********Bias**************
-Vbias   vb  gnd dc = 2.7
+Vbias   vb  gnd dc = 2.6
 *Vbias2  vb2 gnd dc = 1.4
 Vd      vdd gnd dc = 3.3
 vs      vss gnd dc = 0
@@ -91,4 +91,18 @@ vb b gnd dc = 0
 + Idiff = par('I(X1.mn)-I(X2.mn)') vdiff = par('v(ggp)-v(ggn)') I(mb1)
 + I(mo1) I(mo2) I(mo3) I(mo4) I(x1.mn) I(x2.mn)
 *.print dc I(x1.mn) I(x2.mn) I(mb1)
+.meas dc Gm_val DERIVATIVE i(e1) at  0
+
+.alter
+E1  gnd gnd OPAMP gnd gnd
+.meas dc io2_val find v(io2) at 0
+
+.alter   *use gm as low pass filter
+Vinn inn  io2 dc = 0
+Cl io2 gnd 10p
+E1  gnd gnd OPAMP gnd gnd
+*Vr ref gnd dc = 2
+.ac dec 1000 1 1g
+.meas ac noiset find onoise at 10
+.probe ac i(cl)
 .end

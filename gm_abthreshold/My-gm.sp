@@ -11,14 +11,14 @@
 
 *******SUBCKT************
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch  w = 2u    l = 2u m = 1
+Ms  sd  sd bd  bd  pch  w = 5u    l = 1u m = 1
 Min id  id  sd  in  pch w = 3u    l = 2u m = 1
 Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
 .ends
 
 *******Circuits**********
-.param wb = 5u
-Mb  bd  vb  vdd vdd pch w = wb l = 1u   m = 1
+.param wb = 4u
+Mb  bd  vb  vdd vdd pch w = wb l = 2u   m = 1
 X1  vdd vss inn bd ggp idp sdp gmx
 X2  vdd vss inp bd ggn idn sdn gmx
 V0  idp ggp dc = 0
@@ -27,16 +27,16 @@ V1  idn ggn dc = 0
 *Ma1 sdn inp sdp sdp pch w = 1u l = 10u m = 1
 *Ma2 sdp inn sdn sdn pch w = 1u l = 10u m = 1
 *******Bump Circuit*******
-*Mb1  bump  sdn    x      x      pch    w = 1u    l = 0.8u m = 10
-*Mb2  vss   sdp    bump   bump   pch    w = 1u    l = 0.8u m = 10
-*Vx bd x dc = 0
+Mb1  bump  sdn    x      x      pch    w = 1u    l = 1u m = 3
+Mb2  vss   sdp    bump   bump   pch    w = 1u    l = 1u m = 3
+Vx bd x dc = 0
 ********
 *Mb1  bd   ggp  bump vss nch w = 3.1u l = 0.4u m = 4   *slightly adjust bump centerization
 *Mb2  bump ggn  vss  vss  nch w = 6u l = 0.4u m = 4
 
 ******Second Stage*****
-Mo3a io1 io1 vdd vdd pch w = 5.7u l = 5u m = 1
-Mo4a io2 io1 vdd vdd pch w = 5.7u l = 5u m = 1
+Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
+Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
 Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
 Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
 E1  io2 gnd OPAMP ref io2
@@ -52,7 +52,7 @@ Vinp inp  gnd dc = 'cm+diff'  ac=1
 Vinn inn  gnd dc = 'cm-diff'
 
 ********Bias**************
-Vbias   vb  gnd dc = 2.394
+Vbias   vb  gnd dc = 2.6
 *Vbias2  vb2 gnd dc = 1.4
 Vd      vdd gnd dc = 3.3
 vs      vss gnd dc = 0
