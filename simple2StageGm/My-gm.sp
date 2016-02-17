@@ -31,8 +31,8 @@ Mb1  bd   ggp  bump vss nch w = 3.1u l = 2u m = 1   *slightly adjust bump center
 Mb2  bump ggn  vss  vss  nch w = 3u l = 2u m = 1
 
 ******Second Stage*****
-Mo1  io1  ggp  vss  vss  nch w = 2u l = 2u m = 1
-Mo2  io2  ggn  vss  vss  nch w = 2u l = 2u m = 1
+Mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
+Mo2  io2  ggp  vss  vss  nch w = 2u l = 2u m = 1
 Mo3a io1a io1a vdd  vdd  pch w = 2u l = 2u m = 1
 Mo3  io1  io1  io1a io1a pch w = 2u l = 2u m = 1
 Mo4a io2a io1a vdd  vdd  pch w = 2u l = 2u m = 1

@@ -48,15 +48,16 @@ M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch w = 2u    l = 2u m = 1
-Min id  id  sd  in  pch w = 2u    l = 2u m = 1
+Ms  sd  sd bd  bd  pch w = 10u    l = 1u m = 2
+Min id  id  sd  in  pch w = 1u    l = 5u m = 1
 Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
-Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
-Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
-Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
-Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
-Mb  bd  vb  vdd vdd pch w = 5u l = 1u   m = 1
+Mo1  io1  ggp  vss  vss  nch w = 2u l = 2u m = 1
+Mo2  io2  ggn  vss  vss  nch w = 2u l = 2u m = 1
+Mo3a io1a io1a vdd  vdd  pch w = 2u l = 2u m = 1
+Mo3  io1  io1  io1a io1a pch w = 2u l = 2u m = 1
+Mo4a io2a io1a vdd  vdd  pch w = 2u l = 2u m = 1
+Mo4  io2  io1  io2a io2a pch w = 2u l = 2u m = 1
 X1  vdd vss inn bd ggp idp sdp gmx
 X2  vdd vss inp bd ggn idn sdn gmx
 V0  idp ggp dc = 0
@@ -70,12 +71,12 @@ mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
 mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
 mcz  cz cn vss vss nch w = 10u l = 1u m = 3
-
+vcx  cx gnd dc = 2.7v
 
 
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
-Xgm  vdd vss gm_in gm_out gm_out  cz  gm
+Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 XTro vdd vss opb to_in to_out  cz  Trx
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
 Cg  gm_out gnd 1000p
