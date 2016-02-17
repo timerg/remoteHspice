@@ -27,8 +27,8 @@ V1  idn ggn dc = 0
 *Mb2  vss   sdp    bump   bump   pch    w = 10u    l = 0.4u m = 1
 *Vx bd x dc = 0
 ********
-Mb1  bd   ggp  bump vss nch w = 3.5u l = 2u m = 1   *slightly adjust bump centerization
-Mb2  bump ggn  vss  vss  nch w = 4u l = 2u m = 1
+Mb1  bd   ggp  bump vss nch w = 3.1u l = 2u m = 1   *slightly adjust bump centerization
+Mb2  bump ggn  vss  vss  nch w = 3u l = 2u m = 1
 
 ******Second Stage*****
 Mo1  io1  ggp  vss  vss  nch w = 2u l = 2u m = 1
@@ -45,9 +45,9 @@ Vr ref gnd dc = 2
 *RL idn gnd 5k
 
 *******Input******************
-.param diff = 0 cm = 2
-Vinp inp  gnd dc = 'cm-diff'   ac = 1
-Vinn inn  gnd dc = 'cm+diff'
+.param diff = 0.1 cm = 2
+Vinp inp  vss dc = 'cm-diff'   ac = 1
+Vinn inn  vss dc = 'cm+diff'
 
 ********Bias**************
 Vbias   vb  gnd dc = 2.7
@@ -55,33 +55,7 @@ Vbias   vb  gnd dc = 2.7
 Vd      vdd gnd dc = 3.3
 vs      vss gnd dc = 0
 
-***diode test***
-D1 a b nw_dio
-va a gnd dc = 1
-vb b gnd dc = 0
-*
-*.MODEL PDIO D (                                     LEVEL  = 3
-*+ IS     = 2.65E-6         RS     = 1.7E-7          N      = 1.23
-*+ BV     = 9               IBV    = 0.03            IK     = 1E20
-*+ IKR    = 1E10            JSW    = 1.05E-11        AREA   = 7.5E-8
-*+ PJ     = 1.1E-3          CJ     = 1.38871E-3      PB     = 1.0864354
-*+ MJ     = 0.6008857       CJSW   = 3.86159E-10     PHP    = 1.0864354
-*+ MJSW   = 0.4471985       TLEV   = 1               EG     = 1.17
-*+ XTI    = 3               TCV    = -1.01E-3        TRS    = 1E-3
-*+ TLEVC  = 1               CTA    = 9.175825E-4     CTP    = 1.162482E-3
-*+ TPB    = 1.249266E-3     TPHP   = 3.6054E-4       TREF   = 25
-*+ FC     = 0               FCS    = 0             )
-.MODEL NW_DIO D (                                   LEVEL  = 3
-+ IS     = 1.2E-5          RS     = 1.8E-7          N      = 1.35
-+ BV     = 22              IBV    = 0.03            IK     = 1E20
-+ IKR    = 1E10            JSW    = 2.554E-11       AREA   = 7.6104E-8
-+ PJ     = 1.108E-3        CJ     = 1.02413E-4      PB     = 0.5540683
-+ MJ     = 0.3574083       CJSW   = 4.84677E-10     PHP    = 0.5540683
-+ MJSW   = 0.2837341       TLEV   = 1               EG     = 1.17
-+ XTI    = 3               TCV    = 8E-5            TRS    = 1.12E-3
-+ TLEVC  = 1               CTA    = 3.029206E-3     CTP    = 1.740045E-3
-+ TPB    = 3.002617E-3     TPHP   = 2.419203E-3     TREF   = 25
-+ FC     = 0               FCS    = 0           )
+
 
 *******
 .op
@@ -94,15 +68,50 @@ vb b gnd dc = 0
 .meas dc Gm_val DERIVATIVE i(e1) at  0
 
 .alter
-E1  gnd gnd OPAMP gnd gnd
+E1  inn gnd OPAMP vinn inn
+Vinn vinn gnd dc = 'cm+diff'
 .meas dc io2_val find v(io2) at 0
+
 
 .alter   *use gm as low pass filter
 Vinn inn  io2 dc = 0
-Cl io2 gnd 10p
+Cl io2 gnd 1p
 E1  gnd gnd OPAMP gnd gnd
 *Vr ref gnd dc = 2
+.probe dc lv18(x2.min) lv19(x2.min)
 .ac dec 1000 1 1g
 .meas ac noiset find onoise at 10
 .probe ac i(cl)
+.noise v(io2) vinp
+
+*.alter
+****diode test***
+*D1 a b nw_dio
+*va a gnd dc = 1
+*vb b gnd dc = 0
+**
+**.MODEL PDIO D (                                     LEVEL  = 3
+**+ IS     = 2.65E-6         RS     = 1.7E-7          N      = 1.23
+**+ BV     = 9               IBV    = 0.03            IK     = 1E20
+**+ IKR    = 1E10            JSW    = 1.05E-11        AREA   = 7.5E-8
+**+ PJ     = 1.1E-3          CJ     = 1.38871E-3      PB     = 1.0864354
+**+ MJ     = 0.6008857       CJSW   = 3.86159E-10     PHP    = 1.0864354
+**+ MJSW   = 0.4471985       TLEV   = 1               EG     = 1.17
+**+ XTI    = 3               TCV    = -1.01E-3        TRS    = 1E-3
+**+ TLEVC  = 1               CTA    = 9.175825E-4     CTP    = 1.162482E-3
+**+ TPB    = 1.249266E-3     TPHP   = 3.6054E-4       TREF   = 25
+**+ FC     = 0               FCS    = 0             )
+*.MODEL NW_DIO D (                                   LEVEL  = 3
+*+ IS     = 1.2E-5          RS     = 1.8E-7          N      = 1.35
+*+ BV     = 22              IBV    = 0.03            IK     = 1E20
+*+ IKR    = 1E10            JSW    = 2.554E-11       AREA   = 7.6104E-8
+*+ PJ     = 1.108E-3        CJ     = 1.02413E-4      PB     = 0.5540683
+*+ MJ     = 0.3574083       CJSW   = 4.84677E-10     PHP    = 0.5540683
+*+ MJSW   = 0.2837341       TLEV   = 1               EG     = 1.17
+*+ XTI    = 3               TCV    = 8E-5            TRS    = 1.12E-3
+*+ TLEVC  = 1               CTA    = 3.029206E-3     CTP    = 1.740045E-3
+*+ TPB    = 3.002617E-3     TPHP   = 2.419203E-3     TREF   = 25
+*+ FC     = 0               FCS    = 0           )
+*.dc va -1 1 0.01
+*.probe dc I(d1)
 .end

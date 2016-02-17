@@ -48,9 +48,9 @@ M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch  w = 2u    l = 2u m = 1
-Min id  id  sd  in  pch w = 3u    l = 2u m = 1
-Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
+Ms  sd  sd bd  bd  pch w = 2u    l = 2u m = 1
+Min id  id  sd  in  pch w = 2u    l = 2u m = 1
+Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
 Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
 Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
