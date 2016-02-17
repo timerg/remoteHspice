@@ -8,13 +8,13 @@
 
 *******SUBCKT************
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch w = 10u    l = 1u m = 2
+Ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 1
 Min id  id  sd  in  pch w = 1u    l = 5u m = 1
 Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
 
 *******Circuits**********
-Mb  bd  vb  vdd vdd pch w = 4u l = 2u   m = 1
+Mb  bd  vb  vdd vdd pch w = 6u l = 2u   m = 1
 X1  vdd vss inp bd ggp idp sdp gmx
 X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
@@ -27,8 +27,8 @@ V1  idn ggn dc = 0
 *Mb2  vss   sdp    bump   bump   pch    w = 10u    l = 0.4u m = 1
 *Vx bd x dc = 0
 ********
-Mb1  bd   ggp  bump vss nch w = 3.1u l = 2u m = 1   *slightly adjust bump centerization
-Mb2  bump ggn  vss  vss  nch w = 3u l = 2u m = 1
+Mb1  bd   ggp  bump vss nch w = 2.3u l = 0.6u m = 1   *slightly adjust bump centerization
+Mb2  bump ggn  vss  vss  nch w = 4u l = 0.6u m = 1
 
 ******Second Stage*****
 Mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
@@ -45,7 +45,7 @@ Vr ref gnd dc = 2
 *RL idn gnd 5k
 
 *******Input******************
-.param diff = 0.1 cm = 2
+.param diff = 0 cm = 2
 Vinp inp  vss dc = 'cm-diff'   ac = 1
 Vinn inn  vss dc = 'cm+diff'
 
@@ -79,7 +79,7 @@ Cl io2 gnd 1p
 E1  gnd gnd OPAMP gnd gnd
 *Vr ref gnd dc = 2
 .probe dc lv18(x2.min) lv19(x2.min)
-.ac dec 1000 1 1g
+.ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
 .meas ac noiset find onoise at 10
 .probe ac i(cl)
 .noise v(io2) vinp
