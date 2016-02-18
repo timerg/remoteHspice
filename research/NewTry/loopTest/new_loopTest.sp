@@ -47,19 +47,22 @@ M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
 .ends
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
+Mb  bd  vb  vdd vdd pch w = 6u l = 2u   m = 1
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch w = 10u    l = 1u m = 2
+Ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 1
 Min id  id  sd  in  pch w = 1u    l = 5u m = 1
 Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
-Mo1  io1  ggp  vss  vss  nch w = 2u l = 2u m = 1
-Mo2  io2  ggn  vss  vss  nch w = 2u l = 2u m = 1
+Mb1  bd   ggp  bump vss nch w = 2.3u l = 0.6u m = 1
+Mb2  bump ggn  vss  vss  nch w = 4u l = 0.6u m = 1
+Mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
+Mo2  io2  ggp  vss  vss  nch w = 2u l = 2u m = 1
 Mo3a io1a io1a vdd  vdd  pch w = 2u l = 2u m = 1
 Mo3  io1  io1  io1a io1a pch w = 2u l = 2u m = 1
 Mo4a io2a io1a vdd  vdd  pch w = 2u l = 2u m = 1
 Mo4  io2  io1  io2a io2a pch w = 2u l = 2u m = 1
-X1  vdd vss inn bd ggp idp sdp gmx
-X2  vdd vss inp bd ggn idn sdn gmx
+X1  vdd vss inp bd ggp idp sdp gmx
+X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 .ends
@@ -77,9 +80,9 @@ vcx  cx gnd dc = 2.7v
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
 Xgm  vdd vss gm_in gm_out gm_out  cx  gm
-XTro vdd vss opb to_in to_out  cz  Trx
+XTro vdd vss to_in opb to_out  cz  Trx
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-Cg  gm_out gnd 1000p
+Cg  gm_out gnd 10p
 XiEn vdd vss opb iEn_in iEn_out cz  eb iEn
 veb eb gnd dc = 2.5
 

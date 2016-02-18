@@ -1,12 +1,12 @@
 
 .lib inw                *#0
     .param ins_ = 0
-    ins vdd nwd dc = ins_  *ac = 1
-    vfc to_out vnw dc = 1.5 ac = 1
+    ins vdd nwd dc = ins_  ac = 1
+    vfc to_out vnw dc = 1.5 *ac = 1
     .dc ins_ dec 1000 100n 1u
     .ac dec 1000 1 1g
 
-    .pz v(ti_out) ins
+    *.pz v(ti_out) ins
 
     Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
     It vst vss dc = 'pbI-ins_'
@@ -53,14 +53,16 @@
     .param ins_ = 0
     ins inx vss dc = ins_ ac = 1
     Rin inx gnd 100x
-    .pz v(ti_out) ins
+    *.pz v(ti_out) ins
     .dc ins_ dec 1000 100n 10u
     .ac dec 1000 1 1g
 .endl
 
 .lib GMC           *#4
-    Xgm  vdd vss gm_in gm_out gm_out  cz  gm
+    Xgm  vdd vss gm_in gm_out gm_out  cx  gm
+    Xgm2 vdd vss vss vss vss cx  gm
     vc3 gm_in gnd dc = 'comon' ac = 1
+    vc4 gnd to_in  dc = 0
     .dc vc3 1 3 0.01
     .ac dec 1000 1 1g
 .endl
@@ -81,7 +83,7 @@
 .endl
 
 .lib OPout          *#6
-    XTro vdd vss to_in opb to_out  cz  gm
+    XTro vdd vss to_in opb to_out  cz  Trx
     vc4 to_in gnd dc = 2 ac = 1
     .dc vc4 0.2 3 0.01
     .ac dec 1000 1 1g

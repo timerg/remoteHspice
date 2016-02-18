@@ -8,27 +8,27 @@
 ***param***
 .param
 +comon		= 2
-+bias		= 2.5
-+bias1		= 0.6
++bias1		= 1.1
++bias2		= 0.6
 +supplyp	= 3.3
 +supplyn	= 0
 +diff			= 0
 ***netlist***
 ***1st stage***
-.subckt OP vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = 6u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
-M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
-M3	1	1	 vss vss nch W = 1u   L = 1u    m = 1
-M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
-.ends
-XOP vdd vss vinp vinn 2 cz OP
+Mb	b	cz	 vdd vdd pch W = 6u   L = 5u  m = 1
+M1	1	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
+M2	2	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
 
-.subckt OP_n vdd vss vinp vinn 2 b1
-M3  1   1    vdd vdd pch W = 5u   L = 1u m = 1
-M4  2   1    vdd vdd pch W = 5u   L = 1u m = 1
-Mb  b   b1   vss vss nch W = 5u   L = 5u m = 1
-.ends
+*Mx1 x   x1   vdd vdd pch w = 10u   L = 1u  m = 1
+*Mx2 x1  x1   vdd vdd pch w = 10u   L = 1u  m = 1
+My1 von von  vdd vdd pch w = 5u   L = 5u  m = 1
+My2 vop von  vdd vdd pch w = 5u   L = 5u  m = 1
+M3	von	b1	 1   vss nch W = 3u   L = 3u  m = 1
+M4	vop	b1	 2   vss nch W = 3u   L = 3u  m = 1
+Mz1 1	b2	 vss vss nch W = 5u   L = 3u  m = 2
+Mz2	2	b2	 vss vss nch W = 5u   L = 3u  m = 2
+
+
 ***2nd stage***
 
 ***compensation***
@@ -47,21 +47,20 @@ mcz  cz cn vss vss nch w = 10u l = 1u m = 3
 ***source***
 vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
-vb 		b0		gnd dc bias
 vb1		b1		gnd dc bias1
-
+vb2		b2		gnd dc bias2
 
 ***input***
 vinp vinp gnd dc = 'comon-diff' ac = 1
 vinn vinn gnd dc = 'comon+diff' *ac = 1 180
 
 ***test***
-mt	vdt	vgt	vst	vst	nch	w = 6u   l = 5u m = 1
-*mt	vdt	vgt	vst	vst	pch w = 2.8u l = 2u m = 1
+*mt	vdt	vgt	vss	vss	nch	w = 3.5u   l = 5u m = 1
+mt	vgt	vgt	vst	vst	nch w = 10u l = 1u m = 1
 *mt	vdt	vgt	vst	vst	pch	w = 12u   l = 5u m = 1
-vtd	vdt	gnd dc = 0.3
-vtg	vgt	gnd dc = 0.6
-vts vst gnd dc = 0
+vtd	vdt	gnd dc = 2
+vtg	vgt	gnd dc = 1.1
+vts vst gnd dc = 0.6
 
 
 ***Open loop wi loading Test***
@@ -94,7 +93,7 @@ vts vst gnd dc = 0
 *.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 *.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
-*.noise v(2) vinp 100
+.noise v(vop) vinp 100
 
 *.alter
 *.protect
