@@ -36,14 +36,6 @@ C1  2  vop 1p
 *C2  1  von 1p
 RL   vop    vinn rld
 .ends
-.subckt Trx vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 1u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 1u L = 5u    m = 1
-*Ro  2  vss 1000k
-.ends
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
 Mb  bd  vb  vdd vdd pch w = 6u l = 2u   m = 1
@@ -65,22 +57,52 @@ X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 .ends
+******OP: single stage******
+.subckt Trx vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
+M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
+M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
+M3	1	1	 vss vss nch W = 1u   L = 5u  m = 1
+M4	2	1	 vss vss nch W = 1u L = 5u    m = 1
+*Ro  2  vss 1000k
+.ends
+******OP: folded cascode*******
+.subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
+Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
+M1	1	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
+M2	2	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
+My1 von von  vdd vdd pch w = 3u   L = 5u  m = 1
+My2 vop von  vdd vdd pch w = 3u   L = 5u  m = 1
+M3	von cp2	 1   vss nch W = 3u   L = 3u  m = 1
+M4	vop	cp2	 2   vss nch W = 3u   L = 3u  m = 1
+Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
+Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
+.ends
 ******current mirror******
-Ic  cp vss dc = 500n
-mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
-mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
-mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
-mcz  cz cn vss vss nch w = 10u l = 1u m = 3
-vcx  cx gnd dc = 2.7v
+.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
 
+mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.ends
+
+Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
-Xgm  vdd vss gm_in gm_out gm_out  cx  gm
-*Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
-XTro vdd vss to_in opb to_out  cz  Trx
+Xgm  vdd vss gm_in gm_c gm_c  cx  gm
+Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
+*XTro vdd vss to_in opb to_out  cz  Trx
+XOP_fc vdd vss to_in opb to_out cz cp2 cn OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
 Cg  gm_c gnd 1p
 Cg2  gm_out gnd 1p
@@ -100,7 +122,7 @@ vc1 out     iEn_in dc = 0
 vc2 iEn_out ti_in  dc = 0
 vc3 ti_out  gm_in  dc = 0
 vc4 gm_out  to_in  dc = 0
-vfc to_out vnw dc = 0
+vfc to_out vnw dc = vdif
 
 
 
@@ -110,6 +132,7 @@ vopbias opb gnd dc = 2 *ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
++vdif       = 0
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 
@@ -120,6 +143,9 @@ Vs vss gnd dc = 0
 
 .probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
 + par'lx7(mc)/lx8(mc)/lx8(mnw)'
+
+***IC***        *this help converge
+.ic v(vnw) = 0.7
 
 .op
 
@@ -136,11 +162,11 @@ Vs vss gnd dc = 0
 .del lib 'Test.l' wx
 .lib 'Test.l' vsn
 
-***Single block Test***
+**Single block Test***
 .alter *Tri     #3
 .del lib 'Test.l' vsn
 .lib 'Test.l' Tri
-
+*
 .alter *GM-C        #4
 .del lib 'Test.l' Tri
 .lib 'Test.l' GMC

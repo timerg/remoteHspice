@@ -2,7 +2,7 @@
 .lib inw                *#0
     .param ins_ = 0
     ins vdd nwd dc = ins_  ac = 1
-    vfc to_out vnw dc = 1.5 *ac = 1
+    vfc to_out vnw dc = vdif *ac = 1
     .dc ins_ dec 1000 100n 1u
     .ac dec 1000 1 1g
 
@@ -11,7 +11,7 @@
     Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
     It vst vss dc = 'pbI-ins_'
     vtg vgt gnd dc = 1
-    vtd vdt gnd dc = 1.5
+    vtd vdt gnd dc = vdif
     .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)'
     .probe ac i(mnw)
 .endl
@@ -20,28 +20,28 @@
     Ip vdd vss dc = pbI
     Mp  out vgp vdd vdd pch w = 5u l = 1u m = 1
     vpg vgp gnd dc = 2.3      * 1.178u
-    vfc to_out vnw dc = 1.5 ac = 1
+    vfc to_out vnw dc = vdif ac = 1
     .dc wx 0.4u 20u 0.1u
     .ac dec 1000 1 1g
 
     Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
     It vst vss dc = 'pbI'
     vtg vgt gnd dc = 1
-    vtd vdt gnd dc = 1.5
+    vtd vdt gnd dc = vdif
     .probe  lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)'
 .endl
 
 .lib  vsn           *#2
-    vfc to_out vnw dc = 1.5
+    vfc to_out vnw dc = vdif
     .param vsn_ = 0
     vsn vsn gnd dc = vsn_  sin(0 0.1 10k 1ns) ac = 1
-    .dc vsn -2 2 0.01
+    .dc vsn -1 1 0.01
     .ac dec 1000 1 1g
 
     Mt vdt vgt vst vsnt nch w = wx l = 0.4u m = 1
     It vst vss dc = 'pbI'
     vtg vgt gnd dc = 1
-    vtd vdt gnd dc = 1.5
+    vtd vdt gnd dc = vdif
     vsnt vsnt vst dc = vsn_
     .probe  lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)'
 .endl
@@ -59,8 +59,8 @@
 .endl
 
 .lib GMC           *#4
-    Xgm  vdd vss gm_in gm_out gm_out  cx  gm
-    Xgm2 vdd vss vss vss vss cx  gm
+    Xgm  vdd vss gm_in gm_c   gm_c   cx  gm
+    Xgm2 vdd vss gm_c  gm_out gm_out cx  gm
     vc3 gm_in gnd dc = 'comon' ac = 1
     vc4 gnd to_in  dc = 0
     .dc vc3 1 3 0.01
@@ -83,7 +83,7 @@
 .endl
 
 .lib OPout          *#6
-    XTro vdd vss to_in opb to_out  cz  Trx
+    XOP_fc vdd vss to_in opb to_out cz cp2 cn OP_fc
     vc4 to_in gnd dc = 2 ac = 1
     .dc vc4 0.2 3 0.01
     .ac dec 1000 1 1g

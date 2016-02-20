@@ -67,14 +67,23 @@ V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 .ends
 ******current mirror******
-Ic  cp vss dc = 500n
-mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
-mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
-mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
-mcz  cz cn vss vss nch w = 10u l = 1u m = 3
-vcx  cx gnd dc = 2.7v
+.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+
+mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.ends
+
+Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
 
 ***netlist***

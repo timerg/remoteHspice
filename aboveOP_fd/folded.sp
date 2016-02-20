@@ -15,40 +15,44 @@
 +supplyn	= 0
 +diff			= 0
 ***netlist***
-***1st stage***
-Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
-M2	2	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
 
-*Mx1 x   x1   vdd vdd pch w = 10u   L = 1u  m = 1
-*Mx2 x1  x1   vdd vdd pch w = 10u   L = 1u  m = 1
+.subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
+***input stage***
+Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
+M1	1	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
+M2	2	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
+***output stage***
 My1 von von  vdd vdd pch w = 3u   L = 5u  m = 1
 My2 vop von  vdd vdd pch w = 3u   L = 5u  m = 1
-M3	von	b1	 1   vss nch W = 3u   L = 3u  m = 1
-M4	vop	b1	 2   vss nch W = 3u   L = 3u  m = 1
+M3	von cp2	 1   vss nch W = 3u   L = 3u  m = 1
+M4	vop	cp2	 2   vss nch W = 3u   L = 3u  m = 1
 Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
 Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
+.ends
 
-
-***2nd stage***
-
-***compensation***
 
 ******
 
 ***current mirror***
-Iin  cp vss dc = 1u
-mc0  cp0 cp0 vdd vdd pch w = 2u   l = 0.4u   m = 5
-mc0a cp  cp  cp0 cp0 pch w = 10u   l = 0.4u   m = 5
-mc1  c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-mc5  c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-mc2  cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
-mc6  c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
-mc3  cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
-mc7  cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
-mc4  cn  cn  vss vss nch w = 1u   l = 3u     m = 1
-mc8  cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
 
+.subckt CMB vdd vss cp cp2 cp3 cp4 cn    *cp = 2.4; cp2 = 1.25; cp3 = 0.6; cp4 = 2.7
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+
+mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.ends
+
+Xcmb vdd vss cp cp2 cp3 cp4 cn CMB
+XOP_fc vdd vss vinp vinn vop cp cp2 cn OP_fc
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -58,8 +62,8 @@ vb1		b1		gnd dc bias1
 vb2		b2		gnd dc bias2
 
 ***input***
-vinp vinp gnd dc = 'comon-diff' ac = 1
-vinn vinn gnd dc = 'comon+diff' *ac = 1 180
+vinp vinp gnd dc = 'comon+diff' ac = 1
+vinn vinn gnd dc = 'comon-diff' *ac = 1 180
 
 ***test***
 *mt	vdt	vgt	vss	vss	nch	w = 3.5u   l = 5u m = 1
