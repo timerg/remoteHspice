@@ -24,11 +24,6 @@ M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
 .ends
 XOP vdd vss vinp vinn 2 cz OP
 
-.subckt OP_n vdd vss vinp vinn 2 b1
-M3  1   1    vdd vdd pch W = 5u   L = 1u m = 1
-M4  2   1    vdd vdd pch W = 5u   L = 1u m = 1
-Mb  b   b1   vss vss nch W = 5u   L = 5u m = 1
-.ends
 ***2nd stage***
 
 ***compensation***

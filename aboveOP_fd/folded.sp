@@ -8,25 +8,26 @@
 ***param***
 .param
 +comon		= 2
-+bias1		= 1.1
++bias       = 2.4
++bias1		= 1.3
 +bias2		= 0.6
 +supplyp	= 3.3
 +supplyn	= 0
 +diff			= 0
 ***netlist***
 ***1st stage***
-Mb	b	cz	 vdd vdd pch W = 6u   L = 5u  m = 1
+Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
 M1	1	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
 M2	2	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
 
 *Mx1 x   x1   vdd vdd pch w = 10u   L = 1u  m = 1
 *Mx2 x1  x1   vdd vdd pch w = 10u   L = 1u  m = 1
-My1 von von  vdd vdd pch w = 5u   L = 5u  m = 1
-My2 vop von  vdd vdd pch w = 5u   L = 5u  m = 1
+My1 von von  vdd vdd pch w = 3u   L = 5u  m = 1
+My2 vop von  vdd vdd pch w = 3u   L = 5u  m = 1
 M3	von	b1	 1   vss nch W = 3u   L = 3u  m = 1
 M4	vop	b1	 2   vss nch W = 3u   L = 3u  m = 1
-Mz1 1	b2	 vss vss nch W = 5u   L = 3u  m = 2
-Mz2	2	b2	 vss vss nch W = 5u   L = 3u  m = 2
+Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
+Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
 
 
 ***2nd stage***
@@ -36,17 +37,23 @@ Mz2	2	b2	 vss vss nch W = 5u   L = 3u  m = 2
 ******
 
 ***current mirror***
-Iin cp vss dc = 200n
-mc0 cp cp vdd vdd pch w = 16u l = 1u m = 2
-mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
-mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
-mcz  cz cn vss vss nch w = 10u l = 1u m = 3
+Iin  cp vss dc = 1u
+mc0  cp0 cp0 vdd vdd pch w = 2u   l = 0.4u   m = 5
+mc0a cp  cp  cp0 cp0 pch w = 10u   l = 0.4u   m = 5
+mc1  c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc5  c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc2  cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+mc6  c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+mc3  cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+mc7  cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+mc4  cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+mc8  cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+
 
 ***source***
 vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
+vb0		b0		gnd dc bias
 vb1		b1		gnd dc bias1
 vb2		b2		gnd dc bias2
 
@@ -59,7 +66,7 @@ vinn vinn gnd dc = 'comon+diff' *ac = 1 180
 mt	vgt	vgt	vst	vst	nch w = 10u l = 1u m = 1
 *mt	vdt	vgt	vst	vst	pch	w = 12u   l = 5u m = 1
 vtd	vdt	gnd dc = 2
-vtg	vgt	gnd dc = 1.1
+vtg	vgt	gnd dc = 1.4
 vts vst gnd dc = 0.6
 
 
@@ -93,7 +100,7 @@ vts vst gnd dc = 0.6
 *.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 *.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
-.noise v(vop) vinp 100
+*.noise v(vop) vinp 100
 
 *.alter
 *.protect
