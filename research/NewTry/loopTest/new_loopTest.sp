@@ -35,16 +35,7 @@ ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
 C1  2  vop 1p
 RL   vop    vinn rld
 .ends
-.subckt Trx vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
-*ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-*ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
-*C1  2  vop 1p
-.ends
+
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
 Mb  bd  vb  vdd vdd pch w = 6u l = 2u   m = 1
@@ -65,7 +56,31 @@ X1  vdd vss inp bd ggp idp sdp gmx
 X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
+Cc   io1 ggn  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
 .ends
+******OP: single stage******
+.subckt Trx vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
+M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
+M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
+M3	1	1	 vss vss nch W = 1u   L = 5u  m = 1
+M4	2	1	 vss vss nch W = 1u L = 5u    m = 1
+*Ro  2  vss 1000k
+.ends
+******OP: folded cascode*******
+.subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
+Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
+M1	1	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
+M2	2	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
+My1 von von  vdd vdd pch w = 3u   L = 5u  m = 1
+My2 vop von  vdd vdd pch w = 3u   L = 5u  m = 1
+M3	von cp2	 1   vss nch W = 3u   L = 3u  m = 1
+M4	vop	cp2	 2   vss nch W = 3u   L = 3u  m = 1
+Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
+Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
+.ends
+
+
 ******current mirror******
 .subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
 Iin cp  vss dc = 1u
@@ -88,21 +103,24 @@ Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
-Xgm  vdd vss gm_in gm_out gm_out  cx  gm
-XTro vdd vss to_in opb to_out  cz  Trx
+Xgm  vdd vss gm_in gm_out gm_c  cx  gm
+Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
+*XTro vdd vss to_in opb to_out  cz  Trx
+XOP_fc vdd vss to_in opb to_out cz cp2 cn OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-Cg  gm_out gnd 10p
+Cg  gm_c gnd 5p
+Cg2  gm_out gnd 5p
 XiEn vdd vss opb iEn_in iEn_out cz  eb iEn
-veb eb gnd dc = 2.5
+veb eb gnd dc = 2.6
 
 ***NW Input Stage***
 .param pbI = 1u
 Ip vdd out dc = pbI
-Mc  out vgn nwd vss nch w = 10u  l = 0.4u m = 1
+Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
 vng vgn gnd dc = 1.8
-.param wx = 6u
-Mnw nwd vnw vss vss nch w = wx l = 0.4u m = 1
-.param ins = 0
+.param wx = 1.6u
+Mnw nwd vnw vss vsn nch w = wx l = 1u m = 1
+vsn vsn gnd dc = 0
 
 
 
@@ -127,6 +145,11 @@ Vs vss gnd dc = 0
 .probe dc  I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
 + par'lx7(mc)/lx8(mc)/lx8(mnw)'
 .probe ac vp(to_out)
+
+
+***Compensation***
+Cc1 to_out gnd 100p
+
 
 .op
 

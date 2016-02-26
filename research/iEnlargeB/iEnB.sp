@@ -9,51 +9,32 @@
 
 
 ******netlist***
-.subckt OP vdd vss vinn vinp cp cn vop
-Mb	b	cp	vdd	vdd	pch	W = 31u  L = 1u	  m = 2
-M1	1	Vinn	b		b		pch	W = 10u L = 0.4u m = 1
-M2	2	Vinp	b		b		pch	W = 10u L = 0.4u m = 1
-M3	1	cn		vss	vss	nch	W = 4.2u L = 0.4u m = 2
-M4	2	cn		vss	vss	nch	W = 4.2u L = 0.4u m = 2
 
-m1pa	voa	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
-m1pb	von	von	voa	voa	pch	w = 4u l = 0.4u    m = 2
-m2pa	vo2	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
-m2pb	vop	von	vo2 vo2	pch	w = 4u l = 0.4u    m = 2
-m3n	    von	1   vss vss nch w = 15u   l = 0.4u    m = 2
-m4n	    vop	2   vss vss nch w = 15u   l = 0.4u    m = 2
-
-******Compensation***
-Cvonvop zon vop 1p
-*vvb zb gnd dc = 2
-*mz1 zon zb von von pch w = 1u l = 1u
-Rz zon von 100k
-.ends
 .subckt OP_a vdd vss vinn vinp cz 2
-Mb	b	cz	 vdd vdd pch W = 12u  L = 5u  m = 1
-M1	1	Vinp b	 b	 pch W = 6u   L = 5u  m = 1
-M2	2	Vinn b	 b	 pch W = 6u   L = 5u  m = 1
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u   L = 5u    m = 1
+Mb	b	cz	 vdd vdd pch W = 1u   L = 5u  m = 1
+M1	1	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
+M2	2	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 5u  m = 1
+M4	2	1	 vss vss nch W = 1u   L = 5u  m = 1
+*R1  2   gnd  700k
 .ends
 ******current mirror***
-Ic  cp vss dc = 500n
-mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
-mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
-mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
-mcz  cz cn vss vss nch w = 10u l = 1u m = 3
+.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
 
-*XOP1 vdd vss vinn vinp cp cn vop OP
-XOP1 vdd vss vinn vinp cz vop OP_a
-*Ei vop gnd OPAMP vinp vinn 100
-******OPTEST_open***
-*vinp vinp gnd dc = 'comon-diff' *ac = 1
-vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
-.param
-+comon		= 2
-+diff		= 0
+mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.ends
+
 ********************
 ********************
 
@@ -66,43 +47,45 @@ vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
 *veb eb gnd dc = 0.6
 *******Ninput*******
 Me1b vinp eb vdd vdd pch w = 10u l = 0.4u
-Me2b vout eb vdd vdd pch w = 10u l = 0.4u m = 100
-Me1 vinp vop vss vss nch w = 2u l = 0.4u            *decide by noise:
-Me2 vout vop vss vss nch w = 2u l = 0.4u m = 100    *Id ~45n, In~0.8n
+Me2b vout eb vdd vdd pch w = 10u l = 0.4u m = 10
+Me1 vinp vop vss vss nch w = 2u l = 1u            *decide by noise:
+Me2 vout vop vss vss nch w = 2u l = 1u m = 10    *Id ~45n, In~0.8n
 *veb eb gnd dc = '3.3-0.5'      *10n
-*veb eb gnd dc = '3.3-0.58'      *100n
+veb eb gnd dc = '3.3-0.58'      *100n
 *veb eb gnd dc = '3.3-0.7'      *1u
-veb eb gnd dc = '3.3-0.85'      *10u
+*veb eb gnd dc = '0.835'      *10u
+
+Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
 
-***Compensation***
-.param xx = 1p
-Cc  vinp vop xx
+XOP1 vdd vss vinn vinp cx vop OP_a
+
+
 
 
 ***input***
-*******Source Input*******
-*Iin vinp vdd dc = 1n  ac = 1  sin(1u 10n 1k 1ns)
-Iin vdd vinp dc = 100n  ac = 1  sin(1u 10n 1k 1ns)
-*******Mos Input*******
+vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
+.param
++comon		= 2
++diff		= 0
+Iin vdd vinp dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
+Rin vinp gnd 100x
 
 ***output***
-******E element***
-*eo vout gnd OPAMP ref vout
-*vr ref gnd dc = 1.7
-*.probe dc i(eo)
 
-******OP by Design***
-*XOP2 vdd vss vop2 vinp2 cp cn vop2 OP
-Eout vop2 gnd OPAMP vinp2 vout
-vinp2 vinp2 gnd dc = comon
-Ro vout vop2 20k
+Eout vop2 gnd OPAMP opb vop2
+Ro vout vop2 20
 .probe dc i(ro)
+
+***Compensation***
+.param xx = 10f
+Cc  vinp vop 10f
 
 ***
 ***source***
 vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
+vb      opb     gnd dc = comon
 .param
 +supplyp	= 3.3
 +supplyn	= 0
@@ -112,6 +95,10 @@ Mt  vdt vgt vst vst pch w = 5u l = 0.4u
 It  vdd vst dc = 10n
 vtg vgt gnd dc = 2v
 vtd vdt gnd dc = 1v
+
+XTest vdd vss in2 ip2 cx out_t OP_a
+Vi in2 gnd dc = 2
+Vi2 ip2 gnd dc = 2 ac = 1
 
 .op
 
@@ -125,14 +112,20 @@ vtd vdt gnd dc = 1v
 *.print zin=par('v(vinp)/I(iin)') Id=par('I(iin)')
 
 ******AC*******
-.ac dec 100 1 1g *sweep cc 100f 1p 100f
+.ac dec 100 1 1g *sweep
 .probe ac i(ro) vp(vop2)
-.pz i(ro) iin
-*.noise i(ro) Iin
+*.pz i(ro) iin
+.noise i(ro) Iin
 
 ******Trans******
 *.tran 100ns 2ms
 *.probe tran i(me1) i(me2)
+
+
+
+
+
+
 
 .end
 

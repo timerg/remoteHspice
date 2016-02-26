@@ -1,6 +1,6 @@
 
 .lib all            *0
-    vfc to_out vnw dc = 1.5 *ac = 1 *sin(1.5 0.1 1k 1ns)
+    vfc to_out vnw dc = 0 *ac = 1 *sin(1.5 0.1 1k 1ns)
     *.ac wx 0.4u 20u 0.1u
     *.noise
     .param ins_ = 0
@@ -21,7 +21,7 @@
     .ac dec 1000 1 1g
     *.pz v(to_out) vfc
     *Cc nwd gnd 10p
-    vfc vnw gnd dc = 0.5 ac = 1       * this value should be traced by .alter1
+    vfc vnw gnd dc = 0.6 ac = 1       * this value should be traced by .alter1
     .probe ac vp(to_out)
 .endl
 
@@ -40,7 +40,7 @@
 .lib gm_in          *3
     .dc vc3 1.6 2.4 0.01
     .ac dec 1000 1 1g
-    vc3 gm_in gnd dc = 2.02 ac = 1
+    vc3 gm_in gnd dc = 1.987 ac = 1
     .probe ac vp(ti_out)
     .pz v(ti_out) vc3
 .endl
