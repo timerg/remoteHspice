@@ -1,172 +1,2604 @@
-*inputStage
-.protect
-.lib 'mm0355v.l' TT
-*.lib 'rf018.l' TT
-.unprotect
-.options ABSTOL=1e-7 RELTOL=1e-7
-+ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2 CONVERGE=0 dcon=2
+Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice new.sp
+ ****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: new.sp                                                            
+ lic:  
+ lic: FLEXlm: v8.5b 
+ lic: USER:   m103061608           HOSTNAME: ws42 
+ lic: HOSTID: e41f13bfda98         PID:      21152 
+ lic: Using FLEXlm license file: 
+ lic: 26585@lsnctu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 14-may-2016/2015.06 
+ lic: FLOATING license(s) on SERVER lsnctu 
+ lic:   
+ Init: read install configuration file: /usr/cad/synopsys/hspice/cur/hspice/meta.cfg
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ .option runlvl
+ .options abstol=1e-7 reltol=1e-7
+ + post=1 captab=1 accurate=1 ingold=2 *converge=5 dcon=2
 
-***subckt***
-******iEnlarge******
-.subckt iEn vdd vss vinn vinp vout cz eb
-Mb	b	cz	 vdd vdd pch W = 12u  L = 5u  m = 1
-M1	von	Vinp b	 b	 pch W = 6u   L = 5u  m = 1
-M2	vop	Vinn b	 b	 pch W = 6u   L = 5u  m = 1
-M3	von	von	 vss vss nch W = 3u   L = 5u  m = 1
-M4	vop	von	 vss vss nch W = 3u   L = 5u    m = 1
+ ***subckt***
+ ******ienlarge******
+ .subckt ien vdd vss vinn vinp vout cz eb
+ mb	b	cz	 vdd vdd pch   w = 5u  l = 5u  m = 1
+ m1	von	vinp b	 b	 pch   w = 1u  l = 5u  m = 1
+ m2	vop	vinn b	 b	 pch   w = 1u  l = 5u  m = 1
+ m3	von	von	 vss vss nch   w = 1u  l = 5u  m = 1
+ m4	vop	von	 vss vss nch   w = 1u  l = 5u    m = 1
 
-Me1p vinp vop vdd vdd pch w = 10u l = 0.4u
-Me2p vout vop vdd vdd pch w = 10u l = 0.4u m = 10
-Me1n vinp eb vss vss nch  w = 2u l = 0.4u            *decide by noise:
-Me2n vout eb vss vss nch  w = 2u l = 0.4u m = 10    *Id ~45n, In~0.8n
-*Rc  xx   vop 100k
-Cc  vinp vop  1p
-*Ct  vout gnd 300f
-.ends
-******Tr******
-.subckt Tr vdd vss vinp vinn vop cz rld=20k
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
-ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
-C1  2  vop 1p
-RL   vop    vinn rld
-.ends
-.subckt Trx vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
-ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
-C1  2  vop 1p
-.ends
-******GM******
-.subckt gm vdd vss inp inn io2  vb
-.subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch  w = 2u    l = 2u m = 1
-Min id  id  sd  in  pch w = 3u    l = 2u m = 1
-Mn  id  gg  vss vss nch w = 5u    l = 5u m = 1
-.ends
-*.subckt gm2nd vdd vss ggp ggn io2
-Mo3a io1 io1 vdd vdd pch w = 4.8u l = 5u m = 1
-Mo4a io2 io1 vdd vdd pch w = 4.8u l = 5u m = 1
-Mo1  io1 ggp vss vss nch w = 5.7u l = 1u m = 1
-Mo2  io2 ggn vss vss nch w = 5.7u l = 1u m = 1
-*.ends
-Mb  bd  vb  vdd vdd pch w = 5u l = 1u   m = 1
-X1  vdd vss inn bd ggp idp sdp gmx
-X2  vdd vss inp bd ggn idn sdn gmx
-V0  idp ggp dc = 0
-V1  idn ggn dc = 0
-*X2d vdd vss ggp ggn io2 gm2nd
-.ends
-******current mirror******
-Ic  cp vss dc = 500n
-mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
-mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
-mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
-mcz  cz cn vss vss nch w = 10u l = 1u m = 3
+ me1p vinp eb vdd vdd pch   w = 10u l = 0.4u
+ me2p vout eb vdd vdd pch   w = 10u l = 0.4u m = 10
+ me1n vinp vop vss vss nch  w = 2u l = 1u
+ me2n vout vop vss vss nch  w = 2u l = 1u m = 10
+ *rc  xx   vop 100k
+ cc  vinp vop  10f
+ *ct  vout gnd 300f
+ .ends
+ ******tr******
+ .subckt tr vdd vss vinp vinn vop cz rld=20k
+ mb	b	cz	 vdd vdd pch w = 5u  l = 5u  m = 1
+ m1	1	vinn b	 b	 pch w = 3u   l = 5u  m = 2
+ m2	2	vinp b	 b	 pch w = 3u   l = 5u  m = 2
+ m3	1	1	 vss vss nch w = 3u   l = 5u  m = 1
+ m4	2	1	 vss vss nch w = 3u l = 5u    m = 1
+ ma1 vop cz vdd vdd pch w = 8u l = 1u m = 2
+ ma2 vop 2  vss vss nch w = 17.3u l = 1u m = 2
+ c1  2  vop 1p
+ *c2  1  von 1p
+ rl   vop    vinn rld
+ .ends
+ ******gm******
+ .subckt gm vdd vss inp inn io2  vb
+ mb  bd  vb  vdd vdd pch w = 6u l = 2u   m = 1
+ .subckt gmx vdd vss in bd gg id sd
+ ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 1
+ min id  id  sd  in  pch w = 1u    l = 5u m = 1
+ mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
+ .ends
+ mb1  bd   ggp  bump vss nch w = 2.3u l = 0.6u m = 1
+ mb2  bump ggn  vss  vss  nch w = 4u l = 0.6u m = 1
+ mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
+ mo2  io2  ggp  vss  vss  nch w = 2u l = 2u m = 1
+ mo3a io1a io1a vdd  vdd  pch w = 2u l = 2u m = 1
+ mo3  io1  io1  io1a io1a pch w = 2u l = 2u m = 1
+ mo4a io2a io1a vdd  vdd  pch w = 2u l = 2u m = 1
+ mo4  io2  io1  io2a io2a pch w = 2u l = 2u m = 1
+ xgmx1  vdd vss inp bd ggp idp sdp gmx
+ xgmx2  vdd vss inn bd ggn idn sdn gmx
+ v0  idp ggp dc = 0
+ v1  idn ggn dc = 0
+ *cc   io1 ggn  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
+ .ends
+ ******op: single stage******
+ .subckt trx vdd vss vinp vinn 2 cz
+ mb	b	cz	 vdd vdd pch w = 1u  l = 5u  m = 1
+ m1	1	vinn b	 b	 pch w = 1u  l = 5u  m = 1
+ m2	2	vinp b	 b	 pch w = 1u  l = 5u  m = 1
+ m3	1	1	 vss vss nch w = 1u  l = 5u  m = 1
+ m4	2	1	 vss vss nch w = 1u  l = 5u    m = 1
+ *ro  2  vss 1000k
+ .ends
+ ******op: folded cascode*******
+ .subckt op_fc vdd vss vinp vinn vop cp cp2 cn
+ mb	b	cp	 vdd vdd pch w = 6u   l = 5u  m = 1
+ m1	1	vinp b	 b	 pch w = 3u   l = 3u  m = 1
+ m2	2	vinn b	 b	 pch w = 3u   l = 3u  m = 1
+ my1 von von  vdd vdd pch w = 3u   l = 5u  m = 1
+ my2 vop von  vdd vdd pch w = 3u   l = 5u  m = 1
+ m3	von cp2	 1   vss nch w = 3u   l = 3u  m = 1
+ m4	vop	cp2	 2   vss nch w = 3u   l = 3u  m = 1
+ mz1 1	cn	 vss vss nch w = 5u   l = 3u  m = 2
+ mz2	2	cn	 vss vss nch w = 5u   l = 3u  m = 2
+ .ends
+ ******current mirror******
+ .subckt cmb vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
+ iin cp  vss dc = 1u
+ mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+ mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+ mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+ mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+ mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+ mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+ mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+ mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+ mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+
+ mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+ mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+ .ends
+
+ xcmb vdd vss cz cp2 cp3 cx cn cmb
+
+ ***netlist***
+ xtri vdd vss opb ti_in ti_out  cz  tr rld=100k
+ xgm  vdd vss gm_in gm_out gm_c  cx  gm
+ xgm2  vdd vss gm_c gm_out gm_out  cx  gm
+ *xtro vdd vss to_in opb to_out  cz  trx
+ xop_fc vdd vss to_in opb to_out cz cp2 cn op_fc
+ *xtro vdd vss to_in opb to_out  cz  gm       *use gm as op
+ cg  gm_c gnd 10p
+ cg2  gm_out gnd 10p
+ xien vdd vss opb ien_in ien_out cx  eb ien
+ veb eb gnd dc = 2.6
+
+ ***nw input stage***
+ .param pbi = 10u
+ ip vdd out dc = pbi
+ mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
+ vng vgn gnd dc = 1.8
+ .param wx = 1u
+ mnw nwd vnw vss vsn nch w = wx l = 0.4u m = 1
+ vsn vsn gnd dc = 0
+
+ vc1 out     ien_in  dc = 0
+ vc2 ti_in   ien_out dc = 0
+ vc3 ti_out  gm_in   dc = 0
+ vc4 gm_out  to_in   dc = 0
+ vfc to_out vnw dc = vdif
 
 
-***netlist***
-XTri vdd vss opb ti_in ti_out  cz  Tr rld=20k
-Xgm  vdd vss gm_in gm_out gm_out  cz  gm
-*XTro vdd vss opb to_in to_out  cz  Trx
-XTro vdd vss opb to_in to_out  cz  gm       *use gm as op
-Cg  gm_out gnd 10p
-
-***NW Input Stage***
-.param pbI = 3.5u
-*Ip vdd out dc = pbI
-Mp  out vgp vdd vdd pch w = 5u l = 1u m = 1
-vpg vgp gnd dc = 2.3      * 1.178u
-Mc  out vgn nwd vss nch w = 10u  l = 0.4u m = 1
-vng vgn gnd dc = 1.8
-.param wx = 6u
-Mnw nwd vnw vss vsn nch w = wx l = 0.4u m = 1
-*vnw vnw gnd dc = 0.63v ac = 1 sin(0.63 0.01 1k 1ns)
-vsn vsn gnd dc = 0  sin(0 0.1 10k 1ns) *ac = 1
-*.ic v(to_in) = opb
-vc2 out  ti_in dc = 0
-vc3 ti_out  gm_in dc = 0
-vc4 gm_out  to_in dc = 0
 
 
-vfc to_out vnw dc = 1.5 ac = 1 *sin(1.5 0.1 1k 1ns)
-.param ins_ = 0
-ins nwd gnd dc = ins_ *ac = 1
+ vopbias opb gnd dc = 2 *ac = 1 *180
+ .param
+ +comon		= 2
+ +diff		= 0
+ +vdif       = 0
+ vd vdd gnd dc = 3.3
+ vs vss gnd dc = 0
 
 
-vopbias opb gnd dc = 2 *ac = 1 *180
-.param
-+comon		= 2
-+diff		= 0
-Vd vdd gnd dc = 3.3
-Vs vss gnd dc = 0
-
-***AC Stage**
-.param cc = 0.1p
-Cl vnw nwd cc
-***TEST***
-Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
-It vst vss dc = 'pbI-ins_'
-vtg vgt gnd dc = 0.6
-vtd vdt gnd dc = 1.2v
-.probe dc lx2(mt)
-*vts vst gnd dc = 0
+ ***compensation***
+ cc1 to_out gnd 100p
 
 
+ .probe dc i(mp) i(mnw) i(ip) i(mc) i(xtri.rl) lx3(mc) lv9(mc) lv9(mnw)
+ + par'lx7(mc)/lx8(mc)/lx8(mnw)'
 
-.op
-.dc ins_ dec 1000 100n 10u
-*.dc vsn -3 3 0.001
-*.dc vpg 3.3 2.6 0.001
-*.dc wx 0.4u 20u 0.1u
+ ***ic***        *this help converge
 
-.probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
-+ par'lx7(mc)/lx8(mc)/lx8(mnw)'
-.ac dec 1000 1 1g *sweep cc dec 1 10f 100p
-*.ac wx 0.4u 20u 0.1u
-*.probe ac vp(to_out)
-*.pz v(out) vnw
-*.noise
-*.tran 1us 5ms
-**.ic i(mnw) = pbI
-*.probe tran I(ins) I(mnw) I(ip)
-**.ic v(vnw) = 0.5
-*.meas tran out_max max v(ti_out)
-*.meas tran out_min min v(ti_out)
-*.meas tran amp param = '(out_max - out_min)/2'
-***Single block Test***
-.alter *Tri
-XTri vdd vss opb ti_inx ti_outx  cz  Tr rld=20k
-vc2 ti_inx inx dc = 0
-ins vdd inx dc = ins_ ac = 1
 
-.alter *GM-C
-Xgm  vdd vss gm_inx gm_outx gm_outx  cz  gm
-vc3 gm_inx gnd dc = 'comon' ac = 1
-Cg  gm_outx gnd 10p
-vc4 to_in gnd dc = 0
-ins nwd vss dc = ins_ ac = 1
+ .op
 
-.alter * inputStage
-XTri vdd vss opb ti_inx ti_outx  cz  Tr rld=20k
-vnw vnw gnd dc = 0.63v ac = 1 sin(0.63 0.01 1k 1ns)
-vc2 out  ti_inx dc = 0
-vc3 gnd gm_in dc = 0
-vfc to_out gnd dc = 0
+ ***cloase loop test***
+ .alter  *inw_dc    #0
 
-.alter *OPout
-XTro vdd vss opb to_inx to_outx  cz  gm
-vc4 to_inx gnd dc = 2 ac = 1
-vfc to_out gnd dc = 0
-ins nwd vss dc = ins_ ac = 1
-.end
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *inputstage
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xcmb.                           cmb                1.00 
+        2 xtri.                           tr                 1.00 
+        3 xgm.                            gm                 1.00 
+        4 xgm2.                           gm                 1.00 
+        5 xop_fc.                         op_fc              1.00 
+        6 xien.                           ien                1.00 
+        7 xgm.xgmx1.                      gmx                1.00 
+        8 xgm.xgmx2.                      gmx                1.00 
+        9 xgm2.xgmx1.                     gmx                1.00 
+       10 xgm2.xgmx2.                     gmx                1.00 
+ 
+
+ **warning** could not find branch element     0:mp              
+      branch - output ignored
+ 
+      
+  Opening plot unit= 15
+ file=new.pa0                                                                  
+
+
+ **diagnostic** rebuilding matrix with pivot option
+
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *inputstage
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+     node    =voltage       node    =voltage       node    =voltage
+
+ + 0:cn      = 6.064e-01  0:cp2     = 1.250e+00  0:cp3     = 6.064e-01
+ + 0:cx      = 2.701e+00  0:cz      = 2.398e+00  0:eb      = 2.600e+00
+ + 0:gm_c    = 1.988e+00  0:gm_in   = 1.988e+00  0:gm_out  = 1.992e+00
+ + 0:ien_in  = 2.000e+00  0:ien_out = 2.000e+00  0:nwd     = 9.318e-01
+ + 0:opb     = 2.000e+00  0:out     = 2.000e+00  0:ti_in   = 2.000e+00
+ + 0:ti_out  = 1.988e+00  0:to_in   = 1.992e+00  0:to_out  = 7.663e-01
+ + 0:vdd     = 3.300e+00  0:vgn     = 1.800e+00  0:vnw     = 7.663e-01
+ + 0:vsn     =   0.       0:vss     =   0.       1:c0      = 2.261e+00
+ + 1:c2      = 2.261e+00  1:c3      = 1.250e+00  2:1       = 5.942e-01
+ + 2:2       = 5.891e-01  2:b       = 2.830e+00  3:bd      = 1.865e+00
+ + 3:bump    = 1.947e-02  3:ggn     = 3.927e-01  3:ggp     = 3.929e-01
+ + 3:idn     = 3.927e-01  3:idp     = 3.929e-01  3:io1     = 2.047e+00
+ + 3:io1a    = 2.673e+00  3:io2a    = 2.673e+00  3:sdn     = 1.266e+00
+ + 3:sdp     = 1.265e+00  4:bd      = 1.865e+00  4:bump    = 1.946e-02
+ + 4:ggn     = 3.927e-01  4:ggp     = 3.929e-01  4:idn     = 3.927e-01
+ + 4:idp     = 3.929e-01  4:io1     = 2.047e+00  4:io1a    = 2.673e+00
+ + 4:io2a    = 2.673e+00  4:sdn     = 1.266e+00  4:sdp     = 1.266e+00
+ + 5:1       = 4.500e-01  5:2       = 4.460e-01  5:b       = 2.857e+00
+ + 5:von     = 2.188e+00  6:b       = 2.683e+00  6:von     = 4.194e-01
+ + 6:vop     = 6.248e-01
+
+
+ maximum nodal capacitance=   1.000E-10         on node     0:to_out          
+
+    nodal  capacitance table 
+
+     node    =    cap       node    =    cap       node    =    cap
+
+ + 0:cn      = 2.182e-13  0:cp2     = 1.517e-13  0:cp3     = 3.179e-14
+ + 0:cx      = 1.217e-13  0:cz      = 3.821e-13  0:eb      = 7.412e-14
+ + 0:gm_c    = 1.001e-11  0:gm_in   = 8.434e-15  0:gm_out  = 1.002e-11
+ + 0:ien_in  = 3.112e-14  0:ien_out = 1.432e-13  0:nwd     = 4.279e-14
+ + 0:opb     = 1.186e-13  0:out     = 1.090e-14  0:ti_in   = 8.425e-14
+ + 0:ti_out  = 1.056e-12  0:to_in   = 2.802e-14  0:to_out  = 1.000e-10
+ + 0:vdd     = 1.689e-12  0:vgn     = 3.154e-14  0:vnw     = 1.786e-15
+ + 0:vsn     = 3.795e-15  0:vss     = 1.154e-12  1:c0      = 3.454e-14
+ + 1:c2      = 3.454e-14  1:c3      = 5.241e-14  2:1       = 9.553e-14
+ + 2:2       = 1.082e-12  2:b       = 2.923e-13  3:bd      = 3.554e-14
+ + 3:bump    = 9.778e-15  3:ggn     = 1.576e-14  3:ggp     = 1.404e-14
+ + 3:idn     = 1.034e-14  3:idp     = 1.034e-14  3:io1     = 1.584e-14
+ + 3:io1a    = 2.820e-14  3:io2a    = 1.815e-14  3:sdn     = 8.030e-15
+ + 3:sdp     = 8.032e-15  4:bd      = 3.554e-14  4:bump    = 9.778e-15
+ + 4:ggn     = 1.576e-14  4:ggp     = 1.404e-14  4:idn     = 1.034e-14
+ + 4:idp     = 1.034e-14  4:io1     = 1.584e-14  4:io1a    = 2.820e-14
+ + 4:io2a    = 1.816e-14  4:sdn     = 8.030e-15  4:sdp     = 8.032e-15
+ + 5:1       = 5.330e-14  5:2       = 5.347e-14  5:b       = 1.118e-13
+ + 5:von     = 1.094e-13  6:b       = 3.200e-14  6:von     = 1.834e-14
+ + 6:vop     = 8.564e-14
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                              
+ element   0:veb       0:vng       0:vsn       0:vc1       0:vc2     
+  volts     2.600e+00   1.800e+00     0.          0.          0.     
+  current     0.          0.        9.341e-13  -1.057e-08  -1.168e-07
+  power       0.          0.          0.          0.          0.     
+
+ subckt                                                              
+ element   0:vc3       0:vc4       0:vfc       0:vopbias   0:vd      
+  volts       0.          0.          0.        2.000e+00   3.300e+00
+  current   2.319e-12   3.997e-22  -1.388e-17     0.       -5.508e-05
+  power       0.          0.          0.          0.        1.818e-04
+
+ subckt                xgm         xgm         xgm2        xgm2      
+ element   0:vs        3:v0        3:v1        4:v0        4:v1      
+  volts       0.          0.          0.          0.          0.     
+  current   5.508e-05     0.        1.735e-18     0.          0.     
+  power       0.          0.          0.          0.          0.     
+
+     total voltage source power dissipation=  1.818e-04       watts
+
+
+
+ ***** current sources
+
+ subckt                xcmb      
+ element   0:ip        1:iin     
+  volts     1.299e+00   2.398e+00
+  current   1.000e-05   1.000e-06
+  power    -1.299e-05  -2.398e-06
+
+
+     total current source power dissipation=-1.539e-05       watts
+
+ **** resistors
+
+ subckt    xtri      
+ element   2:rl      
+  r value   1.000e+05
+  v drop   -1.168e-02
+  current  -1.168e-07
+  power     1.365e-09
+
+
+
+ **** mosfets
+
+
+ subckt                            xcmb        xcmb        xcmb      
+ element   0:mc        0:mnw       1:mc0       1:mc1       1:mc5     
+ model     0:nch.2     0:nch.6     0:pch.1     0:pch.1     0:pch.1   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id        1.001e-05   1.001e-05  -1.000e-06  -3.065e-07  -3.065e-07
+  ibs      -1.308e-14  -2.258e-17   2.007e-19   6.380e-20   6.380e-20
+  ibd      -2.380e-14  -2.272e-15   4.849e-16   2.063e-16   2.063e-16
+  vgs       8.682e-01   7.663e-01  -9.019e-01  -9.019e-01  -9.019e-01
+  vds       1.069e+00   9.318e-01  -9.019e-01  -1.038e+00  -1.038e+00
+  vbs      -9.318e-01     0.          0.          0.          0.     
+  vth       7.965e-01   5.576e-01  -7.510e-01  -7.681e-01  -7.681e-01
+  vdsat     1.110e-01   1.926e-01  -1.900e-01  -1.739e-01  -1.739e-01
+  vod       7.172e-02   2.087e-01  -1.509e-01  -1.338e-01  -1.338e-01
+  beta      2.144e-03   4.695e-04   6.562e-05   2.418e-05   2.418e-05
+  gam eff   4.546e-01   5.077e-01   4.100e-01   3.885e-01   3.885e-01
+  gm        1.586e-04   8.302e-05   9.768e-06   3.166e-06   3.166e-06
+  gds       7.312e-07   1.317e-06   2.701e-08   9.437e-09   9.437e-09
+  gmb       3.364e-05   2.188e-05   2.296e-06   7.308e-07   7.308e-07
+  cdtot     1.090e-14   1.683e-15   6.824e-15   2.960e-15   2.960e-15
+  cgtot     3.154e-14   1.786e-15   8.151e-14   3.320e-14   3.320e-14
+  cstot     4.110e-14   3.419e-15   9.768e-14   3.830e-14   3.830e-14
+  cbtot     2.701e-14   3.795e-15   4.088e-14   1.793e-14   1.793e-14
+  cgs       2.589e-14   1.301e-15   7.023e-14   2.736e-14   2.736e-14
+  cgd       2.077e-15   2.207e-16   9.425e-16   3.751e-16   3.751e-16
+
+
+
+ subckt    xcmb        xcmb        xcmb        xcmb        xcmb      
+ element   1:mc2       1:mc6       1:mc3       1:mc7       1:mc4     
+ model     0:pch.4     0:pch.4     0:pch.3     0:pch.3     0:nch.4   
+ region      Saturati    Saturati      Cutoff      Cutoff    Saturati
+  id       -3.065e-07  -3.065e-07  -3.065e-07  -3.065e-07   3.065e-07
+  ibs       6.714e-20   6.714e-20   6.157e-20   6.157e-20  -6.949e-19
+  ibd       1.159e-16   1.159e-16   9.518e-16   9.518e-16  -2.233e-15
+  vgs      -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01   6.064e-01
+  vds      -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01   6.064e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.887e-01  -7.887e-01  -7.340e-01  -7.340e-01   5.233e-01
+  vdsat    -2.407e-01  -2.407e-01  -5.522e-02  -5.522e-02   1.155e-01
+  vod      -2.224e-01  -2.224e-01   9.017e-02   9.017e-02   8.310e-02
+  beta      1.114e-05   1.114e-05   1.043e-03   1.043e-03   5.691e-05
+  gam eff   3.553e-01   3.553e-01   4.292e-01   4.292e-01   4.314e-01
+  gm        2.307e-06   2.307e-06   6.589e-06   6.589e-06   4.426e-06
+  gds       7.985e-09   7.985e-09   1.469e-07   1.469e-07   8.222e-09
+  gmb       5.103e-07   5.103e-07   1.459e-06   1.459e-06   1.268e-06
+  cdtot     1.792e-15   1.792e-15   1.431e-14   1.431e-14   1.754e-15
+  cgtot     1.876e-14   1.876e-14   7.863e-15   7.863e-15   1.047e-14
+  cstot     2.092e-14   2.092e-14   1.792e-14   1.792e-14   1.187e-14
+  cbtot     1.066e-14   1.066e-14   3.270e-14   3.270e-14   7.895e-15
+  cgs       1.496e-14   1.496e-14   1.848e-15   1.848e-15   7.702e-15
+  cgd       1.922e-16   1.922e-16   1.848e-15   1.848e-15   2.207e-16
+
+
+
+ subckt    xcmb        xcmb        xcmb        xtri        xtri      
+ element   1:mc8       1:mca       1:mcb       2:mb        2:m1      
+ model     0:nch.4     0:pch.3     0:nch.4     0:pch.1     0:pch.1   
+ region      Saturati      Cutoff    Saturati    Saturati    Saturati
+  id        3.065e-07  -3.291e-07   3.288e-07  -9.639e-07  -4.820e-07
+  ibs      -6.949e-19   6.610e-20  -7.455e-19   1.936e-19   9.841e-20
+  ibd      -2.233e-15   2.855e-15  -2.353e-10   4.759e-16   3.190e-13
+  vgs       6.064e-01  -5.986e-01   6.064e-01  -9.019e-01  -8.301e-01
+  vds       6.064e-01  -5.986e-01   2.701e+00  -4.699e-01  -2.235e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.233e-01  -7.349e-01   5.213e-01  -7.520e-01  -7.564e-01
+  vdsat     1.155e-01  -4.989e-02   1.167e-01  -1.892e-01  -1.314e-01
+  vod       8.310e-02   1.363e-01   8.503e-02  -1.499e-01  -7.362e-02
+  beta      5.691e-05   3.131e-03   5.692e-05   6.428e-05   7.581e-05
+  gam eff   4.314e-01   4.292e-01   4.314e-01   4.097e-01   4.002e-01
+  gm        4.426e-06   7.529e-06   4.661e-06   9.438e-06   6.154e-06
+  gds       8.222e-09   1.678e-07   2.854e-08   4.001e-08   1.367e-08
+  gmb       1.268e-06   1.697e-06   1.336e-06   2.218e-06   1.461e-06
+  cdtot     1.754e-15   4.348e-14   1.474e-15   7.527e-15   6.749e-15
+  cgtot     1.047e-14   2.383e-14   1.047e-14   7.995e-14   8.425e-14
+  cstot     1.187e-14   5.375e-14   1.187e-14   9.577e-14   9.407e-14
+  cbtot     7.895e-15   9.889e-14   7.615e-15   4.096e-14   4.830e-14
+  cgs       7.702e-15   5.545e-15   7.702e-15   6.885e-14   6.593e-14
+  cgd       2.207e-16   5.545e-15   2.207e-16   9.242e-16   1.116e-15
+
+
+
+ subckt    xtri        xtri        xtri        xtri        xtri      
+ element   2:m2        2:m3        2:m4        2:ma1       2:ma2     
+ model     0:pch.1     0:nch.1     0:nch.1     0:pch.2     0:nch.2   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id       -4.819e-07   4.820e-07   4.819e-07  -1.485e-05   1.496e-05
+  ibs       9.839e-20  -8.297e-19  -8.296e-19   2.951e-18  -2.191e-17
+  ibd       3.265e-13  -4.644e-15  -4.644e-15   1.604e-14  -1.490e-09
+  vgs      -8.301e-01   5.942e-01   5.942e-01  -9.019e-01   5.891e-01
+  vds      -2.241e+00   5.942e-01   5.891e-01  -1.311e+00   1.988e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.564e-01   5.345e-01   5.345e-01  -7.514e-01   5.661e-01
+  vdsat    -1.314e-01   1.061e-01   1.061e-01  -1.953e-01   7.732e-02
+  vod      -7.361e-02   5.970e-02   5.970e-02  -1.505e-01   2.293e-02
+  beta      7.581e-05   1.171e-04   1.171e-04   9.125e-04   7.795e-03
+  gam eff   4.002e-01   4.547e-01   4.547e-01   3.952e-01   4.732e-01
+  gm        6.153e-06   7.321e-06   7.320e-06   1.487e-04   2.871e-04
+  gds       1.367e-08   1.018e-08   1.021e-08   1.380e-06   1.436e-06
+  gmb       1.461e-06   2.177e-06   2.177e-06   3.241e-05   8.369e-05
+  cdtot     6.744e-15   4.162e-15   4.166e-15   1.898e-14   3.703e-14
+  cgtot     8.424e-14   4.231e-14   4.231e-14   5.194e-14   7.123e-14
+  cstot     9.406e-14   4.592e-14   4.592e-14   7.895e-14   8.842e-14
+  cbtot     4.830e-14   2.661e-14   2.661e-14   5.538e-14   1.069e-13
+  cgs       6.592e-14   3.151e-14   3.151e-14   4.352e-14   3.696e-14
+  cgd       1.116e-15   6.333e-16   6.333e-16   2.946e-15   7.167e-15
+
+
+
+ subckt    xgm         xgm         xgm         xgm         xgm       
+ element   3:mb        3:mb1       3:mb2       3:mo1       3:mo2     
+ model     0:pch.1     0:nch.3     0:nch.3     0:nch.1     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -2.666e-08   7.544e-09   7.545e-09   1.074e-08   1.073e-08
+  ibs       5.332e-21  -2.019e-15  -1.242e-20  -2.005e-20  -2.005e-20
+  ibd       9.035e-16  -6.432e-13  -3.108e-15  -9.047e-13  -6.445e-13
+  vgs      -5.986e-01   3.734e-01   3.927e-01   3.927e-01   3.929e-01
+  vds      -1.434e+00   1.846e+00   1.947e-02   2.047e+00   1.988e+00
+  vbs         0.       -1.947e-02     0.          0.          0.     
+  vth      -7.512e-01   5.638e-01   5.708e-01   5.360e-01   5.361e-01
+  vdsat    -5.253e-02   4.312e-02   4.333e-02   4.312e-02   4.313e-02
+  vod       1.526e-01  -1.903e-01  -1.781e-01  -1.433e-01  -1.432e-01
+  beta      1.896e-04   7.841e-04   1.431e-03   1.936e-04   1.936e-04
+  gam eff   4.055e-01   4.993e-01   5.041e-01   4.466e-01   4.466e-01
+  gm        5.273e-07   2.063e-07   2.024e-07   2.698e-07   2.698e-07
+  gds       2.417e-09   1.738e-09   2.761e-07   8.694e-10   8.383e-10
+  gmb       1.273e-07   6.260e-08   6.263e-08   8.086e-08   8.084e-08
+  cdtot     7.094e-15   2.916e-15   6.044e-15   2.568e-15   2.578e-15
+  cgtot     1.334e-14   2.589e-15   4.313e-15   5.725e-15   5.724e-15
+  cstot     1.059e-14   3.734e-15   6.079e-15   3.345e-15   3.345e-15
+  cbtot     2.659e-14   7.283e-15   1.308e-14   9.930e-15   9.940e-15
+  cgs       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+  cgd       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+
+
+
+ subckt    xgm         xgm         xgm         xgm         xgm2      
+ element   3:mo3a      3:mo3       3:mo4a      3:mo4       4:mb      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -1.074e-08  -1.074e-08  -1.074e-08  -1.074e-08  -2.666e-08
+  ibs       2.236e-21   2.236e-21   2.236e-21   2.236e-21   5.332e-21
+  ibd       2.059e-16   2.059e-16   2.059e-16   2.059e-16   9.034e-16
+  vgs      -6.263e-01  -6.263e-01  -6.263e-01  -6.259e-01  -5.986e-01
+  vds      -6.263e-01  -6.263e-01  -6.267e-01  -6.846e-01  -1.434e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.687e-01  -7.687e-01  -7.687e-01  -7.684e-01  -7.512e-01
+  vdsat    -5.306e-02  -5.306e-02  -5.306e-02  -5.305e-02  -5.253e-02
+  vod       1.424e-01   1.424e-01   1.424e-01   1.425e-01   1.526e-01
+  beta      5.843e-05   5.843e-05   5.843e-05   5.844e-05   1.896e-04
+  gam eff   3.892e-01   3.892e-01   3.892e-01   3.892e-01   4.055e-01
+  gm        2.018e-07   2.018e-07   2.018e-07   2.018e-07   5.273e-07
+  gds       1.282e-09   1.282e-09   1.282e-09   1.261e-09   2.417e-09
+  gmb       4.817e-08   4.817e-08   4.818e-08   4.818e-08   1.273e-07
+  cdtot     3.276e-15   3.276e-15   3.275e-15   3.224e-15   7.094e-15
+  cgtot     4.998e-15   4.998e-15   4.998e-15   4.998e-15   1.334e-14
+  cstot     4.078e-15   4.078e-15   4.078e-15   4.078e-15   1.059e-14
+  cbtot     1.085e-14   1.085e-14   1.085e-14   1.080e-14   2.659e-14
+  cgs       3.751e-16   3.751e-16   3.751e-16   3.751e-16   1.107e-15
+  cgd       3.751e-16   3.751e-16   3.751e-16   3.751e-16   1.107e-15
+
+
+
+ subckt    xgm2        xgm2        xgm2        xgm2        xgm2      
+ element   4:mb1       4:mb2       4:mo1       4:mo2       4:mo3a    
+ model     0:nch.3     0:nch.3     0:nch.1     0:nch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id        7.544e-09   7.545e-09   1.074e-08   1.073e-08  -1.074e-08
+  ibs      -2.019e-15  -1.242e-20  -2.006e-20  -2.005e-20   2.236e-21
+  ibd      -6.434e-13  -3.107e-15  -9.048e-13  -6.582e-13   2.059e-16
+  vgs       3.734e-01   3.927e-01   3.927e-01   3.929e-01  -6.263e-01
+  vds       1.846e+00   1.946e-02   2.047e+00   1.992e+00  -6.263e-01
+  vbs      -1.946e-02     0.          0.          0.          0.     
+  vth       5.638e-01   5.708e-01   5.360e-01   5.361e-01  -7.687e-01
+  vdsat     4.312e-02   4.333e-02   4.312e-02   4.313e-02  -5.306e-02
+  vod      -1.903e-01  -1.781e-01  -1.433e-01  -1.432e-01   1.424e-01
+  beta      7.841e-04   1.431e-03   1.936e-04   1.936e-04   5.843e-05
+  gam eff   4.993e-01   5.041e-01   4.466e-01   4.466e-01   3.892e-01
+  gm        2.063e-07   2.024e-07   2.699e-07   2.698e-07   2.018e-07
+  gds       1.738e-09   2.763e-07   8.696e-10   8.400e-10   1.282e-09
+  gmb       6.260e-08   6.263e-08   8.088e-08   8.084e-08   4.819e-08
+  cdtot     2.916e-15   6.044e-15   2.568e-15   2.578e-15   3.276e-15
+  cgtot     2.589e-15   4.313e-15   5.725e-15   5.724e-15   4.998e-15
+  cstot     3.734e-15   6.079e-15   3.345e-15   3.345e-15   4.078e-15
+  cbtot     7.283e-15   1.308e-14   9.930e-15   9.939e-15   1.085e-14
+  cgs       4.889e-16   8.396e-16   4.270e-16   4.270e-16   3.751e-16
+  cgd       4.889e-16   8.396e-16   4.270e-16   4.270e-16   3.751e-16
+
+
+
+ subckt    xgm2        xgm2        xgm2        xop_fc      xop_fc    
+ element   4:mo3       4:mo4a      4:mo4       5:mb        5:m1      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff    Saturati    Saturati
+  id       -1.074e-08  -1.074e-08  -1.074e-08  -1.187e-06  -6.200e-07
+  ibs       2.236e-21   2.236e-21   2.236e-21   2.374e-19   1.266e-19
+  ibd       2.059e-16   2.059e-16   2.059e-16   5.659e-16   1.278e-12
+  vgs      -6.263e-01  -6.263e-01  -6.260e-01  -9.019e-01  -8.652e-01
+  vds      -6.263e-01  -6.267e-01  -6.811e-01  -4.425e-01  -2.407e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.687e-01  -7.687e-01  -7.685e-01  -7.501e-01  -7.551e-01
+  vdsat    -5.306e-02  -5.306e-02  -5.305e-02  -1.911e-01  -1.582e-01
+  vod       1.424e-01   1.424e-01   1.425e-01  -1.518e-01  -1.101e-01
+  beta      5.843e-05   5.843e-05   5.844e-05   7.764e-05   6.164e-05
+  gam eff   3.892e-01   3.892e-01   3.892e-01   4.121e-01   3.989e-01
+  gm        2.018e-07   2.018e-07   2.018e-07   1.155e-05   7.040e-06
+  gds       1.282e-09   1.282e-09   1.263e-09   5.274e-08   2.449e-08
+  gmb       4.819e-08   4.819e-08   4.819e-08   2.719e-06   1.629e-06
+  cdtot     3.276e-15   3.275e-15   3.227e-15   8.969e-15   3.300e-15
+  cgtot     4.998e-15   4.998e-15   4.998e-15   9.551e-14   2.802e-14
+  cstot     4.078e-15   4.078e-15   4.078e-15   1.149e-13   3.421e-14
+  cbtot     1.085e-14   1.085e-14   1.080e-14   4.856e-14   1.758e-14
+  cgs       3.751e-16   3.751e-16   3.751e-16   8.264e-14   2.297e-14
+  cgd       3.751e-16   3.751e-16   3.751e-16   1.107e-15   5.582e-16
+
+
+
+ subckt    xop_fc      xop_fc      xop_fc      xop_fc      xop_fc    
+ element   5:m2        5:my1       5:my2       5:m3        5:m4      
+ model     0:pch.1     0:pch.1     0:pch.1     0:nch.1     0:nch.1   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id       -5.674e-07  -2.369e-06  -2.422e-06   2.369e-06   2.422e-06
+  ibs       1.158e-19   4.834e-19   4.941e-19  -4.644e-15  -4.644e-15
+  ibd       1.215e-12   2.960e-16   2.127e-12  -6.112e-12  -4.644e-15
+  vgs      -8.575e-01  -1.112e+00  -1.112e+00   8.002e-01   8.042e-01
+  vds      -2.411e+00  -1.112e+00  -2.533e+00   1.737e+00   3.203e-01
+  vbs         0.          0.          0.       -4.500e-01  -4.460e-01
+  vth      -7.551e-01  -7.586e-01  -7.559e-01   6.590e-01   6.595e-01
+  vdsat    -1.525e-01  -3.633e-01  -3.657e-01   1.656e-01   1.683e-01
+  vod      -1.024e-01  -3.535e-01  -3.561e-01   1.412e-01   1.447e-01
+  beta      6.169e-05   3.640e-05   3.642e-05   1.944e-04   1.943e-04
+  gam eff   3.989e-01   4.002e-01   4.002e-01   4.430e-01   4.431e-01
+  gm        6.621e-06   1.205e-05   1.225e-05   2.575e-05   2.593e-05
+  gds       2.295e-08   4.626e-08   3.180e-08   4.741e-08   1.602e-07
+  gmb       1.535e-06   2.768e-06   2.813e-06   6.334e-06   6.384e-06
+  cdtot     3.298e-15   4.074e-15   3.248e-15   3.573e-15   4.062e-15
+  cgtot     2.758e-14   5.087e-14   5.087e-14   3.083e-14   3.093e-14
+  cstot     3.352e-14   6.072e-14   6.072e-14   3.655e-14   3.672e-14
+  cbtot     1.756e-14   2.514e-14   2.431e-14   1.636e-14   1.686e-14
+  cgs       2.242e-14   4.394e-14   4.394e-14   2.624e-14   2.636e-14
+  cgd       5.582e-16   5.582e-16   5.582e-16   6.333e-16   6.333e-16
+
+
+
+ subckt    xop_fc      xop_fc      xien        xien        xien      
+ element   5:mz1       5:mz2       6:mb        6:m1        6:m2      
+ model     0:nch.1     0:nch.1     0:pch.1     0:pch.4     0:pch.4   
+ region      Saturati    Saturati      Cutoff      Cutoff      Cutoff
+  id        2.989e-06   2.989e-06  -1.009e-08  -5.026e-09  -5.058e-09
+  ibs      -4.781e-18  -4.781e-18   2.027e-21   1.102e-21   1.109e-21
+  ibd      -1.411e-14  -1.411e-14   4.759e-16   5.271e-15   2.153e-15
+  vgs       6.064e-01   6.064e-01  -5.986e-01  -6.824e-01  -6.833e-01
+  vds       4.500e-01   4.460e-01  -6.167e-01  -2.263e+00  -2.058e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.423e-01   5.423e-01  -7.517e-01  -7.861e-01  -7.865e-01
+  vdsat     1.086e-01   1.086e-01  -5.188e-02  -5.761e-02  -5.769e-02
+  vod       6.403e-02   6.402e-02   1.532e-01   1.037e-01   1.033e-01
+  beta      6.827e-04   6.827e-04   6.583e-05   1.147e-05   1.147e-05
+  gam eff   4.619e-01   4.619e-01   4.097e-01   3.553e-01   3.553e-01
+  gm        4.474e-05   4.474e-05   1.906e-07   8.260e-08   8.311e-08
+  gds       1.054e-07   1.060e-07   4.647e-10   1.989e-10   2.018e-10
+  gmb       1.335e-05   1.334e-05   4.825e-08   2.024e-08   2.038e-08
+  cdtot     1.345e-14   1.346e-14   7.211e-15   1.445e-15   1.487e-15
+  cgtot     8.538e-14   8.538e-14   2.628e-14   6.795e-15   6.793e-15
+  cstot     9.910e-14   9.910e-14   8.959e-15   2.451e-15   2.451e-15
+  cbtot     6.055e-14   6.056e-14   3.875e-14   9.923e-15   9.963e-15
+  cgs       6.506e-14   6.506e-14   9.242e-16   1.922e-16   1.922e-16
+  cgd       2.092e-15   2.092e-15   9.242e-16   1.922e-16   1.922e-16
+
+
+
+ subckt    xien        xien        xien        xien        xien      
+ element   6:m3        6:m4        6:me1p      6:me2p      6:me1n    
+ model     0:nch.4     0:nch.4     0:pch.3     0:pch.3     0:nch.2   
+ region        Cutoff      Cutoff    Saturati    Saturati    Saturati
+  id        5.029e-09   5.061e-09  -1.930e-06  -1.931e-05   1.920e-06
+  ibs      -1.140e-20  -1.148e-20   3.827e-19   3.829e-18  -3.583e-18
+  ibd      -2.233e-15  -2.233e-15   2.430e-14   2.458e-13  -1.716e-10
+  vgs       4.194e-01   4.194e-01  -7.000e-01  -7.000e-01   6.248e-01
+  vds       4.194e-01   6.248e-01  -1.299e+00  -1.300e+00   2.000e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.210e-01   5.208e-01  -6.959e-01  -6.959e-01   5.490e-01
+  vdsat     4.651e-02   4.652e-02  -7.616e-02  -7.617e-02   1.073e-01
+  vod      -1.015e-01  -1.014e-01  -4.051e-03  -4.075e-03   7.578e-02
+  beta      3.386e-05   3.386e-05   1.268e-03   1.268e-02   3.960e-04
+  gam eff   4.304e-01   4.304e-01   4.626e-01   4.626e-01   4.612e-01
+  gm        1.183e-07   1.190e-07   3.797e-05   3.799e-04   2.940e-05
+  gds       1.602e-10   1.469e-10   1.098e-06   1.098e-05   1.356e-07
+  gmb       3.489e-08   3.509e-08   8.102e-06   8.105e-05   8.507e-06
+  cdtot     1.806e-15   1.749e-15   1.175e-14   1.174e-13   2.576e-15
+  cgtot     7.546e-15   7.546e-15   6.738e-15   6.738e-14   6.582e-15
+  cstot     1.979e-15   1.979e-15   1.709e-14   1.709e-13   9.192e-15
+  cbtot     1.045e-14   1.039e-14   2.822e-14   2.822e-13   7.664e-15
+  cgs       2.207e-16   2.207e-16   1.839e-15   1.839e-14   4.810e-15
+  cgd       2.207e-16   2.207e-16   1.839e-15   1.839e-14   4.270e-16
+
+
+
+ subckt    xien        xgm.xgmx1   xgm.xgmx1   xgm.xgmx1   xgm.xgmx2 
+ element   6:me2n      7:ms        7:min       7:mn        8:ms      
+ model     0:nch.2     0:pch.2     0:pch.4     0:nch.1     0:pch.2   
+ region      Saturati      Cutoff      Cutoff      Cutoff      Cutoff
+  id        1.919e-05  -9.577e-09  -9.578e-09   9.580e-09  -9.533e-09
+  ibs      -3.583e-17   1.994e-21   1.159e-16  -1.789e-20   1.985e-21
+  ibd      -1.706e-09   2.059e-16   1.159e-16  -3.438e-15   2.059e-16
+  vgs       6.248e-01  -5.997e-01  -8.730e-01   3.929e-01  -5.995e-01
+  vds       2.000e+00  -5.997e-01  -8.730e-01   3.929e-01  -5.995e-01
+  vbs         0.          0.        7.224e-01     0.          0.     
+  vth       5.490e-01  -7.678e-01  -9.231e-01   5.382e-01  -7.678e-01
+  vdsat     1.073e-01  -5.139e-02  -6.862e-02   4.303e-02  -5.137e-02
+  vod       7.578e-02   1.681e-01   5.008e-02  -1.453e-01   1.684e-01
+  beta      3.960e-03   1.062e-04   1.094e-05   1.935e-04   1.062e-04
+  gam eff   4.612e-01   3.948e-01   3.479e-01   4.466e-01   3.948e-01
+  gm        2.940e-04   2.038e-07   1.625e-07   2.419e-07   2.030e-07
+  gds       1.356e-06   1.822e-09   5.134e-10   7.398e-10   1.815e-09
+  gmb       8.506e-05   4.661e-08   2.862e-08   7.247e-08   4.642e-08
+  cdtot     2.576e-14   3.300e-15   1.599e-15   3.059e-15   3.300e-15
+  cgtot     6.582e-14   2.811e-15   5.683e-15   5.724e-15   2.811e-15
+  cstot     9.192e-14   4.078e-15   1.920e-15   3.345e-15   4.078e-15
+  cbtot     7.664e-14   8.689e-15   8.434e-15   1.042e-14   8.689e-15
+  cgs       4.810e-14   3.751e-16   1.922e-16   4.270e-16   3.751e-16
+  cgd       4.270e-15   3.751e-16   1.922e-16   4.270e-16   3.751e-16
+
+
+
+ subckt    xgm.xgmx2   xgm.xgmx2   xgm2.xgmx1  xgm2.xgmx1  xgm2.xgmx1
+ element   8:min       8:mn        9:ms        9:min       9:mn      
+ model     0:pch.4     0:nch.1     0:pch.2     0:pch.4     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -9.534e-09   9.536e-09  -9.574e-09  -9.575e-09   9.577e-09
+  ibs       1.159e-16  -1.781e-20   1.993e-21   1.159e-16  -1.789e-20
+  ibd       1.159e-16  -3.438e-15   2.059e-16   1.159e-16  -3.438e-15
+  vgs      -8.734e-01   3.927e-01  -5.997e-01  -8.731e-01   3.929e-01
+  vds      -8.734e-01   3.927e-01  -5.997e-01  -8.731e-01   3.929e-01
+  vbs       7.261e-01     0.          0.        7.228e-01     0.     
+  vth      -9.237e-01   5.382e-01  -7.678e-01  -9.232e-01   5.382e-01
+  vdsat    -6.855e-02   4.302e-02  -5.138e-02  -6.862e-02   4.303e-02
+  vod       5.029e-02  -1.455e-01   1.682e-01   5.009e-02  -1.453e-01
+  beta      1.094e-05   1.935e-04   1.062e-04   1.094e-05   1.935e-04
+  gam eff   3.479e-01   4.466e-01   3.948e-01   3.479e-01   4.466e-01
+  gm        1.619e-07   2.409e-07   2.038e-07   1.625e-07   2.418e-07
+  gds       5.116e-10   7.366e-10   1.822e-09   5.133e-10   7.396e-10
+  gmb       2.847e-08   7.216e-08   4.660e-08   2.861e-08   7.245e-08
+  cdtot     1.598e-15   3.059e-15   3.300e-15   1.599e-15   3.059e-15
+  cgtot     5.679e-15   5.725e-15   2.811e-15   5.682e-15   5.724e-15
+  cstot     1.919e-15   3.345e-15   4.078e-15   1.920e-15   3.345e-15
+  cbtot     8.427e-15   1.042e-14   8.689e-15   8.433e-15   1.042e-14
+  cgs       1.922e-16   4.270e-16   3.751e-16   1.922e-16   4.270e-16
+  cgd       1.922e-16   4.270e-16   3.751e-16   1.922e-16   4.270e-16
+
+
+
+ subckt    xgm2.xgmx2  xgm2.xgmx2  xgm2.xgmx2
+ element  10:ms       10:min      10:mn      
+ model     0:pch.2     0:pch.4     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff
+  id       -9.536e-09  -9.537e-09   9.538e-09
+  ibs       1.985e-21   1.159e-16  -1.781e-20
+  ibd       2.059e-16   1.159e-16  -3.438e-15
+  vgs      -5.995e-01  -8.734e-01   3.927e-01
+  vds      -5.995e-01  -8.734e-01   3.927e-01
+  vbs         0.        7.261e-01     0.     
+  vth      -7.678e-01  -9.237e-01   5.382e-01
+  vdsat    -5.137e-02  -6.856e-02   4.302e-02
+  vod       1.683e-01   5.028e-02  -1.455e-01
+  beta      1.062e-04   1.094e-05   1.935e-04
+  gam eff   3.948e-01   3.479e-01   4.466e-01
+  gm        2.030e-07   1.619e-07   2.409e-07
+  gds       1.815e-09   5.117e-10   7.368e-10
+  gmb       4.643e-08   2.848e-08   7.217e-08
+  cdtot     3.300e-15   1.598e-15   3.059e-15
+  cgtot     2.811e-15   5.679e-15   5.725e-15
+  cstot     4.078e-15   1.919e-15   3.345e-15
+  cbtot     8.689e-15   8.427e-15   1.042e-14
+  cgs       3.751e-16   1.922e-16   4.270e-16
+  cgd       3.751e-16   1.922e-16   4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *inputstage
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =     197  # elements   =      93
+  # resistors   =       1  # capacitors =       5  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      17
+  # curr_srcs   =       2  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      68  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.15           1         585
+  readin             0.04
+  errchk             0.02
+  setup              0.00
+  output             0.00
+
+
+           total memory used         1172  kbytes
+           total cpu time            0.20 seconds
+           total elapsed time        0.34 seconds
+           job started at     16:30:48 02/26/2016
+           job ended   at     16:30:49 02/26/2016
+
+
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_dc    #0
+
+  ******    alter processing listing tnom=  25.000 temp=  25.000 *****
+ .lib 'test.l' inw_dc
+     .param ins_ = 0
+     ins vdd nwd dc = ins_  ac = 1
+     vfc to_out vnw dc = vdif *ac = 1
+     .dc ins_ dec 10 10n 1u
+
+     mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
+     it vst vss dc = 'pbi+ins_'
+     vtg vgt gnd dc = 1
+     vtd vdt gnd dc = 1.5
+     .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt)
+     .ic v(vnw) = 0.6
+     *.options  gmindc=   1.000e-09
+
+ .endl
+
+ .alter  *inw_ac     #0
+ $ alter processing continues $
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_dc    #0
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xcmb.                           cmb                1.00 
+        2 xtri.                           tr                 1.00 
+        3 xgm.                            gm                 1.00 
+        4 xgm2.                           gm                 1.00 
+        5 xop_fc.                         op_fc              1.00 
+        6 xien.                           ien                1.00 
+        7 xgm.xgmx1.                      gmx                1.00 
+        8 xgm.xgmx2.                      gmx                1.00 
+        9 xgm2.xgmx1.                     gmx                1.00 
+       10 xgm2.xgmx2.                     gmx                1.00 
+ **warning** could not find branch element     0:mp              
+      branch - output ignored
+ 
+      
+  Opening plot unit= 15
+ file=new.pa1                                                                  
+
+
+ **diagnostic** rebuilding matrix with pivot option
+
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_dc    #0
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+     node    =voltage       node    =voltage       node    =voltage
+
+ + 0:cn      = 6.064e-01  0:cp2     = 1.250e+00  0:cp3     = 6.064e-01
+ + 0:cx      = 2.701e+00  0:cz      = 2.398e+00  0:eb      = 2.600e+00
+ + 0:gm_c    = 1.638e+00  0:gm_in   = 1.637e+00  0:gm_out  = 1.662e+00
+ + 0:ien_in  = 2.001e+00  0:ien_out = 1.055e-01  0:nwd     = 1.020e+00
+ + 0:opb     = 2.000e+00  0:out     = 2.001e+00  0:ti_in   = 1.055e-01
+ + 0:ti_out  = 1.637e+00  0:to_in   = 1.662e+00  0:to_out  = 6.000e-01
+ + 0:vdd     = 3.300e+00  0:vdt     = 1.500e+00  0:vgn     = 1.800e+00
+ + 0:vgt     = 1.000e+00  0:vnw     = 6.000e-01  0:vsn     =   0.     
+ + 0:vss     =   0.       0:vst     = 2.388e-01  1:c0      = 2.261e+00
+ + 1:c2      = 2.261e+00  1:c3      = 1.250e+00  2:1       = 6.482e-01
+ + 2:2       = 3.066e-07  2:b       = 1.005e+00  3:bd      = 1.813e+00
+ + 3:bump    = 1.969e-02  3:ggn     = 3.924e-01  3:ggp     = 3.936e-01
+ + 3:idn     = 3.924e-01  3:idp     = 3.936e-01  3:io1     = 2.048e+00
+ + 3:io1a    = 2.674e+00  3:io2a    = 2.671e+00  3:sdn     = 1.214e+00
+ + 3:sdp     = 1.212e+00  4:bd      = 1.813e+00  4:bump    = 1.967e-02
+ + 4:ggn     = 3.925e-01  4:ggp     = 3.936e-01  4:idn     = 3.925e-01
+ + 4:idp     = 3.936e-01  4:io1     = 2.048e+00  4:io1a    = 2.674e+00
+ + 4:io2a    = 2.671e+00  4:sdn     = 1.214e+00  4:sdp     = 1.212e+00
+ + 5:1       = 4.693e-01  5:2       = 4.247e-01  5:b       = 2.592e+00
+ + 5:von     = 2.238e+00  6:b       = 2.683e+00  6:von     = 4.193e-01
+ + 6:vop     = 7.848e-01
+
+
+ maximum nodal capacitance=   1.000E-10         on node     0:to_out          
+
+    nodal  capacitance table 
+
+     node    =    cap       node    =    cap       node    =    cap
+
+ + 0:cn      = 2.182e-13  0:cp2     = 1.514e-13  0:cp3     = 3.179e-14
+ + 0:cx      = 1.217e-13  0:cz      = 3.821e-13  0:eb      = 7.412e-14
+ + 0:gm_c    = 1.001e-11  0:gm_in   = 9.027e-15  0:gm_out  = 1.002e-11
+ + 0:ien_in  = 3.112e-14  0:ien_out = 1.790e-13  0:nwd     = 1.356e-14
+ + 0:opb     = 1.586e-13  0:out     = 1.090e-14  0:ti_in   = 9.746e-14
+ + 0:ti_out  = 1.056e-12  0:to_in   = 2.997e-14  0:to_out  = 1.000e-10
+ + 0:vdd     = 1.658e-12  0:vdt     = 1.627e-15  0:vgn     = 1.145e-14
+ + 0:vgt     = 1.784e-15  0:vnw     = 1.387e-15  0:vsn     = 3.745e-15
+ + 0:vss     = 1.182e-12  0:vst     = 7.155e-15  1:c0      = 3.454e-14
+ + 1:c2      = 3.454e-14  1:c3      = 5.241e-14  2:1       = 1.308e-13
+ + 2:2       = 1.125e-12  2:b       = 3.404e-13  3:bd      = 3.549e-14
+ + 3:bump    = 9.778e-15  3:ggn     = 1.576e-14  3:ggp     = 1.403e-14
+ + 3:idn     = 1.073e-14  3:idp     = 1.076e-14  3:io1     = 1.584e-14
+ + 3:io1a    = 2.820e-14  3:io2a    = 1.790e-14  3:sdn     = 8.188e-15
+ + 3:sdp     = 8.201e-15  4:bd      = 3.549e-14  4:bump    = 9.778e-15
+ + 4:ggn     = 1.576e-14  4:ggp     = 1.403e-14  4:idn     = 1.073e-14
+ + 4:idp     = 1.076e-14  4:io1     = 1.584e-14  4:io1a    = 2.820e-14
+ + 4:io2a    = 1.791e-14  4:sdn     = 8.188e-15  4:sdp     = 8.200e-15
+ + 5:1       = 5.234e-14  5:2       = 5.430e-14  5:b       = 8.625e-14
+ + 5:von     = 1.093e-13  6:b       = 3.203e-14  6:von     = 1.834e-14
+ + 6:vop     = 1.194e-13
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                              
+ element   0:veb       0:vng       0:vsn       0:vc1       0:vc2     
+  volts     2.600e+00   1.800e+00     0.          0.          0.     
+  current     0.          0.        1.025e-12   8.825e-06   1.532e-05
+  power       0.          0.          0.          0.          0.     
+
+ subckt                                                              
+ element   0:vc3       0:vc4       0:vfc       0:vopbias   0:vd      
+  volts       0.          0.          0.        2.000e+00   3.300e+00
+  current   1.669e-12   3.803e-19  -1.128e-06     0.       -8.633e-05
+  power       0.          0.          0.          0.        2.849e-04
+
+ subckt                                        xgm         xgm       
+ element   0:vs        0:vtg       0:vtd       3:v0        3:v1      
+  volts       0.        1.000e+00   1.500e+00     0.          0.     
+  current   9.745e-05     0.       -1.000e-05  -1.735e-18     0.     
+  power       0.          0.        1.500e-05     0.          0.     
+
+ subckt    xgm2        xgm2      
+ element   4:v0        4:v1      
+  volts       0.          0.     
+  current   3.469e-18     0.     
+  power       0.          0.     
+
+     total voltage source power dissipation=  2.999e-04       watts
+
+
+
+ ***** current sources
+
+ subckt                                        xcmb      
+ element   0:ip        0:ins       0:it        1:iin     
+  volts     1.298e+00   2.279e+00   2.388e-01   2.398e+00
+  current   1.000e-05     0.        1.000e-05   1.000e-06
+  power    -1.298e-05     0.       -2.388e-06  -2.398e-06
+
+
+     total current source power dissipation=-1.777e-05       watts
+
+ **** resistors
+
+ subckt    xtri      
+ element   2:rl      
+  r value   1.000e+05
+  v drop    1.531e+00
+  current   1.532e-05
+  power     2.347e-05
+
+
+
+ **** mosfets
+
+
+ subckt                                        xcmb        xcmb      
+ element   0:mc        0:mnw       0:mt        1:mc0       1:mc1     
+ model     0:nch.2     0:nch.6     0:nch.6     0:pch.1     0:pch.1   
+ region        Cutoff    Saturati    Saturati    Saturati    Saturati
+  id        1.175e-06   1.175e-06   1.000e-05  -1.000e-06  -3.065e-07
+  ibs      -1.308e-14  -2.663e-18  -2.256e-17   2.007e-19   6.380e-20
+  ibd      -1.360e-14  -4.383e-15  -3.169e-13   4.849e-16   2.063e-16
+  vgs       7.794e-01   6.000e-01   7.612e-01  -9.019e-01  -9.019e-01
+  vds       9.810e-01   1.020e+00   1.261e+00  -9.019e-01  -1.038e+00
+  vbs      -1.020e+00     0.          0.          0.          0.     
+  vth       8.153e-01   5.569e-01   5.554e-01  -7.510e-01  -7.681e-01
+  vdsat     5.884e-02   8.149e-02   1.904e-01  -1.900e-01  -1.739e-01
+  vod      -3.595e-02   4.308e-02   2.058e-01  -1.509e-01  -1.338e-01
+  beta      2.152e-03   4.706e-04   4.696e-04   6.562e-05   2.418e-05
+  gam eff   4.532e-01   5.077e-01   5.077e-01   4.100e-01   3.885e-01
+  gm        2.748e-05   2.232e-05   8.355e-05   9.768e-06   3.166e-06
+  gds       1.323e-07   2.959e-07   1.219e-06   2.701e-08   9.437e-09
+  gmb       5.730e-06   5.964e-06   2.198e-05   2.296e-06   7.308e-07
+  cdtot     1.090e-14   1.666e-15   1.627e-15   6.824e-15   2.960e-15
+  cgtot     1.145e-14   1.387e-15   1.784e-15   8.151e-14   3.320e-14
+  cstot     1.189e-14   2.738e-15   3.416e-15   9.768e-14   3.830e-14
+  cbtot     2.593e-14   3.745e-15   3.739e-15   4.088e-14   1.793e-14
+  cgs       2.077e-15   7.881e-16   1.299e-15   7.023e-14   2.736e-14
+  cgd       2.077e-15   2.207e-16   2.207e-16   9.425e-16   3.751e-16
+
+
+
+ subckt    xcmb        xcmb        xcmb        xcmb        xcmb      
+ element   1:mc5       1:mc2       1:mc6       1:mc3       1:mc7     
+ model     0:pch.1     0:pch.4     0:pch.4     0:pch.3     0:pch.3   
+ region      Saturati    Saturati    Saturati      Cutoff      Cutoff
+  id       -3.065e-07  -3.065e-07  -3.065e-07  -3.065e-07  -3.065e-07
+  ibs       6.380e-20   6.714e-20   6.714e-20   6.157e-20   6.157e-20
+  ibd       2.063e-16   1.159e-16   1.159e-16   9.518e-16   9.518e-16
+  vgs      -9.019e-01  -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01
+  vds      -1.038e+00  -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.681e-01  -7.887e-01  -7.887e-01  -7.340e-01  -7.340e-01
+  vdsat    -1.739e-01  -2.407e-01  -2.407e-01  -5.522e-02  -5.522e-02
+  vod      -1.338e-01  -2.224e-01  -2.224e-01   9.017e-02   9.017e-02
+  beta      2.418e-05   1.114e-05   1.114e-05   1.043e-03   1.043e-03
+  gam eff   3.885e-01   3.553e-01   3.553e-01   4.292e-01   4.292e-01
+  gm        3.166e-06   2.307e-06   2.307e-06   6.589e-06   6.589e-06
+  gds       9.437e-09   7.985e-09   7.985e-09   1.469e-07   1.469e-07
+  gmb       7.308e-07   5.103e-07   5.103e-07   1.459e-06   1.459e-06
+  cdtot     2.960e-15   1.792e-15   1.792e-15   1.431e-14   1.431e-14
+  cgtot     3.320e-14   1.876e-14   1.876e-14   7.863e-15   7.863e-15
+  cstot     3.830e-14   2.092e-14   2.092e-14   1.792e-14   1.792e-14
+  cbtot     1.793e-14   1.066e-14   1.066e-14   3.270e-14   3.270e-14
+  cgs       2.736e-14   1.496e-14   1.496e-14   1.848e-15   1.848e-15
+  cgd       3.751e-16   1.922e-16   1.922e-16   1.848e-15   1.848e-15
+
+
+
+ subckt    xcmb        xcmb        xcmb        xcmb        xtri      
+ element   1:mc4       1:mc8       1:mca       1:mcb       2:mb      
+ model     0:nch.4     0:nch.4     0:pch.3     0:nch.4     0:pch.1   
+ region      Saturati    Saturati      Cutoff    Saturati    Saturati
+  id        3.065e-07   3.065e-07  -3.291e-07   3.288e-07  -1.009e-06
+  ibs      -6.949e-19  -6.949e-19   6.610e-20  -7.455e-19   2.026e-19
+  ibd      -2.233e-15  -2.233e-15   2.855e-15  -2.353e-10   6.631e-13
+  vgs       6.064e-01   6.064e-01  -5.986e-01   6.064e-01  -9.019e-01
+  vds       6.064e-01   6.064e-01  -5.986e-01   2.701e+00  -2.294e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.233e-01   5.233e-01  -7.349e-01   5.213e-01  -7.489e-01
+  vdsat     1.155e-01   1.155e-01  -4.989e-02   1.167e-01  -1.917e-01
+  vod       8.310e-02   8.310e-02   1.363e-01   8.503e-02  -1.531e-01
+  beta      5.691e-05   5.691e-05   3.131e-03   5.692e-05   6.431e-05
+  gam eff   4.314e-01   4.314e-01   4.292e-01   4.314e-01   4.097e-01
+  gm        4.426e-06   4.426e-06   7.529e-06   4.661e-06   9.776e-06
+  gds       8.222e-09   8.222e-09   1.678e-07   2.854e-08   2.072e-08
+  gmb       1.268e-06   1.268e-06   1.697e-06   1.336e-06   2.297e-06
+  cdtot     1.754e-15   1.754e-15   4.348e-14   1.474e-15   5.257e-15
+  cgtot     1.047e-14   1.047e-14   2.383e-14   1.047e-14   7.995e-14
+  cstot     1.187e-14   1.187e-14   5.375e-14   1.187e-14   9.577e-14
+  cbtot     7.895e-15   7.895e-15   9.889e-14   7.615e-15   3.869e-14
+  cgs       7.702e-15   7.702e-15   5.545e-15   7.702e-15   6.885e-14
+  cgd       2.207e-16   2.207e-16   5.545e-15   2.207e-16   9.242e-16
+
+
+
+ subckt    xtri        xtri        xtri        xtri        xtri      
+ element   2:m1        2:m2        2:m3        2:m4        2:ma1     
+ model     0:pch.1     0:pch.1     0:nch.1     0:nch.1     0:pch.2   
+ region      Saturati      Cutoff    Saturati      Linear    Saturati
+  id       -1.009e-06  -4.657e-27   1.009e-06   4.022e-12  -1.532e-05
+  ibs       2.059e-19   4.106e-25  -1.736e-18  -6.925e-24   3.044e-18
+  ibd       5.918e-16   5.918e-16  -4.644e-15  -5.541e-20   9.041e-13
+  vgs      -8.998e-01   9.946e-01   6.482e-01   6.482e-01  -9.019e-01
+  vds      -3.571e-01  -1.005e+00   6.482e-01   3.066e-07  -1.662e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.600e-01  -7.587e-01   5.345e-01   5.350e-01  -7.490e-01
+  vdsat    -1.799e-01  -4.623e-02   1.422e-01   1.419e-01  -1.973e-01
+  vod      -1.399e-01   1.753e+00   1.138e-01   1.132e-01  -1.529e-01
+  beta      7.511e-05   7.686e-05   1.168e-04   1.168e-04   9.129e-04
+  gam eff   4.002e-01   4.002e-01   4.547e-01   4.547e-01   3.952e-01
+  gm        1.020e-05   1.269e-25   1.229e-05   3.009e-11   1.520e-04
+  gds       6.518e-08   2.833e-28   1.720e-08   1.312e-05   1.316e-06
+  gmb       2.379e-06   7.652e-26   3.633e-06   9.157e-12   3.315e-05
+  cdtot     9.941e-15   8.339e-15   4.129e-15   5.936e-14   1.783e-14
+  cgtot     9.746e-14   1.415e-13   4.936e-14   6.735e-14   5.194e-14
+  cstot     1.147e-13   1.141e-14   5.791e-14   6.283e-14   7.895e-14
+  cbtot     5.218e-14   1.568e-13   2.716e-14   2.864e-14   5.423e-14
+  cgs       8.224e-14   1.116e-15   4.054e-14   3.198e-14   4.352e-14
+  cgd       1.116e-15   1.116e-15   6.333e-16   3.198e-14   2.946e-15
+
+
+
+ subckt    xtri        xgm         xgm         xgm         xgm       
+ element   2:ma2       3:mb        3:mb1       3:mb2       3:mo1     
+ model     0:nch.2     0:pch.1     0:nch.3     0:nch.3     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id        1.767e-12  -2.678e-08   7.549e-09   7.551e-09   1.066e-08
+  ibs      -7.384e-24   5.357e-21  -2.035e-15  -1.243e-20  -1.992e-20
+  ibd      -4.378e-14   1.132e-15  -4.442e-13  -3.132e-15  -9.022e-13
+  vgs       3.066e-07  -5.986e-01   3.739e-01   3.924e-01   3.924e-01
+  vds       1.637e+00  -1.486e+00   1.793e+00   1.969e-02   2.048e+00
+  vbs         0.          0.       -1.969e-02     0.          0.     
+  vth       5.669e-01  -7.510e-01   5.640e-01   5.708e-01   5.360e-01
+  vdsat     4.202e-02  -5.254e-02   4.312e-02   4.333e-02   4.311e-02
+  vod      -5.669e-01   1.524e-01  -1.901e-01  -1.784e-01  -1.436e-01
+  beta      7.824e-03   1.896e-04   7.841e-04   1.431e-03   1.936e-04
+  gam eff   4.732e-01   4.055e-01   4.993e-01   5.041e-01   4.466e-01
+  gm        5.139e-11   5.296e-07   2.064e-07   2.026e-07   2.681e-07
+  gds       2.582e-13   2.416e-09   1.743e-09   2.718e-07   8.641e-10
+  gmb       1.851e-11   1.279e-07   6.263e-08   6.270e-08   8.035e-08
+  cdtot     3.803e-14   7.027e-15   2.927e-15   6.044e-15   2.568e-15
+  cgtot     5.769e-14   1.334e-14   2.589e-15   4.313e-15   5.725e-15
+  cstot     4.851e-14   1.059e-14   3.734e-15   6.079e-15   3.345e-15
+  cbtot     1.156e-13   2.653e-14   7.294e-15   1.308e-14   9.930e-15
+  cgs       7.167e-15   1.107e-15   4.889e-16   8.396e-16   4.270e-16
+  cgd       7.167e-15   1.107e-15   4.889e-16   8.396e-16   4.270e-16
+
+
+
+ subckt    xgm         xgm         xgm         xgm         xgm       
+ element   3:mo2       3:mo3a      3:mo3       3:mo4a      3:mo4     
+ model     0:nch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id        1.067e-08  -1.067e-08  -1.067e-08  -1.067e-08  -1.067e-08
+  ibs      -1.992e-20   2.220e-21   2.220e-21   2.221e-21   2.221e-21
+  ibd      -5.428e-14   2.059e-16   2.059e-16   2.059e-16   2.064e-16
+  vgs       3.936e-01  -6.259e-01  -6.259e-01  -6.259e-01  -6.235e-01
+  vds       1.638e+00  -6.259e-01  -6.259e-01  -6.284e-01  -1.032e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.366e-01  -7.687e-01  -7.687e-01  -7.687e-01  -7.668e-01
+  vdsat     4.314e-02  -5.302e-02  -5.302e-02  -5.303e-02  -5.297e-02
+  vod      -1.429e-01   1.428e-01   1.428e-01   1.428e-01   1.433e-01
+  beta      1.936e-04   5.843e-05   5.843e-05   5.843e-05   5.847e-05
+  gam eff   4.466e-01   3.892e-01   3.892e-01   3.892e-01   3.892e-01
+  gm        2.680e-07   2.005e-07   2.005e-07   2.005e-07   2.007e-07
+  gds       7.472e-10   1.274e-09   1.274e-09   1.273e-09   1.174e-09
+  gmb       8.030e-08   4.787e-08   4.787e-08   4.788e-08   4.792e-08
+  cdtot     2.645e-15   3.276e-15   3.276e-15   3.274e-15   2.964e-15
+  cgtot     5.723e-15   4.998e-15   4.998e-15   4.998e-15   5.002e-15
+  cstot     3.345e-15   4.078e-15   4.078e-15   4.078e-15   4.078e-15
+  cbtot     1.001e-14   1.085e-14   1.085e-14   1.085e-14   1.054e-14
+  cgs       4.270e-16   3.751e-16   3.751e-16   3.751e-16   3.751e-16
+  cgd       4.270e-16   3.751e-16   3.751e-16   3.751e-16   3.751e-16
+
+
+
+ subckt    xgm2        xgm2        xgm2        xgm2        xgm2      
+ element   4:mb        4:mb1       4:mb2       4:mo1       4:mo2     
+ model     0:pch.1     0:nch.3     0:nch.3     0:nch.1     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -2.678e-08   7.549e-09   7.551e-09   1.067e-08   1.067e-08
+  ibs       5.357e-21  -2.033e-15  -1.243e-20  -1.993e-20  -1.994e-20
+  ibd       1.131e-15  -4.446e-13  -3.129e-15  -9.025e-13  -6.552e-14
+  vgs      -5.986e-01   3.739e-01   3.925e-01   3.925e-01   3.936e-01
+  vds      -1.486e+00   1.793e+00   1.967e-02   2.048e+00   1.662e+00
+  vbs         0.       -1.967e-02     0.          0.          0.     
+  vth      -7.510e-01   5.640e-01   5.708e-01   5.360e-01   5.365e-01
+  vdsat    -5.254e-02   4.312e-02   4.333e-02   4.311e-02   4.314e-02
+  vod       1.524e-01  -1.901e-01  -1.784e-01  -1.435e-01  -1.429e-01
+  beta      1.896e-04   7.841e-04   1.431e-03   1.936e-04   1.936e-04
+  gam eff   4.055e-01   4.993e-01   5.041e-01   4.466e-01   4.466e-01
+  gm        5.296e-07   2.064e-07   2.026e-07   2.683e-07   2.682e-07
+  gds       2.416e-09   1.743e-09   2.723e-07   8.648e-10   7.498e-10
+  gmb       1.279e-07   6.263e-08   6.269e-08   8.041e-08   8.035e-08
+  cdtot     7.027e-15   2.927e-15   6.044e-15   2.568e-15   2.641e-15
+  cgtot     1.334e-14   2.589e-15   4.313e-15   5.725e-15   5.723e-15
+  cstot     1.059e-14   3.734e-15   6.079e-15   3.345e-15   3.345e-15
+  cbtot     2.653e-14   7.294e-15   1.308e-14   9.930e-15   1.000e-14
+  cgs       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+  cgd       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+
+
+
+ subckt    xgm2        xgm2        xgm2        xgm2        xop_fc    
+ element   4:mo3a      4:mo3       4:mo4a      4:mo4       5:mb      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff    Saturati
+  id       -1.068e-08  -1.068e-08  -1.068e-08  -1.068e-08  -1.198e-06
+  ibs       2.222e-21   2.222e-21   2.223e-21   2.223e-21   2.397e-19
+  ibd       2.059e-16   2.059e-16   2.059e-16   2.062e-16   5.659e-16
+  vgs      -6.260e-01  -6.260e-01  -6.260e-01  -6.237e-01  -9.019e-01
+  vds      -6.260e-01  -6.260e-01  -6.283e-01  -1.009e+00  -7.073e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.687e-01  -7.687e-01  -7.687e-01  -7.669e-01  -7.496e-01
+  vdsat    -5.303e-02  -5.303e-02  -5.303e-02  -5.298e-02  -1.914e-01
+  vod       1.428e-01   1.428e-01   1.427e-01   1.432e-01  -1.523e-01
+  beta      5.843e-05   5.843e-05   5.843e-05   5.846e-05   7.765e-05
+  gam eff   3.892e-01   3.892e-01   3.892e-01   3.892e-01   4.121e-01
+  gm        2.007e-07   2.007e-07   2.007e-07   2.008e-07   1.165e-05
+  gds       1.275e-09   1.275e-09   1.274e-09   1.178e-09   3.578e-08
+  gmb       4.791e-08   4.791e-08   4.792e-08   4.796e-08   2.743e-06
+  cdtot     3.276e-15   3.276e-15   3.274e-15   2.979e-15   8.313e-15
+  cgtot     4.998e-15   4.998e-15   4.998e-15   5.002e-15   9.551e-14
+  cstot     4.078e-15   4.078e-15   4.078e-15   4.078e-15   1.149e-13
+  cbtot     1.085e-14   1.085e-14   1.085e-14   1.056e-14   4.790e-14
+  cgs       3.751e-16   3.751e-16   3.751e-16   3.751e-16   8.264e-14
+  cgd       3.751e-16   3.751e-16   3.751e-16   3.751e-16   1.107e-15
+
+
+
+ subckt    xop_fc      xop_fc      xop_fc      xop_fc      xop_fc    
+ element   5:m1        5:m2        5:my1       5:my2       5:m3      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:nch.1   
+ region      Saturati      Cutoff    Saturati    Saturati    Saturati
+  id       -1.190e-06  -8.067e-09  -1.801e-06  -1.850e-06   1.801e-06
+  ibs       2.430e-19   1.648e-21   3.675e-19   3.776e-19  -4.644e-15
+  ibd       5.144e-13   9.763e-15   2.960e-16   3.707e-12  -7.113e-12
+  vgs      -9.307e-01  -5.927e-01  -1.061e+00  -1.061e+00   7.809e-01
+  vds      -2.123e+00  -2.168e+00  -1.061e+00  -2.700e+00   1.768e+00
+  vbs         0.          0.          0.          0.       -4.693e-01
+  vth      -7.560e-01  -7.558e-01  -7.586e-01  -7.556e-01   6.638e-01
+  vdsat    -2.098e-01  -5.113e-02  -3.189e-01  -3.216e-01   1.475e-01
+  vod      -1.748e-01   1.631e-01  -3.033e-01  -3.063e-01   1.171e-01
+  beta      6.109e-05   6.272e-05   3.668e-05   3.670e-05   1.946e-04
+  gam eff   3.989e-01   3.989e-01   4.002e-01   4.002e-01   4.426e-01
+  gm        1.067e-05   1.549e-07   1.053e-05   1.074e-05   2.173e-05
+  gds       3.942e-08   5.257e-10   3.791e-08   2.640e-08   4.031e-08
+  gmb       2.440e-06   3.826e-08   2.420e-06   2.467e-06   5.319e-06
+  cdtot     3.427e-15   3.406e-15   4.118e-15   3.184e-15   3.561e-15
+  cgtot     2.997e-14   1.031e-14   5.082e-14   5.082e-14   3.018e-14
+  cstot     3.725e-14   5.705e-15   6.063e-14   6.063e-14   3.551e-14
+  cbtot     1.779e-14   1.719e-14   2.522e-14   2.429e-14   1.624e-14
+  cgs       2.539e-14   5.582e-16   4.383e-14   4.383e-14   2.546e-14
+  cgd       5.582e-16   5.582e-16   5.582e-16   5.582e-16   6.333e-16
+
+
+
+ subckt    xop_fc      xop_fc      xop_fc      xien        xien      
+ element   5:m4        5:mz1       5:mz2       6:mb        6:m1      
+ model     0:nch.1     0:nch.1     0:nch.1     0:pch.1     0:pch.4   
+ region      Saturati    Saturati    Saturati      Cutoff      Cutoff
+  id        2.979e-06   2.991e-06   2.987e-06  -1.009e-08  -5.014e-09
+  ibs      -4.644e-15  -4.785e-18  -4.777e-18   2.027e-21   1.099e-21
+  ibd      -4.644e-15  -1.411e-14  -1.411e-14   4.759e-16   5.273e-15
+  vgs       8.255e-01   6.064e-01   6.064e-01  -5.986e-01  -6.822e-01
+  vds       1.753e-01   4.693e-01   4.247e-01  -6.162e-01  -2.264e+00
+  vbs      -4.247e-01     0.          0.          0.          0.     
+  vth       6.544e-01   5.423e-01   5.423e-01  -7.517e-01  -7.861e-01
+  vdsat     1.888e-01   1.086e-01   1.086e-01  -5.188e-02  -5.758e-02
+  vod       1.711e-01   6.405e-02   6.400e-02   1.532e-01   1.039e-01
+  beta      1.940e-04   6.827e-04   6.827e-04   6.583e-05   1.147e-05
+  gam eff   4.436e-01   4.619e-01   4.619e-01   4.097e-01   3.553e-01
+  gm        2.598e-05   4.477e-05   4.471e-05   1.906e-07   8.241e-08
+  gds       4.342e-06   1.029e-07   1.096e-07   4.648e-10   1.984e-10
+  gmb       6.459e-06   1.335e-05   1.333e-05   4.825e-08   2.020e-08
+  cdtot     4.159e-15   1.340e-14   1.351e-14   7.212e-15   1.445e-15
+  cgtot     3.133e-14   8.538e-14   8.538e-14   2.628e-14   6.795e-15
+  cstot     3.738e-14   9.910e-14   9.910e-14   8.959e-15   2.451e-15
+  cbtot     1.706e-14   6.051e-14   6.061e-14   3.875e-14   9.923e-15
+  cgs       2.683e-14   6.506e-14   6.506e-14   9.242e-16   1.922e-16
+  cgd       6.333e-16   2.092e-15   2.092e-15   9.242e-16   1.922e-16
+
+
+
+ subckt    xien        xien        xien        xien        xien      
+ element   6:m2        6:m3        6:m4        6:me1p      6:me2p    
+ model     0:pch.4     0:nch.4     0:nch.4     0:pch.3     0:pch.3   
+ region        Cutoff      Cutoff      Cutoff    Saturati    Saturati
+  id       -5.070e-09   5.018e-09   5.072e-09  -1.930e-06  -5.116e-05
+  ibs       1.111e-21  -1.138e-20  -1.150e-20   3.825e-19   1.014e-17
+  ibd       9.781e-16  -2.233e-15  -2.233e-15   2.409e-14   1.135e-08
+  vgs      -6.838e-01   4.193e-01   4.193e-01  -7.000e-01  -7.000e-01
+  vds      -1.899e+00   4.193e-01   7.848e-01  -1.298e+00  -3.194e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.869e-01   5.210e-01   5.207e-01  -6.960e-01  -6.450e-01
+  vdsat    -5.773e-02   4.650e-02   4.652e-02  -7.616e-02  -1.032e-01
+  vod       1.031e-01  -1.016e-01  -1.014e-01  -4.032e-03  -5.499e-02
+  beta      1.147e-05   3.386e-05   3.386e-05   1.268e-03   1.282e-02
+  gam eff   3.553e-01   4.304e-01   4.304e-01   4.626e-01   4.626e-01
+  gm        8.330e-08   1.180e-07   1.192e-07   3.796e-05   8.519e-04
+  gds       2.038e-10   1.598e-10   1.442e-10   1.097e-06   2.376e-05
+  gmb       2.043e-08   3.481e-08   3.516e-08   8.099e-06   1.800e-04
+  cdtot     1.523e-15   1.806e-15   1.712e-15   1.175e-14   9.043e-14
+  cgtot     6.792e-15   7.546e-15   7.546e-15   6.738e-15   6.738e-14
+  cstot     2.451e-15   1.979e-15   1.979e-15   1.709e-14   1.709e-13
+  cbtot     9.997e-15   1.045e-14   1.035e-14   2.822e-14   2.552e-13
+  cgs       1.922e-16   2.207e-16   2.207e-16   1.839e-15   1.839e-14
+  cgd       1.922e-16   2.207e-16   2.207e-16   1.839e-15   1.839e-14
+
+
+
+ subckt    xien        xien        xgm.xgmx1   xgm.xgmx1   xgm.xgmx1 
+ element   6:me1n      6:me2n      7:ms        7:min       7:mn      
+ model     0:nch.2     0:nch.2     0:pch.2     0:pch.4     0:nch.1   
+ region      Saturati      Linear      Cutoff      Cutoff      Cutoff
+  id        1.075e-05   6.649e-05  -9.764e-09  -9.765e-09   9.766e-09
+  ibs      -2.003e-17  -1.240e-16   2.033e-21   1.159e-16  -1.824e-20
+  ibd      -4.433e-10  -3.382e-14   2.059e-16   1.159e-16  -3.438e-15
+  vgs       7.848e-01   7.848e-01  -6.006e-01  -8.191e-01   3.936e-01
+  vds       2.001e+00   1.055e-01  -6.006e-01  -8.191e-01   3.936e-01
+  vbs         0.          0.          0.        4.247e-01     0.     
+  vth       5.490e-01   5.530e-01  -7.678e-01  -8.726e-01   5.382e-01
+  vdsat     2.241e-01   2.212e-01  -5.144e-02  -6.822e-02   4.306e-02
+  vod       2.357e-01   2.318e-01   1.672e-01   5.354e-02  -1.446e-01
+  beta      3.915e-04   3.914e-03   1.062e-04   1.114e-05   1.935e-04
+  gam eff   4.612e-01   4.612e-01   3.948e-01   3.507e-01   4.466e-01
+  gm        7.968e-05   3.599e-04   2.075e-07   1.622e-07   2.463e-07
+  gds       3.922e-07   4.326e-04   1.855e-09   4.884e-10   7.533e-10
+  gmb       2.286e-05   1.061e-04   4.744e-08   3.183e-08   7.378e-08
+  cdtot     2.576e-15   8.856e-14   3.299e-15   1.706e-15   3.059e-15
+  cgtot     7.617e-15   9.857e-14   2.810e-15   5.998e-15   5.723e-15
+  cstot     1.095e-14   1.117e-13   4.078e-15   2.091e-15   3.345e-15
+  cbtot     7.736e-15   8.517e-14   8.687e-15   9.027e-15   1.042e-14
+  cgs       6.149e-15   5.758e-14   3.751e-16   1.922e-16   4.270e-16
+  cgd       4.270e-16   3.643e-14   3.751e-16   1.922e-16   4.270e-16
+
+
+
+ subckt    xgm.xgmx2   xgm.xgmx2   xgm.xgmx2   xgm2.xgmx1  xgm2.xgmx1
+ element   8:ms        8:min       8:mn        9:ms        9:min     
+ model     0:pch.2     0:pch.4     0:nch.1     0:pch.2     0:pch.4   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -9.468e-09  -9.468e-09   9.470e-09  -9.755e-09  -9.756e-09
+  ibs       1.971e-21   1.159e-16  -1.769e-20   2.031e-21   1.159e-16
+  ibd       2.059e-16   1.159e-16  -3.438e-15   2.059e-16   1.159e-16
+  vgs      -5.992e-01  -8.218e-01   3.924e-01  -6.005e-01  -8.193e-01
+  vds      -5.992e-01  -8.218e-01   3.924e-01  -6.005e-01  -8.193e-01
+  vbs         0.        4.478e-01     0.          0.        4.260e-01
+  vth      -7.678e-01  -8.768e-01   5.382e-01  -7.678e-01  -8.729e-01
+  vdsat    -5.135e-02  -6.777e-02   4.301e-02  -5.144e-02  -6.821e-02
+  vod       1.687e-01   5.500e-02  -1.458e-01   1.673e-01   5.357e-02
+  beta      1.062e-04   1.112e-05   1.935e-04   1.062e-04   1.114e-05
+  gam eff   3.948e-01   3.505e-01   4.466e-01   3.948e-01   3.507e-01
+  gm        2.017e-07   1.577e-07   2.393e-07   2.073e-07   1.621e-07
+  gds       1.803e-09   4.767e-10   7.318e-10   1.854e-09   4.881e-10
+  gmb       4.613e-08   3.068e-08   7.169e-08   4.740e-08   3.179e-08
+  cdtot     3.301e-15   1.697e-15   3.060e-15   3.299e-15   1.706e-15
+  cgtot     2.811e-15   5.972e-15   5.725e-15   2.810e-15   5.997e-15
+  cstot     4.078e-15   2.076e-15   3.345e-15   4.078e-15   2.090e-15
+  cbtot     8.689e-15   8.977e-15   1.042e-14   8.687e-15   9.024e-15
+  cgs       3.751e-16   1.922e-16   4.270e-16   3.751e-16   1.922e-16
+  cgd       3.751e-16   1.922e-16   4.270e-16   3.751e-16   1.922e-16
+
+
+
+ subckt    xgm2.xgmx1  xgm2.xgmx2  xgm2.xgmx2  xgm2.xgmx2
+ element   9:mn       10:ms       10:min      10:mn      
+ model     0:nch.1     0:pch.2     0:pch.4     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff
+  id        9.757e-09  -9.476e-09  -9.477e-09   9.478e-09
+  ibs      -1.822e-20   1.973e-21   1.159e-16  -1.770e-20
+  ibd      -3.438e-15   2.059e-16   1.159e-16  -3.438e-15
+  vgs       3.936e-01  -5.992e-01  -8.218e-01   3.925e-01
+  vds       3.936e-01  -5.992e-01  -8.218e-01   3.925e-01
+  vbs         0.          0.        4.477e-01     0.     
+  vth       5.382e-01  -7.678e-01  -8.767e-01   5.382e-01
+  vdsat     4.306e-02  -5.135e-02  -6.778e-02   4.301e-02
+  vod      -1.446e-01   1.686e-01   5.495e-02  -1.458e-01
+  beta      1.935e-04   1.062e-04   1.112e-05   1.935e-04
+  gam eff   4.466e-01   3.948e-01   3.505e-01   4.466e-01
+  gm        2.461e-07   2.019e-07   1.579e-07   2.395e-07
+  gds       7.526e-10   1.805e-09   4.771e-10   7.324e-10
+  gmb       7.372e-08   4.617e-08   3.071e-08   7.175e-08
+  cdtot     3.059e-15   3.301e-15   1.697e-15   3.060e-15
+  cgtot     5.723e-15   2.811e-15   5.972e-15   5.725e-15
+  cstot     3.345e-15   4.078e-15   2.076e-15   3.345e-15
+  cbtot     1.042e-14   8.689e-15   8.977e-15   1.042e-14
+  cgs       4.270e-16   3.751e-16   1.922e-16   4.270e-16
+  cgd       4.270e-16   3.751e-16   1.922e-16   4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_dc    #0
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =     203  # elements   =      99
+  # resistors   =       1  # capacitors =       5  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      20
+  # curr_srcs   =       4  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      69  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.14           1         580
+  dc sweep           0.16          21         626
+  readin             0.01
+  errchk             0.01
+  setup              0.00
+  output             0.00
+
+
+           total memory used         1174  kbytes
+           total cpu time            0.32 seconds
+           total elapsed time        0.33 seconds
+           job started at     16:30:48 02/26/2016
+           job ended   at     16:30:49 02/26/2016
+
+
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_ac     #0
+
+  ******    alter processing listing tnom=  25.000 temp=  25.000 *****
+ .del lib 'test.l' inw_dc
+ .lib 'test.l' inw_ac
+     .param ins_ = 0
+     ins vdd nwd dc = ins_  ac = 1
+     vfc to_out vnw dc = vdif *ac = 1
+
+     .ac dec 1000 1 1g *sweep ins_ dec 1 10n 10u
+     *.pz v(ti_out) ins
+     .probe ac i(mnw)
+ .endl
+
+ .alter  *wx     #1
+ $ alter processing continues $
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_ac     #0
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xcmb.                           cmb                1.00 
+        2 xtri.                           tr                 1.00 
+        3 xgm.                            gm                 1.00 
+        4 xgm2.                           gm                 1.00 
+        5 xop_fc.                         op_fc              1.00 
+        6 xien.                           ien                1.00 
+        7 xgm.xgmx1.                      gmx                1.00 
+        8 xgm.xgmx2.                      gmx                1.00 
+        9 xgm2.xgmx1.                     gmx                1.00 
+       10 xgm2.xgmx2.                     gmx                1.00 
+ **warning** could not find branch element     0:mp              
+      branch - output ignored
+ 
+      
+  Opening plot unit= 15
+ file=new.pa2                                                                  
+
+
+ **diagnostic** rebuilding matrix with pivot option
+
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_ac     #0
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+     node    =voltage       node    =voltage       node    =voltage
+
+ + 0:cn      = 6.064e-01  0:cp2     = 1.250e+00  0:cp3     = 6.064e-01
+ + 0:cx      = 2.701e+00  0:cz      = 2.398e+00  0:eb      = 2.600e+00
+ + 0:gm_c    = 1.988e+00  0:gm_in   = 1.988e+00  0:gm_out  = 1.992e+00
+ + 0:ien_in  = 2.000e+00  0:ien_out = 2.000e+00  0:nwd     = 9.318e-01
+ + 0:opb     = 2.000e+00  0:out     = 2.000e+00  0:ti_in   = 2.000e+00
+ + 0:ti_out  = 1.988e+00  0:to_in   = 1.992e+00  0:to_out  = 7.663e-01
+ + 0:vdd     = 3.300e+00  0:vgn     = 1.800e+00  0:vnw     = 7.663e-01
+ + 0:vsn     =   0.       0:vss     =   0.       1:c0      = 2.261e+00
+ + 1:c2      = 2.261e+00  1:c3      = 1.250e+00  2:1       = 5.942e-01
+ + 2:2       = 5.891e-01  2:b       = 2.830e+00  3:bd      = 1.865e+00
+ + 3:bump    = 1.947e-02  3:ggn     = 3.927e-01  3:ggp     = 3.929e-01
+ + 3:idn     = 3.927e-01  3:idp     = 3.929e-01  3:io1     = 2.047e+00
+ + 3:io1a    = 2.673e+00  3:io2a    = 2.673e+00  3:sdn     = 1.266e+00
+ + 3:sdp     = 1.265e+00  4:bd      = 1.865e+00  4:bump    = 1.946e-02
+ + 4:ggn     = 3.927e-01  4:ggp     = 3.929e-01  4:idn     = 3.927e-01
+ + 4:idp     = 3.929e-01  4:io1     = 2.047e+00  4:io1a    = 2.673e+00
+ + 4:io2a    = 2.673e+00  4:sdn     = 1.266e+00  4:sdp     = 1.266e+00
+ + 5:1       = 4.500e-01  5:2       = 4.460e-01  5:b       = 2.857e+00
+ + 5:von     = 2.188e+00  6:b       = 2.683e+00  6:von     = 4.194e-01
+ + 6:vop     = 6.248e-01
+
+
+ maximum nodal capacitance=   1.000E-10         on node     0:to_out          
+
+    nodal  capacitance table 
+
+     node    =    cap       node    =    cap       node    =    cap
+
+ + 0:cn      = 2.182e-13  0:cp2     = 1.517e-13  0:cp3     = 3.179e-14
+ + 0:cx      = 1.217e-13  0:cz      = 3.821e-13  0:eb      = 7.412e-14
+ + 0:gm_c    = 1.001e-11  0:gm_in   = 8.434e-15  0:gm_out  = 1.002e-11
+ + 0:ien_in  = 3.112e-14  0:ien_out = 1.432e-13  0:nwd     = 4.279e-14
+ + 0:opb     = 1.186e-13  0:out     = 1.090e-14  0:ti_in   = 8.425e-14
+ + 0:ti_out  = 1.056e-12  0:to_in   = 2.802e-14  0:to_out  = 1.000e-10
+ + 0:vdd     = 1.689e-12  0:vgn     = 3.154e-14  0:vnw     = 1.786e-15
+ + 0:vsn     = 3.795e-15  0:vss     = 1.154e-12  1:c0      = 3.454e-14
+ + 1:c2      = 3.454e-14  1:c3      = 5.241e-14  2:1       = 9.553e-14
+ + 2:2       = 1.082e-12  2:b       = 2.923e-13  3:bd      = 3.554e-14
+ + 3:bump    = 9.778e-15  3:ggn     = 1.576e-14  3:ggp     = 1.404e-14
+ + 3:idn     = 1.034e-14  3:idp     = 1.034e-14  3:io1     = 1.584e-14
+ + 3:io1a    = 2.820e-14  3:io2a    = 1.815e-14  3:sdn     = 8.030e-15
+ + 3:sdp     = 8.032e-15  4:bd      = 3.554e-14  4:bump    = 9.778e-15
+ + 4:ggn     = 1.576e-14  4:ggp     = 1.404e-14  4:idn     = 1.034e-14
+ + 4:idp     = 1.034e-14  4:io1     = 1.584e-14  4:io1a    = 2.820e-14
+ + 4:io2a    = 1.816e-14  4:sdn     = 8.030e-15  4:sdp     = 8.032e-15
+ + 5:1       = 5.330e-14  5:2       = 5.347e-14  5:b       = 1.118e-13
+ + 5:von     = 1.094e-13  6:b       = 3.200e-14  6:von     = 1.834e-14
+ + 6:vop     = 8.564e-14
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                              
+ element   0:veb       0:vng       0:vsn       0:vc1       0:vc2     
+  volts     2.600e+00   1.800e+00     0.          0.          0.     
+  current     0.          0.        9.341e-13  -1.057e-08  -1.168e-07
+  power       0.          0.          0.          0.          0.     
+
+ subckt                                                              
+ element   0:vc3       0:vc4       0:vfc       0:vopbias   0:vd      
+  volts       0.          0.          0.        2.000e+00   3.300e+00
+  current   2.319e-12   3.997e-22  -1.388e-17     0.       -5.508e-05
+  power       0.          0.          0.          0.        1.818e-04
+
+ subckt                xgm         xgm         xgm2        xgm2      
+ element   0:vs        3:v0        3:v1        4:v0        4:v1      
+  volts       0.          0.          0.          0.          0.     
+  current   5.508e-05     0.        1.735e-18     0.          0.     
+  power       0.          0.          0.          0.          0.     
+
+     total voltage source power dissipation=  1.818e-04       watts
+
+
+
+ ***** current sources
+
+ subckt                            xcmb      
+ element   0:ip        0:ins       1:iin     
+  volts     1.299e+00   2.368e+00   2.398e+00
+  current   1.000e-05     0.        1.000e-06
+  power    -1.299e-05     0.       -2.398e-06
+
+
+     total current source power dissipation=-1.539e-05       watts
+
+ **** resistors
+
+ subckt    xtri      
+ element   2:rl      
+  r value   1.000e+05
+  v drop   -1.168e-02
+  current  -1.168e-07
+  power     1.365e-09
+
+
+
+ **** mosfets
+
+
+ subckt                            xcmb        xcmb        xcmb      
+ element   0:mc        0:mnw       1:mc0       1:mc1       1:mc5     
+ model     0:nch.2     0:nch.6     0:pch.1     0:pch.1     0:pch.1   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id        1.001e-05   1.001e-05  -1.000e-06  -3.065e-07  -3.065e-07
+  ibs      -1.308e-14  -2.258e-17   2.007e-19   6.380e-20   6.380e-20
+  ibd      -2.380e-14  -2.272e-15   4.849e-16   2.063e-16   2.063e-16
+  vgs       8.682e-01   7.663e-01  -9.019e-01  -9.019e-01  -9.019e-01
+  vds       1.069e+00   9.318e-01  -9.019e-01  -1.038e+00  -1.038e+00
+  vbs      -9.318e-01     0.          0.          0.          0.     
+  vth       7.965e-01   5.576e-01  -7.510e-01  -7.681e-01  -7.681e-01
+  vdsat     1.110e-01   1.926e-01  -1.900e-01  -1.739e-01  -1.739e-01
+  vod       7.172e-02   2.087e-01  -1.509e-01  -1.338e-01  -1.338e-01
+  beta      2.144e-03   4.695e-04   6.562e-05   2.418e-05   2.418e-05
+  gam eff   4.546e-01   5.077e-01   4.100e-01   3.885e-01   3.885e-01
+  gm        1.586e-04   8.302e-05   9.768e-06   3.166e-06   3.166e-06
+  gds       7.312e-07   1.317e-06   2.701e-08   9.437e-09   9.437e-09
+  gmb       3.364e-05   2.188e-05   2.296e-06   7.308e-07   7.308e-07
+  cdtot     1.090e-14   1.683e-15   6.824e-15   2.960e-15   2.960e-15
+  cgtot     3.154e-14   1.786e-15   8.151e-14   3.320e-14   3.320e-14
+  cstot     4.110e-14   3.419e-15   9.768e-14   3.830e-14   3.830e-14
+  cbtot     2.701e-14   3.795e-15   4.088e-14   1.793e-14   1.793e-14
+  cgs       2.589e-14   1.301e-15   7.023e-14   2.736e-14   2.736e-14
+  cgd       2.077e-15   2.207e-16   9.425e-16   3.751e-16   3.751e-16
+
+
+
+ subckt    xcmb        xcmb        xcmb        xcmb        xcmb      
+ element   1:mc2       1:mc6       1:mc3       1:mc7       1:mc4     
+ model     0:pch.4     0:pch.4     0:pch.3     0:pch.3     0:nch.4   
+ region      Saturati    Saturati      Cutoff      Cutoff    Saturati
+  id       -3.065e-07  -3.065e-07  -3.065e-07  -3.065e-07   3.065e-07
+  ibs       6.714e-20   6.714e-20   6.157e-20   6.157e-20  -6.949e-19
+  ibd       1.159e-16   1.159e-16   9.518e-16   9.518e-16  -2.233e-15
+  vgs      -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01   6.064e-01
+  vds      -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01   6.064e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.887e-01  -7.887e-01  -7.340e-01  -7.340e-01   5.233e-01
+  vdsat    -2.407e-01  -2.407e-01  -5.522e-02  -5.522e-02   1.155e-01
+  vod      -2.224e-01  -2.224e-01   9.017e-02   9.017e-02   8.310e-02
+  beta      1.114e-05   1.114e-05   1.043e-03   1.043e-03   5.691e-05
+  gam eff   3.553e-01   3.553e-01   4.292e-01   4.292e-01   4.314e-01
+  gm        2.307e-06   2.307e-06   6.589e-06   6.589e-06   4.426e-06
+  gds       7.985e-09   7.985e-09   1.469e-07   1.469e-07   8.222e-09
+  gmb       5.103e-07   5.103e-07   1.459e-06   1.459e-06   1.268e-06
+  cdtot     1.792e-15   1.792e-15   1.431e-14   1.431e-14   1.754e-15
+  cgtot     1.876e-14   1.876e-14   7.863e-15   7.863e-15   1.047e-14
+  cstot     2.092e-14   2.092e-14   1.792e-14   1.792e-14   1.187e-14
+  cbtot     1.066e-14   1.066e-14   3.270e-14   3.270e-14   7.895e-15
+  cgs       1.496e-14   1.496e-14   1.848e-15   1.848e-15   7.702e-15
+  cgd       1.922e-16   1.922e-16   1.848e-15   1.848e-15   2.207e-16
+
+
+
+ subckt    xcmb        xcmb        xcmb        xtri        xtri      
+ element   1:mc8       1:mca       1:mcb       2:mb        2:m1      
+ model     0:nch.4     0:pch.3     0:nch.4     0:pch.1     0:pch.1   
+ region      Saturati      Cutoff    Saturati    Saturati    Saturati
+  id        3.065e-07  -3.291e-07   3.288e-07  -9.639e-07  -4.820e-07
+  ibs      -6.949e-19   6.610e-20  -7.455e-19   1.936e-19   9.841e-20
+  ibd      -2.233e-15   2.855e-15  -2.353e-10   4.759e-16   3.190e-13
+  vgs       6.064e-01  -5.986e-01   6.064e-01  -9.019e-01  -8.301e-01
+  vds       6.064e-01  -5.986e-01   2.701e+00  -4.699e-01  -2.235e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.233e-01  -7.349e-01   5.213e-01  -7.520e-01  -7.564e-01
+  vdsat     1.155e-01  -4.989e-02   1.167e-01  -1.892e-01  -1.314e-01
+  vod       8.310e-02   1.363e-01   8.503e-02  -1.499e-01  -7.362e-02
+  beta      5.691e-05   3.131e-03   5.692e-05   6.428e-05   7.581e-05
+  gam eff   4.314e-01   4.292e-01   4.314e-01   4.097e-01   4.002e-01
+  gm        4.426e-06   7.529e-06   4.661e-06   9.438e-06   6.154e-06
+  gds       8.222e-09   1.678e-07   2.854e-08   4.001e-08   1.367e-08
+  gmb       1.268e-06   1.697e-06   1.336e-06   2.218e-06   1.461e-06
+  cdtot     1.754e-15   4.348e-14   1.474e-15   7.527e-15   6.749e-15
+  cgtot     1.047e-14   2.383e-14   1.047e-14   7.995e-14   8.425e-14
+  cstot     1.187e-14   5.375e-14   1.187e-14   9.577e-14   9.407e-14
+  cbtot     7.895e-15   9.889e-14   7.615e-15   4.096e-14   4.830e-14
+  cgs       7.702e-15   5.545e-15   7.702e-15   6.885e-14   6.593e-14
+  cgd       2.207e-16   5.545e-15   2.207e-16   9.242e-16   1.116e-15
+
+
+
+ subckt    xtri        xtri        xtri        xtri        xtri      
+ element   2:m2        2:m3        2:m4        2:ma1       2:ma2     
+ model     0:pch.1     0:nch.1     0:nch.1     0:pch.2     0:nch.2   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id       -4.819e-07   4.820e-07   4.819e-07  -1.485e-05   1.496e-05
+  ibs       9.839e-20  -8.297e-19  -8.296e-19   2.951e-18  -2.191e-17
+  ibd       3.265e-13  -4.644e-15  -4.644e-15   1.604e-14  -1.490e-09
+  vgs      -8.301e-01   5.942e-01   5.942e-01  -9.019e-01   5.891e-01
+  vds      -2.241e+00   5.942e-01   5.891e-01  -1.311e+00   1.988e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.564e-01   5.345e-01   5.345e-01  -7.514e-01   5.661e-01
+  vdsat    -1.314e-01   1.061e-01   1.061e-01  -1.953e-01   7.732e-02
+  vod      -7.361e-02   5.970e-02   5.970e-02  -1.505e-01   2.293e-02
+  beta      7.581e-05   1.171e-04   1.171e-04   9.125e-04   7.795e-03
+  gam eff   4.002e-01   4.547e-01   4.547e-01   3.952e-01   4.732e-01
+  gm        6.153e-06   7.321e-06   7.320e-06   1.487e-04   2.871e-04
+  gds       1.367e-08   1.018e-08   1.021e-08   1.380e-06   1.436e-06
+  gmb       1.461e-06   2.177e-06   2.177e-06   3.241e-05   8.369e-05
+  cdtot     6.744e-15   4.162e-15   4.166e-15   1.898e-14   3.703e-14
+  cgtot     8.424e-14   4.231e-14   4.231e-14   5.194e-14   7.123e-14
+  cstot     9.406e-14   4.592e-14   4.592e-14   7.895e-14   8.842e-14
+  cbtot     4.830e-14   2.661e-14   2.661e-14   5.538e-14   1.069e-13
+  cgs       6.592e-14   3.151e-14   3.151e-14   4.352e-14   3.696e-14
+  cgd       1.116e-15   6.333e-16   6.333e-16   2.946e-15   7.167e-15
+
+
+
+ subckt    xgm         xgm         xgm         xgm         xgm       
+ element   3:mb        3:mb1       3:mb2       3:mo1       3:mo2     
+ model     0:pch.1     0:nch.3     0:nch.3     0:nch.1     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -2.666e-08   7.544e-09   7.545e-09   1.074e-08   1.073e-08
+  ibs       5.332e-21  -2.019e-15  -1.242e-20  -2.005e-20  -2.005e-20
+  ibd       9.035e-16  -6.432e-13  -3.108e-15  -9.047e-13  -6.445e-13
+  vgs      -5.986e-01   3.734e-01   3.927e-01   3.927e-01   3.929e-01
+  vds      -1.434e+00   1.846e+00   1.947e-02   2.047e+00   1.988e+00
+  vbs         0.       -1.947e-02     0.          0.          0.     
+  vth      -7.512e-01   5.638e-01   5.708e-01   5.360e-01   5.361e-01
+  vdsat    -5.253e-02   4.312e-02   4.333e-02   4.312e-02   4.313e-02
+  vod       1.526e-01  -1.903e-01  -1.781e-01  -1.433e-01  -1.432e-01
+  beta      1.896e-04   7.841e-04   1.431e-03   1.936e-04   1.936e-04
+  gam eff   4.055e-01   4.993e-01   5.041e-01   4.466e-01   4.466e-01
+  gm        5.273e-07   2.063e-07   2.024e-07   2.698e-07   2.698e-07
+  gds       2.417e-09   1.738e-09   2.761e-07   8.694e-10   8.383e-10
+  gmb       1.273e-07   6.260e-08   6.263e-08   8.086e-08   8.084e-08
+  cdtot     7.094e-15   2.916e-15   6.044e-15   2.568e-15   2.578e-15
+  cgtot     1.334e-14   2.589e-15   4.313e-15   5.725e-15   5.724e-15
+  cstot     1.059e-14   3.734e-15   6.079e-15   3.345e-15   3.345e-15
+  cbtot     2.659e-14   7.283e-15   1.308e-14   9.930e-15   9.940e-15
+  cgs       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+  cgd       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+
+
+
+ subckt    xgm         xgm         xgm         xgm         xgm2      
+ element   3:mo3a      3:mo3       3:mo4a      3:mo4       4:mb      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -1.074e-08  -1.074e-08  -1.074e-08  -1.074e-08  -2.666e-08
+  ibs       2.236e-21   2.236e-21   2.236e-21   2.236e-21   5.332e-21
+  ibd       2.059e-16   2.059e-16   2.059e-16   2.059e-16   9.034e-16
+  vgs      -6.263e-01  -6.263e-01  -6.263e-01  -6.259e-01  -5.986e-01
+  vds      -6.263e-01  -6.263e-01  -6.267e-01  -6.846e-01  -1.434e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.687e-01  -7.687e-01  -7.687e-01  -7.684e-01  -7.512e-01
+  vdsat    -5.306e-02  -5.306e-02  -5.306e-02  -5.305e-02  -5.253e-02
+  vod       1.424e-01   1.424e-01   1.424e-01   1.425e-01   1.526e-01
+  beta      5.843e-05   5.843e-05   5.843e-05   5.844e-05   1.896e-04
+  gam eff   3.892e-01   3.892e-01   3.892e-01   3.892e-01   4.055e-01
+  gm        2.018e-07   2.018e-07   2.018e-07   2.018e-07   5.273e-07
+  gds       1.282e-09   1.282e-09   1.282e-09   1.261e-09   2.417e-09
+  gmb       4.817e-08   4.817e-08   4.818e-08   4.818e-08   1.273e-07
+  cdtot     3.276e-15   3.276e-15   3.275e-15   3.224e-15   7.094e-15
+  cgtot     4.998e-15   4.998e-15   4.998e-15   4.998e-15   1.334e-14
+  cstot     4.078e-15   4.078e-15   4.078e-15   4.078e-15   1.059e-14
+  cbtot     1.085e-14   1.085e-14   1.085e-14   1.080e-14   2.659e-14
+  cgs       3.751e-16   3.751e-16   3.751e-16   3.751e-16   1.107e-15
+  cgd       3.751e-16   3.751e-16   3.751e-16   3.751e-16   1.107e-15
+
+
+
+ subckt    xgm2        xgm2        xgm2        xgm2        xgm2      
+ element   4:mb1       4:mb2       4:mo1       4:mo2       4:mo3a    
+ model     0:nch.3     0:nch.3     0:nch.1     0:nch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id        7.544e-09   7.545e-09   1.074e-08   1.073e-08  -1.074e-08
+  ibs      -2.019e-15  -1.242e-20  -2.006e-20  -2.005e-20   2.236e-21
+  ibd      -6.434e-13  -3.107e-15  -9.048e-13  -6.582e-13   2.059e-16
+  vgs       3.734e-01   3.927e-01   3.927e-01   3.929e-01  -6.263e-01
+  vds       1.846e+00   1.946e-02   2.047e+00   1.992e+00  -6.263e-01
+  vbs      -1.946e-02     0.          0.          0.          0.     
+  vth       5.638e-01   5.708e-01   5.360e-01   5.361e-01  -7.687e-01
+  vdsat     4.312e-02   4.333e-02   4.312e-02   4.313e-02  -5.306e-02
+  vod      -1.903e-01  -1.781e-01  -1.433e-01  -1.432e-01   1.424e-01
+  beta      7.841e-04   1.431e-03   1.936e-04   1.936e-04   5.843e-05
+  gam eff   4.993e-01   5.041e-01   4.466e-01   4.466e-01   3.892e-01
+  gm        2.063e-07   2.024e-07   2.699e-07   2.698e-07   2.018e-07
+  gds       1.738e-09   2.763e-07   8.696e-10   8.400e-10   1.282e-09
+  gmb       6.260e-08   6.263e-08   8.088e-08   8.084e-08   4.819e-08
+  cdtot     2.916e-15   6.044e-15   2.568e-15   2.578e-15   3.276e-15
+  cgtot     2.589e-15   4.313e-15   5.725e-15   5.724e-15   4.998e-15
+  cstot     3.734e-15   6.079e-15   3.345e-15   3.345e-15   4.078e-15
+  cbtot     7.283e-15   1.308e-14   9.930e-15   9.939e-15   1.085e-14
+  cgs       4.889e-16   8.396e-16   4.270e-16   4.270e-16   3.751e-16
+  cgd       4.889e-16   8.396e-16   4.270e-16   4.270e-16   3.751e-16
+
+
+
+ subckt    xgm2        xgm2        xgm2        xop_fc      xop_fc    
+ element   4:mo3       4:mo4a      4:mo4       5:mb        5:m1      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff    Saturati    Saturati
+  id       -1.074e-08  -1.074e-08  -1.074e-08  -1.187e-06  -6.200e-07
+  ibs       2.236e-21   2.236e-21   2.236e-21   2.374e-19   1.266e-19
+  ibd       2.059e-16   2.059e-16   2.059e-16   5.659e-16   1.278e-12
+  vgs      -6.263e-01  -6.263e-01  -6.260e-01  -9.019e-01  -8.652e-01
+  vds      -6.263e-01  -6.267e-01  -6.811e-01  -4.425e-01  -2.407e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.687e-01  -7.687e-01  -7.685e-01  -7.501e-01  -7.551e-01
+  vdsat    -5.306e-02  -5.306e-02  -5.305e-02  -1.911e-01  -1.582e-01
+  vod       1.424e-01   1.424e-01   1.425e-01  -1.518e-01  -1.101e-01
+  beta      5.843e-05   5.843e-05   5.844e-05   7.764e-05   6.164e-05
+  gam eff   3.892e-01   3.892e-01   3.892e-01   4.121e-01   3.989e-01
+  gm        2.018e-07   2.018e-07   2.018e-07   1.155e-05   7.040e-06
+  gds       1.282e-09   1.282e-09   1.263e-09   5.274e-08   2.449e-08
+  gmb       4.819e-08   4.819e-08   4.819e-08   2.719e-06   1.629e-06
+  cdtot     3.276e-15   3.275e-15   3.227e-15   8.969e-15   3.300e-15
+  cgtot     4.998e-15   4.998e-15   4.998e-15   9.551e-14   2.802e-14
+  cstot     4.078e-15   4.078e-15   4.078e-15   1.149e-13   3.421e-14
+  cbtot     1.085e-14   1.085e-14   1.080e-14   4.856e-14   1.758e-14
+  cgs       3.751e-16   3.751e-16   3.751e-16   8.264e-14   2.297e-14
+  cgd       3.751e-16   3.751e-16   3.751e-16   1.107e-15   5.582e-16
+
+
+
+ subckt    xop_fc      xop_fc      xop_fc      xop_fc      xop_fc    
+ element   5:m2        5:my1       5:my2       5:m3        5:m4      
+ model     0:pch.1     0:pch.1     0:pch.1     0:nch.1     0:nch.1   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id       -5.674e-07  -2.369e-06  -2.422e-06   2.369e-06   2.422e-06
+  ibs       1.158e-19   4.834e-19   4.941e-19  -4.644e-15  -4.644e-15
+  ibd       1.215e-12   2.960e-16   2.127e-12  -6.112e-12  -4.644e-15
+  vgs      -8.575e-01  -1.112e+00  -1.112e+00   8.002e-01   8.042e-01
+  vds      -2.411e+00  -1.112e+00  -2.533e+00   1.737e+00   3.203e-01
+  vbs         0.          0.          0.       -4.500e-01  -4.460e-01
+  vth      -7.551e-01  -7.586e-01  -7.559e-01   6.590e-01   6.595e-01
+  vdsat    -1.525e-01  -3.633e-01  -3.657e-01   1.656e-01   1.683e-01
+  vod      -1.024e-01  -3.535e-01  -3.561e-01   1.412e-01   1.447e-01
+  beta      6.169e-05   3.640e-05   3.642e-05   1.944e-04   1.943e-04
+  gam eff   3.989e-01   4.002e-01   4.002e-01   4.430e-01   4.431e-01
+  gm        6.621e-06   1.205e-05   1.225e-05   2.575e-05   2.593e-05
+  gds       2.295e-08   4.626e-08   3.180e-08   4.741e-08   1.602e-07
+  gmb       1.535e-06   2.768e-06   2.813e-06   6.334e-06   6.384e-06
+  cdtot     3.298e-15   4.074e-15   3.248e-15   3.573e-15   4.062e-15
+  cgtot     2.758e-14   5.087e-14   5.087e-14   3.083e-14   3.093e-14
+  cstot     3.352e-14   6.072e-14   6.072e-14   3.655e-14   3.672e-14
+  cbtot     1.756e-14   2.514e-14   2.431e-14   1.636e-14   1.686e-14
+  cgs       2.242e-14   4.394e-14   4.394e-14   2.624e-14   2.636e-14
+  cgd       5.582e-16   5.582e-16   5.582e-16   6.333e-16   6.333e-16
+
+
+
+ subckt    xop_fc      xop_fc      xien        xien        xien      
+ element   5:mz1       5:mz2       6:mb        6:m1        6:m2      
+ model     0:nch.1     0:nch.1     0:pch.1     0:pch.4     0:pch.4   
+ region      Saturati    Saturati      Cutoff      Cutoff      Cutoff
+  id        2.989e-06   2.989e-06  -1.009e-08  -5.026e-09  -5.058e-09
+  ibs      -4.781e-18  -4.781e-18   2.027e-21   1.102e-21   1.109e-21
+  ibd      -1.411e-14  -1.411e-14   4.759e-16   5.271e-15   2.153e-15
+  vgs       6.064e-01   6.064e-01  -5.986e-01  -6.824e-01  -6.833e-01
+  vds       4.500e-01   4.460e-01  -6.167e-01  -2.263e+00  -2.058e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.423e-01   5.423e-01  -7.517e-01  -7.861e-01  -7.865e-01
+  vdsat     1.086e-01   1.086e-01  -5.188e-02  -5.761e-02  -5.769e-02
+  vod       6.403e-02   6.402e-02   1.532e-01   1.037e-01   1.033e-01
+  beta      6.827e-04   6.827e-04   6.583e-05   1.147e-05   1.147e-05
+  gam eff   4.619e-01   4.619e-01   4.097e-01   3.553e-01   3.553e-01
+  gm        4.474e-05   4.474e-05   1.906e-07   8.260e-08   8.311e-08
+  gds       1.054e-07   1.060e-07   4.647e-10   1.989e-10   2.018e-10
+  gmb       1.335e-05   1.334e-05   4.825e-08   2.024e-08   2.038e-08
+  cdtot     1.345e-14   1.346e-14   7.211e-15   1.445e-15   1.487e-15
+  cgtot     8.538e-14   8.538e-14   2.628e-14   6.795e-15   6.793e-15
+  cstot     9.910e-14   9.910e-14   8.959e-15   2.451e-15   2.451e-15
+  cbtot     6.055e-14   6.056e-14   3.875e-14   9.923e-15   9.963e-15
+  cgs       6.506e-14   6.506e-14   9.242e-16   1.922e-16   1.922e-16
+  cgd       2.092e-15   2.092e-15   9.242e-16   1.922e-16   1.922e-16
+
+
+
+ subckt    xien        xien        xien        xien        xien      
+ element   6:m3        6:m4        6:me1p      6:me2p      6:me1n    
+ model     0:nch.4     0:nch.4     0:pch.3     0:pch.3     0:nch.2   
+ region        Cutoff      Cutoff    Saturati    Saturati    Saturati
+  id        5.029e-09   5.061e-09  -1.930e-06  -1.931e-05   1.920e-06
+  ibs      -1.140e-20  -1.148e-20   3.827e-19   3.829e-18  -3.583e-18
+  ibd      -2.233e-15  -2.233e-15   2.430e-14   2.458e-13  -1.716e-10
+  vgs       4.194e-01   4.194e-01  -7.000e-01  -7.000e-01   6.248e-01
+  vds       4.194e-01   6.248e-01  -1.299e+00  -1.300e+00   2.000e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.210e-01   5.208e-01  -6.959e-01  -6.959e-01   5.490e-01
+  vdsat     4.651e-02   4.652e-02  -7.616e-02  -7.617e-02   1.073e-01
+  vod      -1.015e-01  -1.014e-01  -4.051e-03  -4.075e-03   7.578e-02
+  beta      3.386e-05   3.386e-05   1.268e-03   1.268e-02   3.960e-04
+  gam eff   4.304e-01   4.304e-01   4.626e-01   4.626e-01   4.612e-01
+  gm        1.183e-07   1.190e-07   3.797e-05   3.799e-04   2.940e-05
+  gds       1.602e-10   1.469e-10   1.098e-06   1.098e-05   1.356e-07
+  gmb       3.489e-08   3.509e-08   8.102e-06   8.105e-05   8.507e-06
+  cdtot     1.806e-15   1.749e-15   1.175e-14   1.174e-13   2.576e-15
+  cgtot     7.546e-15   7.546e-15   6.738e-15   6.738e-14   6.582e-15
+  cstot     1.979e-15   1.979e-15   1.709e-14   1.709e-13   9.192e-15
+  cbtot     1.045e-14   1.039e-14   2.822e-14   2.822e-13   7.664e-15
+  cgs       2.207e-16   2.207e-16   1.839e-15   1.839e-14   4.810e-15
+  cgd       2.207e-16   2.207e-16   1.839e-15   1.839e-14   4.270e-16
+
+
+
+ subckt    xien        xgm.xgmx1   xgm.xgmx1   xgm.xgmx1   xgm.xgmx2 
+ element   6:me2n      7:ms        7:min       7:mn        8:ms      
+ model     0:nch.2     0:pch.2     0:pch.4     0:nch.1     0:pch.2   
+ region      Saturati      Cutoff      Cutoff      Cutoff      Cutoff
+  id        1.919e-05  -9.577e-09  -9.578e-09   9.580e-09  -9.533e-09
+  ibs      -3.583e-17   1.994e-21   1.159e-16  -1.789e-20   1.985e-21
+  ibd      -1.706e-09   2.059e-16   1.159e-16  -3.438e-15   2.059e-16
+  vgs       6.248e-01  -5.997e-01  -8.730e-01   3.929e-01  -5.995e-01
+  vds       2.000e+00  -5.997e-01  -8.730e-01   3.929e-01  -5.995e-01
+  vbs         0.          0.        7.224e-01     0.          0.     
+  vth       5.490e-01  -7.678e-01  -9.231e-01   5.382e-01  -7.678e-01
+  vdsat     1.073e-01  -5.139e-02  -6.862e-02   4.303e-02  -5.137e-02
+  vod       7.578e-02   1.681e-01   5.008e-02  -1.453e-01   1.684e-01
+  beta      3.960e-03   1.062e-04   1.094e-05   1.935e-04   1.062e-04
+  gam eff   4.612e-01   3.948e-01   3.479e-01   4.466e-01   3.948e-01
+  gm        2.940e-04   2.038e-07   1.625e-07   2.419e-07   2.030e-07
+  gds       1.356e-06   1.822e-09   5.134e-10   7.398e-10   1.815e-09
+  gmb       8.506e-05   4.661e-08   2.862e-08   7.247e-08   4.642e-08
+  cdtot     2.576e-14   3.300e-15   1.599e-15   3.059e-15   3.300e-15
+  cgtot     6.582e-14   2.811e-15   5.683e-15   5.724e-15   2.811e-15
+  cstot     9.192e-14   4.078e-15   1.920e-15   3.345e-15   4.078e-15
+  cbtot     7.664e-14   8.689e-15   8.434e-15   1.042e-14   8.689e-15
+  cgs       4.810e-14   3.751e-16   1.922e-16   4.270e-16   3.751e-16
+  cgd       4.270e-15   3.751e-16   1.922e-16   4.270e-16   3.751e-16
+
+
+
+ subckt    xgm.xgmx2   xgm.xgmx2   xgm2.xgmx1  xgm2.xgmx1  xgm2.xgmx1
+ element   8:min       8:mn        9:ms        9:min       9:mn      
+ model     0:pch.4     0:nch.1     0:pch.2     0:pch.4     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -9.534e-09   9.536e-09  -9.574e-09  -9.575e-09   9.577e-09
+  ibs       1.159e-16  -1.781e-20   1.993e-21   1.159e-16  -1.789e-20
+  ibd       1.159e-16  -3.438e-15   2.059e-16   1.159e-16  -3.438e-15
+  vgs      -8.734e-01   3.927e-01  -5.997e-01  -8.731e-01   3.929e-01
+  vds      -8.734e-01   3.927e-01  -5.997e-01  -8.731e-01   3.929e-01
+  vbs       7.261e-01     0.          0.        7.228e-01     0.     
+  vth      -9.237e-01   5.382e-01  -7.678e-01  -9.232e-01   5.382e-01
+  vdsat    -6.855e-02   4.302e-02  -5.138e-02  -6.862e-02   4.303e-02
+  vod       5.029e-02  -1.455e-01   1.682e-01   5.009e-02  -1.453e-01
+  beta      1.094e-05   1.935e-04   1.062e-04   1.094e-05   1.935e-04
+  gam eff   3.479e-01   4.466e-01   3.948e-01   3.479e-01   4.466e-01
+  gm        1.619e-07   2.409e-07   2.038e-07   1.625e-07   2.418e-07
+  gds       5.116e-10   7.366e-10   1.822e-09   5.133e-10   7.396e-10
+  gmb       2.847e-08   7.216e-08   4.660e-08   2.861e-08   7.245e-08
+  cdtot     1.598e-15   3.059e-15   3.300e-15   1.599e-15   3.059e-15
+  cgtot     5.679e-15   5.725e-15   2.811e-15   5.682e-15   5.724e-15
+  cstot     1.919e-15   3.345e-15   4.078e-15   1.920e-15   3.345e-15
+  cbtot     8.427e-15   1.042e-14   8.689e-15   8.433e-15   1.042e-14
+  cgs       1.922e-16   4.270e-16   3.751e-16   1.922e-16   4.270e-16
+  cgd       1.922e-16   4.270e-16   3.751e-16   1.922e-16   4.270e-16
+
+
+
+ subckt    xgm2.xgmx2  xgm2.xgmx2  xgm2.xgmx2
+ element  10:ms       10:min      10:mn      
+ model     0:pch.2     0:pch.4     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff
+  id       -9.536e-09  -9.537e-09   9.538e-09
+  ibs       1.985e-21   1.159e-16  -1.781e-20
+  ibd       2.059e-16   1.159e-16  -3.438e-15
+  vgs      -5.995e-01  -8.734e-01   3.927e-01
+  vds      -5.995e-01  -8.734e-01   3.927e-01
+  vbs         0.        7.261e-01     0.     
+  vth      -7.678e-01  -9.237e-01   5.382e-01
+  vdsat    -5.137e-02  -6.856e-02   4.302e-02
+  vod       1.683e-01   5.028e-02  -1.455e-01
+  beta      1.062e-04   1.094e-05   1.935e-04
+  gam eff   3.948e-01   3.479e-01   4.466e-01
+  gm        2.030e-07   1.619e-07   2.409e-07
+  gds       1.815e-09   5.117e-10   7.368e-10
+  gmb       4.643e-08   2.848e-08   7.217e-08
+  cdtot     3.300e-15   1.598e-15   3.059e-15
+  cgtot     2.811e-15   5.679e-15   5.725e-15
+  cstot     4.078e-15   1.919e-15   3.345e-15
+  cbtot     8.689e-15   8.427e-15   1.042e-14
+  cgs       3.751e-16   1.922e-16   4.270e-16
+  cgd       3.751e-16   1.922e-16   4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *inw_ac     #0
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =     197  # elements   =      94
+  # resistors   =       1  # capacitors =       5  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      17
+  # curr_srcs   =       3  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      68  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.13           1         585
+  ac analysis        0.51        9001        9001
+  readin             0.01
+  errchk             0.01
+  setup              0.01
+  output             0.00
+
+
+           total memory used         1316  kbytes
+           total cpu time            0.67 seconds
+           total elapsed time        0.78 seconds
+           job started at     16:30:48 02/26/2016
+           job ended   at     16:30:50 02/26/2016
+
+
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *wx     #1
+
+  ******    alter processing listing tnom=  25.000 temp=  25.000 *****
+ .del lib 'test.l' inw_ac
+ .lib 'test.l' wx
+     *ip vdd vss dc = pbi
+     *mp  out vgp vdd vdd pch w = 5u l = 1u m = 1
+     *vpg vgp gnd dc = 2.5      * 1.178u
+     vfc to_out vnw dc = vdif ac = 1
+     .dc wx 0.4u 20u 0.1u
+     .ac dec 1000 1 1g
+     mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
+     it vst vss dc = 'pbi'
+     vtg vgt gnd dc = 1
+     vtd vdt gnd dc = 1.5
+     .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt)
+
+ .endl
+ **
+ *.alter  *vsn(sweep v on bulk)       #2
+ *.del lib 'test.l' wx
+ *.lib 'test.l' vsn
+ *
+ ****single block test***
+ *.alter *tri     #3
+ *.del lib 'test.l' vsn
+ *.lib 'test.l' tri
+ **
+ *.alter *gm-c        #4
+ *.del lib 'test.l' tri
+ *.lib 'test.l' gmc
+ *
+ *
+ *.alter * inputstage     #5
+ *.del lib 'test.l' gmc
+ *.lib 'test.l' ins
+ *
+ *
+ *.alter *opout       #6
+ *.del lib 'test.l' ins
+ *.lib 'test.l' opout
+ *
+ *.alter *ien
+ *.del lib 'test.l' opout
+ *.lib 'test.l' ien
+ *
+ *.alter *total feedackpart(op + gm)
+ *.del lib 'test.l' ien
+ *.lib 'test.l' fd
+ *
+ *.alter *av part
+ *.del lib 'test.l' fd
+ *.lib 'test.l' av
+ *
+ **.alter *tran
+ **.del lib 'test.l' ien
+ **.lib 'test.l' tran
+ .end
+ $ end of alter processing $
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *wx     #1
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xcmb.                           cmb                1.00 
+        2 xtri.                           tr                 1.00 
+        3 xgm.                            gm                 1.00 
+        4 xgm2.                           gm                 1.00 
+        5 xop_fc.                         op_fc              1.00 
+        6 xien.                           ien                1.00 
+        7 xgm.xgmx1.                      gmx                1.00 
+        8 xgm.xgmx2.                      gmx                1.00 
+        9 xgm2.xgmx1.                     gmx                1.00 
+       10 xgm2.xgmx2.                     gmx                1.00 
+ **warning** could not find branch element     0:mp              
+      branch - output ignored
+ 
+      
+  Opening plot unit= 15
+ file=new.pa3                                                                  
+
+
+ **diagnostic** rebuilding matrix with pivot option
+
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *wx     #1
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+     node    =voltage       node    =voltage       node    =voltage
+
+ + 0:cn      = 6.064e-01  0:cp2     = 1.250e+00  0:cp3     = 6.064e-01
+ + 0:cx      = 2.701e+00  0:cz      = 2.398e+00  0:eb      = 2.600e+00
+ + 0:gm_c    = 1.988e+00  0:gm_in   = 1.988e+00  0:gm_out  = 1.992e+00
+ + 0:ien_in  = 2.000e+00  0:ien_out = 2.000e+00  0:nwd     = 9.318e-01
+ + 0:opb     = 2.000e+00  0:out     = 2.000e+00  0:ti_in   = 2.000e+00
+ + 0:ti_out  = 1.988e+00  0:to_in   = 1.992e+00  0:to_out  = 7.663e-01
+ + 0:vdd     = 3.300e+00  0:vdt     = 1.500e+00  0:vgn     = 1.800e+00
+ + 0:vgt     = 1.000e+00  0:vnw     = 7.663e-01  0:vsn     =   0.     
+ + 0:vss     =   0.       0:vst     = 2.388e-01  1:c0      = 2.261e+00
+ + 1:c2      = 2.261e+00  1:c3      = 1.250e+00  2:1       = 5.942e-01
+ + 2:2       = 5.891e-01  2:b       = 2.830e+00  3:bd      = 1.865e+00
+ + 3:bump    = 1.947e-02  3:ggn     = 3.927e-01  3:ggp     = 3.929e-01
+ + 3:idn     = 3.927e-01  3:idp     = 3.929e-01  3:io1     = 2.047e+00
+ + 3:io1a    = 2.673e+00  3:io2a    = 2.673e+00  3:sdn     = 1.266e+00
+ + 3:sdp     = 1.265e+00  4:bd      = 1.865e+00  4:bump    = 1.946e-02
+ + 4:ggn     = 3.927e-01  4:ggp     = 3.929e-01  4:idn     = 3.927e-01
+ + 4:idp     = 3.929e-01  4:io1     = 2.047e+00  4:io1a    = 2.673e+00
+ + 4:io2a    = 2.673e+00  4:sdn     = 1.266e+00  4:sdp     = 1.266e+00
+ + 5:1       = 4.500e-01  5:2       = 4.460e-01  5:b       = 2.857e+00
+ + 5:von     = 2.188e+00  6:b       = 2.683e+00  6:von     = 4.194e-01
+ + 6:vop     = 6.248e-01
+
+
+ maximum nodal capacitance=   1.000E-10         on node     0:to_out          
+
+    nodal  capacitance table 
+
+     node    =    cap       node    =    cap       node    =    cap
+
+ + 0:cn      = 2.182e-13  0:cp2     = 1.517e-13  0:cp3     = 3.179e-14
+ + 0:cx      = 1.217e-13  0:cz      = 3.821e-13  0:eb      = 7.412e-14
+ + 0:gm_c    = 1.001e-11  0:gm_in   = 8.434e-15  0:gm_out  = 1.002e-11
+ + 0:ien_in  = 3.112e-14  0:ien_out = 1.432e-13  0:nwd     = 4.279e-14
+ + 0:opb     = 1.186e-13  0:out     = 1.090e-14  0:ti_in   = 8.425e-14
+ + 0:ti_out  = 1.056e-12  0:to_in   = 2.802e-14  0:to_out  = 1.000e-10
+ + 0:vdd     = 1.689e-12  0:vdt     = 1.627e-15  0:vgn     = 3.154e-14
+ + 0:vgt     = 1.784e-15  0:vnw     = 1.786e-15  0:vsn     = 3.795e-15
+ + 0:vss     = 1.154e-12  0:vst     = 7.155e-15  1:c0      = 3.454e-14
+ + 1:c2      = 3.454e-14  1:c3      = 5.241e-14  2:1       = 9.553e-14
+ + 2:2       = 1.082e-12  2:b       = 2.923e-13  3:bd      = 3.554e-14
+ + 3:bump    = 9.778e-15  3:ggn     = 1.576e-14  3:ggp     = 1.404e-14
+ + 3:idn     = 1.034e-14  3:idp     = 1.034e-14  3:io1     = 1.584e-14
+ + 3:io1a    = 2.820e-14  3:io2a    = 1.815e-14  3:sdn     = 8.030e-15
+ + 3:sdp     = 8.032e-15  4:bd      = 3.554e-14  4:bump    = 9.778e-15
+ + 4:ggn     = 1.576e-14  4:ggp     = 1.404e-14  4:idn     = 1.034e-14
+ + 4:idp     = 1.034e-14  4:io1     = 1.584e-14  4:io1a    = 2.820e-14
+ + 4:io2a    = 1.816e-14  4:sdn     = 8.030e-15  4:sdp     = 8.032e-15
+ + 5:1       = 5.330e-14  5:2       = 5.347e-14  5:b       = 1.118e-13
+ + 5:von     = 1.094e-13  6:b       = 3.200e-14  6:von     = 1.834e-14
+ + 6:vop     = 8.564e-14
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                              
+ element   0:veb       0:vng       0:vsn       0:vc1       0:vc2     
+  volts     2.600e+00   1.800e+00     0.          0.          0.     
+  current     0.          0.        9.341e-13  -1.057e-08  -1.168e-07
+  power       0.          0.          0.          0.          0.     
+
+ subckt                                                              
+ element   0:vc3       0:vc4       0:vfc       0:vopbias   0:vd      
+  volts       0.          0.          0.        2.000e+00   3.300e+00
+  current   2.318e-12   1.389e-17   1.388e-17     0.       -5.508e-05
+  power       0.          0.          0.          0.        1.818e-04
+
+ subckt                                        xgm         xgm       
+ element   0:vs        0:vtg       0:vtd       3:v0        3:v1      
+  volts       0.        1.000e+00   1.500e+00     0.          0.     
+  current   6.508e-05     0.       -1.000e-05     0.       -1.735e-18
+  power       0.          0.        1.500e-05     0.          0.     
+
+ subckt    xgm2        xgm2      
+ element   4:v0        4:v1      
+  volts       0.          0.     
+  current   1.735e-18  -1.735e-18
+  power       0.          0.     
+
+     total voltage source power dissipation=  1.968e-04       watts
+
+
+
+ ***** current sources
+
+ subckt                            xcmb      
+ element   0:ip        0:it        1:iin     
+  volts     1.299e+00   2.388e-01   2.398e+00
+  current   1.000e-05   1.000e-05   1.000e-06
+  power    -1.299e-05  -2.388e-06  -2.398e-06
+
+
+     total current source power dissipation=-1.778e-05       watts
+
+ **** resistors
+
+ subckt    xtri      
+ element   2:rl      
+  r value   1.000e+05
+  v drop   -1.168e-02
+  current  -1.168e-07
+  power     1.365e-09
+
+
+
+ **** mosfets
+
+
+ subckt                                        xcmb        xcmb      
+ element   0:mc        0:mnw       0:mt        1:mc0       1:mc1     
+ model     0:nch.2     0:nch.6     0:nch.6     0:pch.1     0:pch.1   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id        1.001e-05   1.001e-05   1.000e-05  -1.000e-06  -3.065e-07
+  ibs      -1.308e-14  -2.258e-17  -2.256e-17   2.007e-19   6.380e-20
+  ibd      -2.380e-14  -2.272e-15  -3.169e-13   4.849e-16   2.063e-16
+  vgs       8.682e-01   7.663e-01   7.612e-01  -9.019e-01  -9.019e-01
+  vds       1.069e+00   9.318e-01   1.261e+00  -9.019e-01  -1.038e+00
+  vbs      -9.318e-01     0.          0.          0.          0.     
+  vth       7.965e-01   5.576e-01   5.554e-01  -7.510e-01  -7.681e-01
+  vdsat     1.110e-01   1.926e-01   1.904e-01  -1.900e-01  -1.739e-01
+  vod       7.172e-02   2.087e-01   2.058e-01  -1.509e-01  -1.338e-01
+  beta      2.144e-03   4.695e-04   4.696e-04   6.562e-05   2.418e-05
+  gam eff   4.546e-01   5.077e-01   5.077e-01   4.100e-01   3.885e-01
+  gm        1.586e-04   8.302e-05   8.355e-05   9.768e-06   3.166e-06
+  gds       7.312e-07   1.317e-06   1.219e-06   2.701e-08   9.437e-09
+  gmb       3.364e-05   2.188e-05   2.198e-05   2.296e-06   7.308e-07
+  cdtot     1.090e-14   1.683e-15   1.627e-15   6.824e-15   2.960e-15
+  cgtot     3.154e-14   1.786e-15   1.784e-15   8.151e-14   3.320e-14
+  cstot     4.110e-14   3.419e-15   3.416e-15   9.768e-14   3.830e-14
+  cbtot     2.701e-14   3.795e-15   3.739e-15   4.088e-14   1.793e-14
+  cgs       2.589e-14   1.301e-15   1.299e-15   7.023e-14   2.736e-14
+  cgd       2.077e-15   2.207e-16   2.207e-16   9.425e-16   3.751e-16
+
+
+
+ subckt    xcmb        xcmb        xcmb        xcmb        xcmb      
+ element   1:mc5       1:mc2       1:mc6       1:mc3       1:mc7     
+ model     0:pch.1     0:pch.4     0:pch.4     0:pch.3     0:pch.3   
+ region      Saturati    Saturati    Saturati      Cutoff      Cutoff
+  id       -3.065e-07  -3.065e-07  -3.065e-07  -3.065e-07  -3.065e-07
+  ibs       6.380e-20   6.714e-20   6.714e-20   6.157e-20   6.157e-20
+  ibd       2.063e-16   1.159e-16   1.159e-16   9.518e-16   9.518e-16
+  vgs      -9.019e-01  -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01
+  vds      -1.038e+00  -1.011e+00  -1.011e+00  -6.439e-01  -6.439e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.681e-01  -7.887e-01  -7.887e-01  -7.340e-01  -7.340e-01
+  vdsat    -1.739e-01  -2.407e-01  -2.407e-01  -5.522e-02  -5.522e-02
+  vod      -1.338e-01  -2.224e-01  -2.224e-01   9.017e-02   9.017e-02
+  beta      2.418e-05   1.114e-05   1.114e-05   1.043e-03   1.043e-03
+  gam eff   3.885e-01   3.553e-01   3.553e-01   4.292e-01   4.292e-01
+  gm        3.166e-06   2.307e-06   2.307e-06   6.589e-06   6.589e-06
+  gds       9.437e-09   7.985e-09   7.985e-09   1.469e-07   1.469e-07
+  gmb       7.308e-07   5.103e-07   5.103e-07   1.459e-06   1.459e-06
+  cdtot     2.960e-15   1.792e-15   1.792e-15   1.431e-14   1.431e-14
+  cgtot     3.320e-14   1.876e-14   1.876e-14   7.863e-15   7.863e-15
+  cstot     3.830e-14   2.092e-14   2.092e-14   1.792e-14   1.792e-14
+  cbtot     1.793e-14   1.066e-14   1.066e-14   3.270e-14   3.270e-14
+  cgs       2.736e-14   1.496e-14   1.496e-14   1.848e-15   1.848e-15
+  cgd       3.751e-16   1.922e-16   1.922e-16   1.848e-15   1.848e-15
+
+
+
+ subckt    xcmb        xcmb        xcmb        xcmb        xtri      
+ element   1:mc4       1:mc8       1:mca       1:mcb       2:mb      
+ model     0:nch.4     0:nch.4     0:pch.3     0:nch.4     0:pch.1   
+ region      Saturati    Saturati      Cutoff    Saturati    Saturati
+  id        3.065e-07   3.065e-07  -3.291e-07   3.288e-07  -9.639e-07
+  ibs      -6.949e-19  -6.949e-19   6.610e-20  -7.455e-19   1.936e-19
+  ibd      -2.233e-15  -2.233e-15   2.855e-15  -2.353e-10   4.759e-16
+  vgs       6.064e-01   6.064e-01  -5.986e-01   6.064e-01  -9.019e-01
+  vds       6.064e-01   6.064e-01  -5.986e-01   2.701e+00  -4.699e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.233e-01   5.233e-01  -7.349e-01   5.213e-01  -7.520e-01
+  vdsat     1.155e-01   1.155e-01  -4.989e-02   1.167e-01  -1.892e-01
+  vod       8.310e-02   8.310e-02   1.363e-01   8.503e-02  -1.499e-01
+  beta      5.691e-05   5.691e-05   3.131e-03   5.692e-05   6.428e-05
+  gam eff   4.314e-01   4.314e-01   4.292e-01   4.314e-01   4.097e-01
+  gm        4.426e-06   4.426e-06   7.529e-06   4.661e-06   9.438e-06
+  gds       8.222e-09   8.222e-09   1.678e-07   2.854e-08   4.001e-08
+  gmb       1.268e-06   1.268e-06   1.697e-06   1.336e-06   2.218e-06
+  cdtot     1.754e-15   1.754e-15   4.348e-14   1.474e-15   7.527e-15
+  cgtot     1.047e-14   1.047e-14   2.383e-14   1.047e-14   7.995e-14
+  cstot     1.187e-14   1.187e-14   5.375e-14   1.187e-14   9.577e-14
+  cbtot     7.895e-15   7.895e-15   9.889e-14   7.615e-15   4.096e-14
+  cgs       7.702e-15   7.702e-15   5.545e-15   7.702e-15   6.885e-14
+  cgd       2.207e-16   2.207e-16   5.545e-15   2.207e-16   9.242e-16
+
+
+
+ subckt    xtri        xtri        xtri        xtri        xtri      
+ element   2:m1        2:m2        2:m3        2:m4        2:ma1     
+ model     0:pch.1     0:pch.1     0:nch.1     0:nch.1     0:pch.2   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id       -4.820e-07  -4.819e-07   4.820e-07   4.819e-07  -1.485e-05
+  ibs       9.841e-20   9.839e-20  -8.297e-19  -8.296e-19   2.951e-18
+  ibd       3.190e-13   3.265e-13  -4.644e-15  -4.644e-15   1.604e-14
+  vgs      -8.301e-01  -8.301e-01   5.942e-01   5.942e-01  -9.019e-01
+  vds      -2.235e+00  -2.241e+00   5.942e-01   5.891e-01  -1.311e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.564e-01  -7.564e-01   5.345e-01   5.345e-01  -7.514e-01
+  vdsat    -1.314e-01  -1.314e-01   1.061e-01   1.061e-01  -1.953e-01
+  vod      -7.362e-02  -7.361e-02   5.970e-02   5.970e-02  -1.505e-01
+  beta      7.581e-05   7.581e-05   1.171e-04   1.171e-04   9.125e-04
+  gam eff   4.002e-01   4.002e-01   4.547e-01   4.547e-01   3.952e-01
+  gm        6.154e-06   6.153e-06   7.321e-06   7.320e-06   1.487e-04
+  gds       1.367e-08   1.367e-08   1.018e-08   1.021e-08   1.380e-06
+  gmb       1.461e-06   1.461e-06   2.177e-06   2.177e-06   3.241e-05
+  cdtot     6.749e-15   6.744e-15   4.162e-15   4.166e-15   1.898e-14
+  cgtot     8.425e-14   8.424e-14   4.231e-14   4.231e-14   5.194e-14
+  cstot     9.407e-14   9.406e-14   4.592e-14   4.592e-14   7.895e-14
+  cbtot     4.830e-14   4.830e-14   2.661e-14   2.661e-14   5.538e-14
+  cgs       6.593e-14   6.592e-14   3.151e-14   3.151e-14   4.352e-14
+  cgd       1.116e-15   1.116e-15   6.333e-16   6.333e-16   2.946e-15
+
+
+
+ subckt    xtri        xgm         xgm         xgm         xgm       
+ element   2:ma2       3:mb        3:mb1       3:mb2       3:mo1     
+ model     0:nch.2     0:pch.1     0:nch.3     0:nch.3     0:nch.1   
+ region      Saturati      Cutoff      Cutoff      Cutoff      Cutoff
+  id        1.496e-05  -2.666e-08   7.544e-09   7.545e-09   1.074e-08
+  ibs      -2.191e-17   5.332e-21  -2.019e-15  -1.242e-20  -2.005e-20
+  ibd      -1.490e-09   9.035e-16  -6.432e-13  -3.108e-15  -9.047e-13
+  vgs       5.891e-01  -5.986e-01   3.734e-01   3.927e-01   3.927e-01
+  vds       1.988e+00  -1.434e+00   1.846e+00   1.947e-02   2.047e+00
+  vbs         0.          0.       -1.947e-02     0.          0.     
+  vth       5.661e-01  -7.512e-01   5.638e-01   5.708e-01   5.360e-01
+  vdsat     7.732e-02  -5.253e-02   4.312e-02   4.333e-02   4.312e-02
+  vod       2.293e-02   1.526e-01  -1.903e-01  -1.781e-01  -1.433e-01
+  beta      7.795e-03   1.896e-04   7.841e-04   1.431e-03   1.936e-04
+  gam eff   4.732e-01   4.055e-01   4.993e-01   5.041e-01   4.466e-01
+  gm        2.871e-04   5.273e-07   2.063e-07   2.024e-07   2.698e-07
+  gds       1.436e-06   2.417e-09   1.738e-09   2.761e-07   8.694e-10
+  gmb       8.369e-05   1.273e-07   6.260e-08   6.263e-08   8.086e-08
+  cdtot     3.703e-14   7.094e-15   2.916e-15   6.044e-15   2.568e-15
+  cgtot     7.123e-14   1.334e-14   2.589e-15   4.313e-15   5.725e-15
+  cstot     8.842e-14   1.059e-14   3.734e-15   6.079e-15   3.345e-15
+  cbtot     1.069e-13   2.659e-14   7.283e-15   1.308e-14   9.930e-15
+  cgs       3.696e-14   1.107e-15   4.889e-16   8.396e-16   4.270e-16
+  cgd       7.167e-15   1.107e-15   4.889e-16   8.396e-16   4.270e-16
+
+
+
+ subckt    xgm         xgm         xgm         xgm         xgm       
+ element   3:mo2       3:mo3a      3:mo3       3:mo4a      3:mo4     
+ model     0:nch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id        1.073e-08  -1.074e-08  -1.074e-08  -1.074e-08  -1.074e-08
+  ibs      -2.005e-20   2.236e-21   2.236e-21   2.236e-21   2.236e-21
+  ibd      -6.445e-13   2.059e-16   2.059e-16   2.059e-16   2.059e-16
+  vgs       3.929e-01  -6.263e-01  -6.263e-01  -6.263e-01  -6.259e-01
+  vds       1.988e+00  -6.263e-01  -6.263e-01  -6.267e-01  -6.846e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth       5.361e-01  -7.687e-01  -7.687e-01  -7.687e-01  -7.684e-01
+  vdsat     4.313e-02  -5.306e-02  -5.306e-02  -5.306e-02  -5.305e-02
+  vod      -1.432e-01   1.424e-01   1.424e-01   1.424e-01   1.425e-01
+  beta      1.936e-04   5.843e-05   5.843e-05   5.843e-05   5.844e-05
+  gam eff   4.466e-01   3.892e-01   3.892e-01   3.892e-01   3.892e-01
+  gm        2.698e-07   2.018e-07   2.018e-07   2.018e-07   2.018e-07
+  gds       8.383e-10   1.282e-09   1.282e-09   1.282e-09   1.261e-09
+  gmb       8.084e-08   4.817e-08   4.817e-08   4.818e-08   4.818e-08
+  cdtot     2.578e-15   3.276e-15   3.276e-15   3.275e-15   3.224e-15
+  cgtot     5.724e-15   4.998e-15   4.998e-15   4.998e-15   4.998e-15
+  cstot     3.345e-15   4.078e-15   4.078e-15   4.078e-15   4.078e-15
+  cbtot     9.940e-15   1.085e-14   1.085e-14   1.085e-14   1.080e-14
+  cgs       4.270e-16   3.751e-16   3.751e-16   3.751e-16   3.751e-16
+  cgd       4.270e-16   3.751e-16   3.751e-16   3.751e-16   3.751e-16
+
+
+
+ subckt    xgm2        xgm2        xgm2        xgm2        xgm2      
+ element   4:mb        4:mb1       4:mb2       4:mo1       4:mo2     
+ model     0:pch.1     0:nch.3     0:nch.3     0:nch.1     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -2.666e-08   7.544e-09   7.545e-09   1.074e-08   1.073e-08
+  ibs       5.332e-21  -2.019e-15  -1.242e-20  -2.006e-20  -2.005e-20
+  ibd       9.034e-16  -6.434e-13  -3.107e-15  -9.048e-13  -6.582e-13
+  vgs      -5.986e-01   3.734e-01   3.927e-01   3.927e-01   3.929e-01
+  vds      -1.434e+00   1.846e+00   1.946e-02   2.047e+00   1.992e+00
+  vbs         0.       -1.946e-02     0.          0.          0.     
+  vth      -7.512e-01   5.638e-01   5.708e-01   5.360e-01   5.361e-01
+  vdsat    -5.253e-02   4.312e-02   4.333e-02   4.312e-02   4.313e-02
+  vod       1.526e-01  -1.903e-01  -1.781e-01  -1.433e-01  -1.432e-01
+  beta      1.896e-04   7.841e-04   1.431e-03   1.936e-04   1.936e-04
+  gam eff   4.055e-01   4.993e-01   5.041e-01   4.466e-01   4.466e-01
+  gm        5.273e-07   2.063e-07   2.024e-07   2.699e-07   2.698e-07
+  gds       2.417e-09   1.738e-09   2.763e-07   8.696e-10   8.400e-10
+  gmb       1.273e-07   6.260e-08   6.263e-08   8.088e-08   8.084e-08
+  cdtot     7.094e-15   2.916e-15   6.044e-15   2.568e-15   2.578e-15
+  cgtot     1.334e-14   2.589e-15   4.313e-15   5.725e-15   5.724e-15
+  cstot     1.059e-14   3.734e-15   6.079e-15   3.345e-15   3.345e-15
+  cbtot     2.659e-14   7.283e-15   1.308e-14   9.930e-15   9.939e-15
+  cgs       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+  cgd       1.107e-15   4.889e-16   8.396e-16   4.270e-16   4.270e-16
+
+
+
+ subckt    xgm2        xgm2        xgm2        xgm2        xop_fc    
+ element   4:mo3a      4:mo3       4:mo4a      4:mo4       5:mb      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:pch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff    Saturati
+  id       -1.074e-08  -1.074e-08  -1.074e-08  -1.074e-08  -1.187e-06
+  ibs       2.236e-21   2.236e-21   2.236e-21   2.236e-21   2.374e-19
+  ibd       2.059e-16   2.059e-16   2.059e-16   2.059e-16   5.659e-16
+  vgs      -6.263e-01  -6.263e-01  -6.263e-01  -6.260e-01  -9.019e-01
+  vds      -6.263e-01  -6.263e-01  -6.267e-01  -6.811e-01  -4.425e-01
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.687e-01  -7.687e-01  -7.687e-01  -7.685e-01  -7.501e-01
+  vdsat    -5.306e-02  -5.306e-02  -5.306e-02  -5.305e-02  -1.911e-01
+  vod       1.424e-01   1.424e-01   1.424e-01   1.425e-01  -1.518e-01
+  beta      5.843e-05   5.843e-05   5.843e-05   5.844e-05   7.764e-05
+  gam eff   3.892e-01   3.892e-01   3.892e-01   3.892e-01   4.121e-01
+  gm        2.018e-07   2.018e-07   2.018e-07   2.018e-07   1.155e-05
+  gds       1.282e-09   1.282e-09   1.282e-09   1.263e-09   5.274e-08
+  gmb       4.819e-08   4.819e-08   4.819e-08   4.819e-08   2.719e-06
+  cdtot     3.276e-15   3.276e-15   3.275e-15   3.227e-15   8.969e-15
+  cgtot     4.998e-15   4.998e-15   4.998e-15   4.998e-15   9.551e-14
+  cstot     4.078e-15   4.078e-15   4.078e-15   4.078e-15   1.149e-13
+  cbtot     1.085e-14   1.085e-14   1.085e-14   1.080e-14   4.856e-14
+  cgs       3.751e-16   3.751e-16   3.751e-16   3.751e-16   8.264e-14
+  cgd       3.751e-16   3.751e-16   3.751e-16   3.751e-16   1.107e-15
+
+
+
+ subckt    xop_fc      xop_fc      xop_fc      xop_fc      xop_fc    
+ element   5:m1        5:m2        5:my1       5:my2       5:m3      
+ model     0:pch.1     0:pch.1     0:pch.1     0:pch.1     0:nch.1   
+ region      Saturati    Saturati    Saturati    Saturati    Saturati
+  id       -6.200e-07  -5.674e-07  -2.369e-06  -2.422e-06   2.369e-06
+  ibs       1.266e-19   1.158e-19   4.834e-19   4.941e-19  -4.644e-15
+  ibd       1.278e-12   1.215e-12   2.960e-16   2.127e-12  -6.112e-12
+  vgs      -8.652e-01  -8.575e-01  -1.112e+00  -1.112e+00   8.002e-01
+  vds      -2.407e+00  -2.411e+00  -1.112e+00  -2.533e+00   1.737e+00
+  vbs         0.          0.          0.          0.       -4.500e-01
+  vth      -7.551e-01  -7.551e-01  -7.586e-01  -7.559e-01   6.590e-01
+  vdsat    -1.582e-01  -1.525e-01  -3.633e-01  -3.657e-01   1.656e-01
+  vod      -1.101e-01  -1.024e-01  -3.535e-01  -3.561e-01   1.412e-01
+  beta      6.164e-05   6.169e-05   3.640e-05   3.642e-05   1.944e-04
+  gam eff   3.989e-01   3.989e-01   4.002e-01   4.002e-01   4.430e-01
+  gm        7.040e-06   6.621e-06   1.205e-05   1.225e-05   2.575e-05
+  gds       2.449e-08   2.295e-08   4.626e-08   3.180e-08   4.741e-08
+  gmb       1.629e-06   1.535e-06   2.768e-06   2.813e-06   6.334e-06
+  cdtot     3.300e-15   3.298e-15   4.074e-15   3.248e-15   3.573e-15
+  cgtot     2.802e-14   2.758e-14   5.087e-14   5.087e-14   3.083e-14
+  cstot     3.421e-14   3.352e-14   6.072e-14   6.072e-14   3.655e-14
+  cbtot     1.758e-14   1.756e-14   2.514e-14   2.431e-14   1.636e-14
+  cgs       2.297e-14   2.242e-14   4.394e-14   4.394e-14   2.624e-14
+  cgd       5.582e-16   5.582e-16   5.582e-16   5.582e-16   6.333e-16
+
+
+
+ subckt    xop_fc      xop_fc      xop_fc      xien        xien      
+ element   5:m4        5:mz1       5:mz2       6:mb        6:m1      
+ model     0:nch.1     0:nch.1     0:nch.1     0:pch.1     0:pch.4   
+ region      Saturati    Saturati    Saturati      Cutoff      Cutoff
+  id        2.422e-06   2.989e-06   2.989e-06  -1.009e-08  -5.026e-09
+  ibs      -4.644e-15  -4.781e-18  -4.781e-18   2.027e-21   1.102e-21
+  ibd      -4.644e-15  -1.411e-14  -1.411e-14   4.759e-16   5.271e-15
+  vgs       8.042e-01   6.064e-01   6.064e-01  -5.986e-01  -6.824e-01
+  vds       3.203e-01   4.500e-01   4.460e-01  -6.167e-01  -2.263e+00
+  vbs      -4.460e-01     0.          0.          0.          0.     
+  vth       6.595e-01   5.423e-01   5.423e-01  -7.517e-01  -7.861e-01
+  vdsat     1.683e-01   1.086e-01   1.086e-01  -5.188e-02  -5.761e-02
+  vod       1.447e-01   6.403e-02   6.402e-02   1.532e-01   1.037e-01
+  beta      1.943e-04   6.827e-04   6.827e-04   6.583e-05   1.147e-05
+  gam eff   4.431e-01   4.619e-01   4.619e-01   4.097e-01   3.553e-01
+  gm        2.593e-05   4.474e-05   4.474e-05   1.906e-07   8.260e-08
+  gds       1.602e-07   1.054e-07   1.060e-07   4.647e-10   1.989e-10
+  gmb       6.384e-06   1.335e-05   1.334e-05   4.825e-08   2.024e-08
+  cdtot     4.062e-15   1.345e-14   1.346e-14   7.211e-15   1.445e-15
+  cgtot     3.093e-14   8.538e-14   8.538e-14   2.628e-14   6.795e-15
+  cstot     3.672e-14   9.910e-14   9.910e-14   8.959e-15   2.451e-15
+  cbtot     1.686e-14   6.055e-14   6.056e-14   3.875e-14   9.923e-15
+  cgs       2.636e-14   6.506e-14   6.506e-14   9.242e-16   1.922e-16
+  cgd       6.333e-16   2.092e-15   2.092e-15   9.242e-16   1.922e-16
+
+
+
+ subckt    xien        xien        xien        xien        xien      
+ element   6:m2        6:m3        6:m4        6:me1p      6:me2p    
+ model     0:pch.4     0:nch.4     0:nch.4     0:pch.3     0:pch.3   
+ region        Cutoff      Cutoff      Cutoff    Saturati    Saturati
+  id       -5.058e-09   5.029e-09   5.061e-09  -1.930e-06  -1.931e-05
+  ibs       1.109e-21  -1.140e-20  -1.148e-20   3.827e-19   3.829e-18
+  ibd       2.153e-15  -2.233e-15  -2.233e-15   2.430e-14   2.458e-13
+  vgs      -6.833e-01   4.194e-01   4.194e-01  -7.000e-01  -7.000e-01
+  vds      -2.058e+00   4.194e-01   6.248e-01  -1.299e+00  -1.300e+00
+  vbs         0.          0.          0.          0.          0.     
+  vth      -7.865e-01   5.210e-01   5.208e-01  -6.959e-01  -6.959e-01
+  vdsat    -5.769e-02   4.651e-02   4.652e-02  -7.616e-02  -7.617e-02
+  vod       1.033e-01  -1.015e-01  -1.014e-01  -4.051e-03  -4.075e-03
+  beta      1.147e-05   3.386e-05   3.386e-05   1.268e-03   1.268e-02
+  gam eff   3.553e-01   4.304e-01   4.304e-01   4.626e-01   4.626e-01
+  gm        8.311e-08   1.183e-07   1.190e-07   3.797e-05   3.799e-04
+  gds       2.018e-10   1.602e-10   1.469e-10   1.098e-06   1.098e-05
+  gmb       2.038e-08   3.489e-08   3.509e-08   8.102e-06   8.105e-05
+  cdtot     1.487e-15   1.806e-15   1.749e-15   1.175e-14   1.174e-13
+  cgtot     6.793e-15   7.546e-15   7.546e-15   6.738e-15   6.738e-14
+  cstot     2.451e-15   1.979e-15   1.979e-15   1.709e-14   1.709e-13
+  cbtot     9.963e-15   1.045e-14   1.039e-14   2.822e-14   2.822e-13
+  cgs       1.922e-16   2.207e-16   2.207e-16   1.839e-15   1.839e-14
+  cgd       1.922e-16   2.207e-16   2.207e-16   1.839e-15   1.839e-14
+
+
+
+ subckt    xien        xien        xgm.xgmx1   xgm.xgmx1   xgm.xgmx1 
+ element   6:me1n      6:me2n      7:ms        7:min       7:mn      
+ model     0:nch.2     0:nch.2     0:pch.2     0:pch.4     0:nch.1   
+ region      Saturati    Saturati      Cutoff      Cutoff      Cutoff
+  id        1.920e-06   1.919e-05  -9.577e-09  -9.578e-09   9.580e-09
+  ibs      -3.583e-18  -3.583e-17   1.994e-21   1.159e-16  -1.789e-20
+  ibd      -1.716e-10  -1.706e-09   2.059e-16   1.159e-16  -3.438e-15
+  vgs       6.248e-01   6.248e-01  -5.997e-01  -8.730e-01   3.929e-01
+  vds       2.000e+00   2.000e+00  -5.997e-01  -8.730e-01   3.929e-01
+  vbs         0.          0.          0.        7.224e-01     0.     
+  vth       5.490e-01   5.490e-01  -7.678e-01  -9.231e-01   5.382e-01
+  vdsat     1.073e-01   1.073e-01  -5.139e-02  -6.862e-02   4.303e-02
+  vod       7.578e-02   7.578e-02   1.681e-01   5.008e-02  -1.453e-01
+  beta      3.960e-04   3.960e-03   1.062e-04   1.094e-05   1.935e-04
+  gam eff   4.612e-01   4.612e-01   3.948e-01   3.479e-01   4.466e-01
+  gm        2.940e-05   2.940e-04   2.038e-07   1.625e-07   2.419e-07
+  gds       1.356e-07   1.356e-06   1.822e-09   5.134e-10   7.398e-10
+  gmb       8.507e-06   8.506e-05   4.661e-08   2.862e-08   7.247e-08
+  cdtot     2.576e-15   2.576e-14   3.300e-15   1.599e-15   3.059e-15
+  cgtot     6.582e-15   6.582e-14   2.811e-15   5.683e-15   5.724e-15
+  cstot     9.192e-15   9.192e-14   4.078e-15   1.920e-15   3.345e-15
+  cbtot     7.664e-15   7.664e-14   8.689e-15   8.434e-15   1.042e-14
+  cgs       4.810e-15   4.810e-14   3.751e-16   1.922e-16   4.270e-16
+  cgd       4.270e-16   4.270e-15   3.751e-16   1.922e-16   4.270e-16
+
+
+
+ subckt    xgm.xgmx2   xgm.xgmx2   xgm.xgmx2   xgm2.xgmx1  xgm2.xgmx1
+ element   8:ms        8:min       8:mn        9:ms        9:min     
+ model     0:pch.2     0:pch.4     0:nch.1     0:pch.2     0:pch.4   
+ region        Cutoff      Cutoff      Cutoff      Cutoff      Cutoff
+  id       -9.533e-09  -9.534e-09   9.536e-09  -9.574e-09  -9.575e-09
+  ibs       1.985e-21   1.159e-16  -1.781e-20   1.993e-21   1.159e-16
+  ibd       2.059e-16   1.159e-16  -3.438e-15   2.059e-16   1.159e-16
+  vgs      -5.995e-01  -8.734e-01   3.927e-01  -5.997e-01  -8.731e-01
+  vds      -5.995e-01  -8.734e-01   3.927e-01  -5.997e-01  -8.731e-01
+  vbs         0.        7.261e-01     0.          0.        7.228e-01
+  vth      -7.678e-01  -9.237e-01   5.382e-01  -7.678e-01  -9.232e-01
+  vdsat    -5.137e-02  -6.855e-02   4.302e-02  -5.138e-02  -6.862e-02
+  vod       1.684e-01   5.029e-02  -1.455e-01   1.682e-01   5.009e-02
+  beta      1.062e-04   1.094e-05   1.935e-04   1.062e-04   1.094e-05
+  gam eff   3.948e-01   3.479e-01   4.466e-01   3.948e-01   3.479e-01
+  gm        2.030e-07   1.619e-07   2.409e-07   2.038e-07   1.625e-07
+  gds       1.815e-09   5.116e-10   7.366e-10   1.822e-09   5.133e-10
+  gmb       4.642e-08   2.847e-08   7.216e-08   4.660e-08   2.861e-08
+  cdtot     3.300e-15   1.598e-15   3.059e-15   3.300e-15   1.599e-15
+  cgtot     2.811e-15   5.679e-15   5.725e-15   2.811e-15   5.682e-15
+  cstot     4.078e-15   1.919e-15   3.345e-15   4.078e-15   1.920e-15
+  cbtot     8.689e-15   8.427e-15   1.042e-14   8.689e-15   8.433e-15
+  cgs       3.751e-16   1.922e-16   4.270e-16   3.751e-16   1.922e-16
+  cgd       3.751e-16   1.922e-16   4.270e-16   3.751e-16   1.922e-16
+
+
+
+ subckt    xgm2.xgmx1  xgm2.xgmx2  xgm2.xgmx2  xgm2.xgmx2
+ element   9:mn       10:ms       10:min      10:mn      
+ model     0:nch.1     0:pch.2     0:pch.4     0:nch.1   
+ region        Cutoff      Cutoff      Cutoff      Cutoff
+  id        9.577e-09  -9.536e-09  -9.537e-09   9.538e-09
+  ibs      -1.789e-20   1.985e-21   1.159e-16  -1.781e-20
+  ibd      -3.438e-15   2.059e-16   1.159e-16  -3.438e-15
+  vgs       3.929e-01  -5.995e-01  -8.734e-01   3.927e-01
+  vds       3.929e-01  -5.995e-01  -8.734e-01   3.927e-01
+  vbs         0.          0.        7.261e-01     0.     
+  vth       5.382e-01  -7.678e-01  -9.237e-01   5.382e-01
+  vdsat     4.303e-02  -5.137e-02  -6.856e-02   4.302e-02
+  vod      -1.453e-01   1.683e-01   5.028e-02  -1.455e-01
+  beta      1.935e-04   1.062e-04   1.094e-05   1.935e-04
+  gam eff   4.466e-01   3.948e-01   3.479e-01   4.466e-01
+  gm        2.418e-07   2.030e-07   1.619e-07   2.409e-07
+  gds       7.396e-10   1.815e-09   5.117e-10   7.368e-10
+  gmb       7.245e-08   4.643e-08   2.848e-08   7.217e-08
+  cdtot     3.059e-15   3.300e-15   1.598e-15   3.059e-15
+  cgtot     5.724e-15   2.811e-15   5.679e-15   5.725e-15
+  cstot     3.345e-15   4.078e-15   1.919e-15   3.345e-15
+  cbtot     1.042e-14   8.689e-15   8.427e-15   1.042e-14
+  cgs       4.270e-16   3.751e-16   1.922e-16   4.270e-16
+  cgd       4.270e-16   3.751e-16   1.922e-16   4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+   *wx     #1
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =     203  # elements   =      98
+  # resistors   =       1  # capacitors =       5  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      20
+  # curr_srcs   =       3  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      69  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.14           1         585
+  dc sweep           0.29         197         988
+  ac analysis        0.53        9001        9001
+  readin             0.02
+  errchk             0.02
+  setup              0.00
+  output             0.00
+
+
+           total memory used         1326  kbytes
+           total cpu time            1.00 seconds
+           total elapsed time        1.11 seconds
+           job started at     16:30:48 02/26/2016
+           job ended   at     16:30:51 02/26/2016
+
+
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ lic: Release hspice token(s) 

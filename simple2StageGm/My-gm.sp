@@ -14,21 +14,21 @@ Min id  id  sd  in  pch w = 1u    l = 5u m = 1
 Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
 *******Circuits**********
-Mb  bd  vb  vdd vdd pch w = 6u l = 2u   m = 1
+Mb  bd  vb  vdd vdd pch w = 3u l = 10u   m = 1
 X1  vdd vss inp bd ggp idp sdp gmx
 X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 ********Bump*********
-Mb1  bd   ggp  bump vss nch w = 2.3u l = 0.6u m = 1   *slightly adjust bump centerization
-Mb2  bump ggn  vss  vss  nch w = 4u l = 0.6u m = 1
+Mb1  bd   ggp  bump vss nch w = 4u l = 1u m = 1   *slightly adjust bump centerization
+Mb2  bump ggn  vss  vss  nch w = 5u l = 1u m = 1    *lowering Length to lower vth. i guess this help to release vds supression
 ******Second Stage*****
 Mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
 Mo2  io2  ggp  vss  vss  nch w = 2u l = 2u m = 1
-Mo3a io1a io1a vdd  vdd  pch w = 2u l = 2u m = 1
-Mo3  io1  io1  io1a io1a pch w = 2u l = 2u m = 1
-Mo4a io2a io1a vdd  vdd  pch w = 2u l = 2u m = 1
-Mo4  io2  io1  io2a io2a pch w = 2u l = 2u m = 1
+Mo3a io1a io1a vdd  vdd  pch w = 0.6u l = 6u m = 1
+Mo3  io1  io1  io1a io1a pch w = 0.6u l = 6u m = 1
+Mo4a io2a io1a vdd  vdd  pch w = 0.6u l = 6u m = 1
+Mo4  io2  io1  io2a io2a pch w = 0.6u l = 6u m = 1
 *Cc   io1 gnd  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
 *Rc   ggn xx  1k
 .ends

@@ -12,11 +12,11 @@
 
 .lib Lp
     .dc diff -1 1 0.01
-    .ac dec 1000 1 1g *sweep diff -0.2 0.2 0.1
+    .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
 
     Vinn inn  io2 dc = 0
     Cl1 io2 gnd 10p
-    .param cm = 1.914
+    .param cm = 2
     E1  gnd gnd OPAMP gnd gnd
     *Vr ref gnd dc = 2
     .probe dc lv18(x2.min) lv19(x2.min)
@@ -28,13 +28,13 @@
 
 .lib twoStageLp
     .dc diff -1 1 0.01
-    .ac dec 1000 1 1g
+    .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
     Xgm vdd vss inp io22 io2 io1 ggp ggn vb gm cc = 500f
     Xgm2 vdd vss io2 io22 io22 io12 ggp2 ggn2 vb gm cc = 500f
     E1  gnd gnd OPAMP gnd gnd
     Cl1 io2 gnd 10p
-    Cl2  io22 gnd 10p
-    .param cm = 1.914
+    Cl2  io22 gnd 5p
+    .param cm = 2
     .pz v(io22) vinp
     .probe ac vp(io22)
 .endl

@@ -1,107 +1,82 @@
- ****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+Using: /usr/bin/time -p /usr/cad/synopsys/hspice/cur/hspice/linux/hspice My-gm.sp
+ ****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
   Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
   Unpublished-rights reserved under US copyright laws.
   This program is protected by law and is subject to the 
   terms and conditions of the license agreement from Synopsys.
   Use of this program is your acceptance to be bound by the 
   license agreement. HSPICE is the trademark of Synopsys, Inc.
-  Input File: c:\users\timer\documents\github\hspice\gm\simple2stagegm\my-gm.sp 
- Init: read install configuration file: C:\synopsys\Hspice_B-2008.09\meta.cfg
- Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
-
-
-
-
+  Input File: My-gm.sp                                                          
+ lic:  
+ lic: FLEXlm: v8.5b 
+ lic: USER:   m103061608           HOSTNAME: ws42 
+ lic: HOSTID: e41f13bfda98         PID:      23483 
+ lic: Using FLEXlm license file: 
+ lic: 26585@lsnctu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 14-may-2016/2015.06 
+ lic: FLOATING license(s) on SERVER lsnctu 
+ lic:   
+ Init: read install configuration file: /usr/cad/synopsys/hspice/cur/hspice/meta.cfg
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ .option runlvl
  .options abstol=1e-7 reltol=1e-7
- + post=1 captab=1 accurate=1 ingold=1
+ + post=1 captab=1 accurate=1 ingold=1 unwrap = 1
  ***netlist***
 
  *******subckt************
+ .subckt gm  vdd vss inp inn io2 io1 ggp ggn vb cc = 0
  .subckt gmx vdd vss in bd gg id sd
- ms  sd  sd bd  bd  pch w = 15u    l = 0.4u m = 1
- min id  id  sd  in  pch w = 25u    l = 0.4u m = 1
- mn  id  gg  vss vss nch w = 5u    l = 0.4u m = 2
+ ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 1
+ min id  id  sd  in  pch w = 1u    l = 5u m = 1
+ mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
  .ends
-
  *******circuits**********
- mb  bd  vb  vdd vdd pch w = 25u l = 1u   m = 2
+ mb  bd  vb  vdd vdd pch w = 3u l = 10u   m = 1
  x1  vdd vss inp bd ggp idp sdp gmx
  x2  vdd vss inn bd ggn idn sdn gmx
  v0  idp ggp dc = 0
  v1  idn ggn dc = 0
- *******activelinearization*******
- *ma1 sdn inp sdp sdp pch w = 1u l = 10u m = 1
- *ma2 sdp inn sdn sdn pch w = 1u l = 10u m = 1
- *******bump circuit*******
- *mb1  bump  sdn    x      x      pch    w = 10u    l = 0.4u m = 1
- *mb2  vss   sdp    bump   bump   pch    w = 10u    l = 0.4u m = 1
- *vx bd x dc = 0
- ********
- mb1  bd   ggp  bump vss nch w = 3.1u l = 0.4u m = 4   *slightly adjust bump centerization
- mb2  bump ggn  vss  vss  nch w = 6u l = 0.4u m = 4
-
+ ********bump*********
+ mb1  bd   ggp  bump vss nch w = 4u l = 1u m = 1   *slightly adjust bump centerization
+ mb2  bump ggn  vss  vss  nch w = 5u l = 1u m = 1    *lowering length to lower vth. i guess this help to release vds supression
  ******second stage*****
- mo1 io1 ggp vss vss nch w = 8u l = 0.4u m = 2
- mo2 io2 ggn vss vss nch w = 8u l = 0.4u m = 2
- mo3a io1a io1a vdd vdd pch w = 8u l = 0.4u m = 2
- mo4a io2a io1a vdd vdd pch w = 8u l = 0.4u m = 2
- mo3b io1 io1 io1a io1a pch w = 8u l = 0.4u m = 2
- mo4b io2 io1 io2a io2a pch w = 8u l = 0.4u m = 2
- e1  io2 gnd opamp ref io2
- vr ref gnd dc = 1.65
+ mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
+ mo2  io2  ggp  vss  vss  nch w = 2u l = 2u m = 1
+ mo3a io1a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
+ mo3  io1  io1  io1a io1a pch w = 0.6u l = 5u m = 1
+ mo4a io2a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
+ mo4  io2  io1  io2a io2a pch w = 0.6u l = 5u m = 1
+ *cc   io1 gnd  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
+ *rc   ggn xx  1k
+ .ends
+
+ xgm vdd vss inp inn io2 io1 ggp ggn vb gm cc = 500f
+
  *******output load**************
  *e1 idn gnd opamp ref idn
  *vr ref gnd dc = 0.383
  *rl idn gnd 5k
+ e1   io2 gnd opamp ref io2
+ vr ref gnd dc = 2
 
  *******input******************
- .param diff = 0 cm = 1.4
- vinp inp  gnd dc = 'cm-diff'
- vinn inn  gnd dc = 'cm+diff'
+ .param diff = 0 cm = 2
+ vinp inp  vss dc = 'cm-diff'   ac = 1
+ vinn inn  vss dc = 'cm+diff'
 
  ********bias**************
- vbias   vb  gnd dc = 2.7
+ vbias   vb  gnd dc = 2.701
  *vbias2  vb2 gnd dc = 1.4
  vd      vdd gnd dc = 3.3
  vs      vss gnd dc = 0
 
- ***diode test***
- d1 a b nw_dio
- va a gnd dc = 1
- vb b gnd dc = 0
- *
- *.model pdio d (                                     level  = 3
- *+ is     = 2.65e-6         rs     = 1.7e-7          n      = 1.23
- *+ bv     = 9               ibv    = 0.03            ik     = 1e20
- *+ ikr    = 1e10            jsw    = 1.05e-11        area   = 7.5e-8
- *+ pj     = 1.1e-3          cj     = 1.38871e-3      pb     = 1.0864354
- *+ mj     = 0.6008857       cjsw   = 3.86159e-10     php    = 1.0864354
- *+ mjsw   = 0.4471985       tlev   = 1               eg     = 1.17
- *+ xti    = 3               tcv    = -1.01e-3        trs    = 1e-3
- *+ tlevc  = 1               cta    = 9.175825e-4     ctp    = 1.162482e-3
- *+ tpb    = 1.249266e-3     tphp   = 3.6054e-4       tref   = 25
- *+ fc     = 0               fcs    = 0             )
- .model nw_dio d (                                   level  = 3
- + is     = 1.2e-5          rs     = 1.8e-7          n      = 1.35
- + bv     = 22              ibv    = 0.03            ik     = 1e20
- + ikr    = 1e10            jsw    = 2.554e-11       area   = 7.6104e-8
- + pj     = 1.108e-3        cj     = 1.02413e-4      pb     = 0.5540683
- + mj     = 0.3574083       cjsw   = 4.84677e-10     php    = 0.5540683
- + mjsw   = 0.2837341       tlev   = 1               eg     = 1.17
- + xti    = 3               tcv    = 8e-5            trs    = 1.12e-3
- + tlevc  = 1               cta    = 3.029206e-3     ctp    = 1.740045e-3
- + tpb    = 3.002617e-3     tphp   = 2.419203e-3     tref   = 25
- + fc     = 0               fcs    = 0           )
+
 
  *******
  .op
- .dc va -2 2 0.01
- .dc diff -1 1 0.01 *sweep cm 1 2 0.2
- .probe dc i(e1) i(rl) i(mb)
- + idiff = par('i(x1.mn)-i(x2.mn)') vdiff = par('v(ggp)-v(ggn)') i(mb1)
- + i(mo1) i(mo2) i(mo3) i(mo4) i(x1.mn) i(x2.mn)
- *.print dc i(x1.mn) i(x2.mn) i(mb1)
- .end
+
+ .alter
 
 
  **warning**  the accurate option increases  the cpu time but the results
@@ -110,7 +85,7 @@
  lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
      ft= 200.00m relmos=  10.00m
  (used for FFT control ) fft_accurate= 1
-1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
  ******  
  *mygm
 
@@ -118,69 +93,17 @@
  circuit number to circuit name directory
    number circuitname                     definition         multiplier
         0 main circuit
-        1 x1.                             gmx                1.00 
-        2 x2.                             gmx                1.00 
-1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
- ******  
- *mygm
-
-  ******  diode model parameters tnom=  25.000 temp=  25.000 *****
- ********************************************************
- *** common model parameters model name:   0:nw_dio  ****
- ********************************************************
-
-     names  values   units     names  values   units     names  values   units
-     -----  ------   -----     -----  ------   -----     -----  ------   -----
-
-   1*** dc breakdown parameters ***
-       vb=  22.00  volts        ibv=  30.00m a/m**2 
-
-   2*** parasitic resistance parameters ***
-       rs= 180.00nohm*m**2
-
-   3*** capacitance parameters ***
-       fc=   0.                 fcs=   0.                   m= 357.41m        
-     mjsw= 283.73m               pb= 554.07m volts        php= 554.07m volts  
-       tt=   0.    secs         cjo= 102.41u f/m**2       cjp= 484.68p f/m    
-
-   4*** temperature effect parameters ***
-     tlev=   1.00             tlevc=   1.00               tcv=  80.00u /deg   
-      trs=   1.12m /deg         cta=   3.03m /deg         ctp=   1.74m /deg   
-      xti=   3.00            xtitun=   3.00               keg=   1.00         
-       eg=   1.17  ev          gap1= 702.00u  ev/deg     gap2=   1.11k  deg   
-     ttt1=   0.    /deg        ttt2=   0.    /deg2        tm1=   0.    /deg   
-      tm2=   0.    /deg2        tpb=   3.00m v/deg k     tphp=   2.42m v/deg k
-     tref=  25.00   deg c 
-
-   5*** noise parameters ***
-       kf=   0.                  af=   1.00         
-
-   ***  level   3  model parameters  ***
-
-    level=   3.00                is=  12.00u a/m**2       jsw=  25.54p amp/m  
-        n=   1.35               nbv=   1.35                ik= 1.0e+20 a/m**2 
-     area=  76.10n m**2      shrink=   1.00                pj=   1.11m meters 
-      ikr=  10.00g a/m**2         l=   0.    meters         w=   0.    meters 
-       xw=   0.    meters        lm=   0.    meters        lp=   0.    meters 
-       wm=   0.    meters        wp=   0.    meters        xm=   0.    meters 
-      xoi=   7.00kangstrom       xp=   0.    meters       xom=  10.00kangstrom
-    expli=   0.    a/m**2    explir=   0.    amps        jtun=   0.    amps   
-   jtunsw=   0.    amps        ntun=  30.00         
-  
+        1 xgm.                            gm                 1.00 
+        2 xgm.x1.                         gmx                1.00 
+        3 xgm.x2.                         gmx                1.00 
  
 
- **warning** could not find branch element     0:rl              
-      branch - output ignored
- **warning** could not find branch element     0:mo3             
-      branch - output ignored
- **warning** could not find branch element     0:mo4             
-      branch - output ignored
  
       
-  Opening plot unit= 79
- file=c:\users\timer\documents\github\hspice\gm\simple2stagegm\my-gm.pa0       
+  Opening plot unit= 15
+ file=My-gm.pa0                                                                
 
-1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
  ******  
  *mygm
 
@@ -188,46 +111,44 @@
  ***** operating point status is all       simulation time is     0.     
     node    =voltage      node    =voltage      node    =voltage
 
- +0:a       =   1.0000  0:b       =   0.      0:bd      =   1.6337 
- +0:bump    = 1.880e-02 0:ggn     =   0.4253  0:ggp     =   0.4253 
- +0:idn     =   0.4253  0:idp     =   0.4253  0:inn     =   1.4000 
- +0:inp     =   1.4000  0:io1     =   2.0563  0:io1a    =   2.6782 
- +0:io2     =   1.6500  0:io2a    =   2.6667  0:ref     =   1.6500 
- +0:sdn     =   1.0537  0:sdp     =   1.0537  0:vb      =   2.7000 
- +0:vdd     =   3.3000  0:vss     =   0.     
+ +0:ggn     =   0.3084  0:ggp     =   0.3084  0:inn     =   2.0000 
+ +0:inp     =   2.0000  0:io1     =   2.0096  0:io2     =   2.0000 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.5892  1:bump    = 1.826e-02
+ +1:idn     =   0.3084  1:idp     =   0.3084  1:io1a    =   2.6548 
+ +1:io2a    =   2.6548  1:sdn     =   1.0857  1:sdp     =   1.0857 
 
 
- maximum nodal capacitance=   1.290E-11         on node     0:a               
+ maximum nodal capacitance=   9.439E-14         on node     0:vss             
 
     nodal  capacitance table 
 
     node    =    cap      node    =    cap      node    =    cap
 
- +0:a       = 1.290e-11 0:b       = 1.290e-11 0:bd      = 2.091e-13
- +0:bump    = 5.434e-14 0:ggn     = 4.139e-14 0:ggp     = 3.207e-14
- +0:idn     = 5.982e-14 0:idp     = 5.982e-14 0:inn     = 6.425e-14
- +0:inp     = 6.425e-14 0:io1     = 6.184e-14 0:io1a    = 1.211e-13
- +0:io2     = 3.828e-14 0:io2a    = 9.694e-14 0:ref     =   0.     
- +0:sdn     = 6.704e-14 0:sdp     = 6.704e-14 0:vb      = 5.902e-14
- +0:vdd     = 3.953e-13 0:vss     = 3.543e-13
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.247e-15
+ +0:inp     = 8.247e-15 0:io1     = 1.419e-14 0:io2     = 4.014e-15
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.459e-14
+ +0:vss     = 9.439e-14 1:bd      = 3.434e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.029e-14 1:idp     = 1.029e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.109e-14 1:sdn     = 8.119e-15 1:sdp     = 8.119e-15
 
  
 
  ****  voltage sources
 
  subckt                                                                    
- element  0:v0       0:v1       0:vr       0:vinp     0:vinn     0:vbias   
-  volts      0.         0.         1.6500     1.4000     1.4000     2.7000 
-  current    0.         0.         0.      -1.326e-12 -1.326e-12    0.     
-  power      0.         0.         0.       1.856e-12  1.856e-12    0.     
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.0000     2.0000     2.7010     3.3000     0.     
+  current    0.      -2.606e-12 -2.606e-12    0.      -5.225e-09  5.225e-09
+  power      0.       5.212e-12  5.212e-12    0.       1.724e-08    0.     
 
- subckt                                              
- element  0:vd       0:vs       0:va       0:vb      
-  volts      3.3000     0.         1.0000     0.     
-  current -1.145e-06  1.090e-06 -5.838e-02  5.838e-02
-  power    3.778e-06    0.       5.838e-02    0.     
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current -3.469e-18    0.     
+  power      0.         0.     
 
-     total voltage source power dissipation=  5.839e-02       watts
+     total voltage source power dissipation=  1.725e-08       watts
 
 
 
@@ -236,22 +157,8 @@
 
  subckt             
  element  0:e1      
-  volts      1.6500 
-  current  5.502e-08
-
-
-
-
- **** diodes
-
-
- subckt             
- element  0:d1      
- model    0:nw_dio  
-  id       5.838e-02
-  vd         1.0000 
-  req        0.5937 
-  cap      1.290e-11
+  volts      2.0000 
+  current  9.370e-13
 
 
 
@@ -260,90 +167,90 @@
  **** mosfets
 
 
- subckt                                                                    
- element  0:mb       0:mb1      0:mb2      0:mo1      0:mo2      0:mo3a    
- model    0:pch.11   0:nch.3    0:nch.3    0:nch.3    0:nch.3    0:pch.3   
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
  region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
-  id      -3.850e-07  1.325e-07  1.325e-07  3.782e-07  3.263e-07 -3.784e-07
-  ibs      7.572e-20 -9.890e-15 -2.078e-19 -5.783e-19 -4.990e-19  7.527e-20
-  ibd      8.094e-14 -2.864e-12 -1.715e-14 -1.856e-10 -9.514e-12  1.492e-15
-  vgs       -0.6000     0.4065     0.4253     0.4253     0.4253    -0.6218 
-  vds       -1.6663     1.6149   1.880e-02    2.0563     1.6500    -0.6218 
-  vbs        0.      -1.880e-02    0.         0.         0.         0.     
-  vth       -0.7441     0.5644     0.5735     0.5590     0.5620    -0.7154 
-  vdsat   -5.312e-02  4.304e-02  4.346e-02  4.386e-02  4.379e-02 -5.106e-02
-  vod        0.1441    -0.1579    -0.1482    -0.1337    -0.1367   9.357e-02
-  beta     2.969e-03  6.756e-03  1.362e-02  9.194e-03  9.191e-03  2.015e-03
-  gam eff    0.3933     0.5483     0.5599     0.5631     0.5631     0.4608 
-  gm       8.325e-06  3.605e-06  3.526e-06  9.969e-06  8.632e-06  8.605e-06
-  gds      6.594e-08  5.056e-08  5.123e-06  1.355e-07  1.202e-07  2.630e-07
-  gmb      1.905e-06  1.020e-06  1.039e-06  2.834e-06  2.471e-06  1.911e-06
-  cdtot    5.341e-14  1.530e-14  3.505e-14  1.758e-14  1.811e-14  2.224e-14
-  cgtot    5.902e-14  1.058e-14  1.989e-14  1.316e-14  1.316e-14  1.100e-14
-  cstot    8.300e-14  1.929e-14  3.525e-14  2.309e-14  2.309e-14  2.768e-14
-  cbtot    1.588e-13  3.470e-14  7.015e-14  4.050e-14  4.104e-14  4.914e-14
-  cgs      9.168e-15  2.616e-15  5.009e-15  3.330e-15  3.330e-15  2.946e-15
-  cgd      9.168e-15  2.616e-15  5.009e-15  3.330e-15  3.330e-15  2.946e-15
+  id      -2.923e-09  9.141e-10  9.156e-10  1.146e-09  1.145e-09 -1.148e-09
+  ibs      5.971e-22 -2.976e-15 -1.465e-21 -2.143e-21 -2.142e-21  2.661e-22
+  ibd      3.723e-16 -1.071e-14 -3.589e-15 -8.159e-14 -7.726e-14  7.991e-17
+  vgs       -0.5990     0.2901     0.3084     0.3084     0.3084    -0.6452 
+  vds       -1.7108     1.5709   1.826e-02    2.0096     2.0000    -0.6452 
+  vbs        0.      -1.826e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5361    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.964e-02
+  vod        0.1586    -0.2747    -0.2564    -0.2277    -0.2277     0.1688 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.382e-08  2.611e-08  2.591e-08  3.168e-08  3.166e-08  1.895e-08
+  gds      7.091e-11  1.283e-10  3.617e-08  9.564e-11  9.505e-11  4.113e-11
+  gmb      1.376e-08  8.242e-09  8.250e-09  9.754e-09  9.747e-09  4.795e-09
+  cdtot    3.647e-15  4.804e-15  7.405e-15  2.575e-15  2.576e-15  1.441e-15
+  cgtot    3.246e-14  6.266e-15  7.730e-15  5.873e-15  5.873e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.958e-14  1.376e-14  1.840e-14  1.009e-14  1.009e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
 
 
 
- subckt                                    x1         x1         x1        
- element  0:mo4a     0:mo3b     0:mo4b     1:ms       1:min      1:mn      
- model    0:pch.3    0:pch.3    0:pch.3    0:pch.3    0:pch.12   0:nch.3   
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
  region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
-  id      -3.814e-07 -3.784e-07 -3.814e-07 -1.262e-07 -1.262e-07  1.262e-07
-  ibs      7.587e-20  7.527e-20  7.587e-20  2.492e-20  2.276e-15 -2.019e-19
-  ibd      1.492e-15  1.492e-15  1.564e-15  1.376e-15  2.276e-15 -1.411e-14
-  vgs       -0.6218    -0.6218    -0.6104    -0.5799    -0.6284     0.4253 
-  vds       -0.6333    -0.6218    -1.0167    -0.5799    -0.6284     0.4253 
-  vbs        0.         0.         0.         0.         0.3463     0.     
-  vth       -0.7151    -0.7154    -0.7048    -0.7136    -0.7794     0.5700 
-  vdsat   -5.109e-02 -5.106e-02 -5.096e-02 -4.740e-02 -4.788e-02  4.345e-02
-  vod      9.327e-02  9.357e-02  9.435e-02    0.1336     0.1510    -0.1447 
-  beta     2.016e-03  2.015e-03  2.022e-03  1.915e-03  3.147e-03  5.627e-03
-  gam eff    0.4608     0.4608     0.4608     0.4650     0.4649     0.5574 
-  gm       8.671e-06  8.605e-06  8.681e-06  3.014e-06  3.225e-06  3.381e-06
-  gds      2.645e-07  2.630e-07  2.533e-07  9.195e-08  9.678e-08  5.584e-08
-  gmb      1.925e-06  1.911e-06  1.929e-06  6.923e-07  6.051e-07  9.823e-07
-  cdtot    2.217e-14  2.224e-14  2.017e-14  2.051e-14  3.051e-14  1.351e-14
-  cgtot    1.100e-14  1.100e-14  1.103e-14  1.026e-14  1.580e-14  8.340e-15
-  cstot    2.768e-14  2.768e-14  2.768e-14  2.523e-14  3.627e-14  1.489e-14
-  cbtot    4.907e-14  4.914e-14  4.709e-14  4.499e-14  6.425e-14  2.837e-14
-  cgs      2.946e-15  2.946e-15  2.946e-15  2.754e-15  4.584e-15  2.092e-15
-  cgd      2.946e-15  2.946e-15  2.946e-15  2.754e-15  4.584e-15  2.092e-15
+  id      -1.148e-09 -1.148e-09 -1.148e-09 -1.003e-09 -1.005e-09  1.006e-09
+  ibs      2.661e-22  2.661e-22  2.661e-22  2.090e-22  1.159e-16 -1.880e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6452    -0.6452    -0.6452    -0.5035    -0.7773     0.3084 
+  vds       -0.6452    -0.6452    -0.6548    -0.5035    -0.7773     0.3084 
+  vbs        0.         0.         0.         0.         0.9143     0.     
+  vth       -0.8140    -0.8140    -0.8140    -0.7685    -0.9536     0.5383 
+  vdsat   -4.964e-02 -4.964e-02 -4.964e-02 -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.1688     0.1688     0.1688     0.2650     0.1763    -0.2299 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3463     0.4466 
+  gm       1.895e-08  1.895e-08  1.895e-08  2.520e-08  1.818e-08  2.789e-08
+  gds      4.113e-11  4.113e-11  4.097e-11  2.236e-10  5.999e-11  8.862e-11
+  gmb      4.795e-09  4.795e-09  4.794e-09  5.939e-09  3.118e-09  8.586e-09
+  cdtot    1.441e-15  1.441e-15  1.437e-15  3.394e-15  1.573e-15  3.108e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  2.894e-15  5.610e-15  5.873e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    7.854e-15  7.854e-15  7.851e-15  8.865e-15  8.247e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
 
 
 
- subckt   x2         x2         x2        
- element  2:ms       2:min      2:mn      
- model    0:pch.3    0:pch.12   0:nch.3   
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
  region       Cutoff     Cutoff     Cutoff
-  id      -1.262e-07 -1.262e-07  1.262e-07
-  ibs      2.492e-20  2.276e-15 -2.019e-19
-  ibd      1.376e-15  2.276e-15 -1.411e-14
-  vgs       -0.5799    -0.6284     0.4253 
-  vds       -0.5799    -0.6284     0.4253 
-  vbs        0.         0.3463     0.     
-  vth       -0.7136    -0.7794     0.5700 
-  vdsat   -4.740e-02 -4.788e-02  4.345e-02
-  vod        0.1336     0.1510    -0.1447 
-  beta     1.915e-03  3.147e-03  5.627e-03
-  gam eff    0.4650     0.4649     0.5574 
-  gm       3.014e-06  3.225e-06  3.381e-06
-  gds      9.195e-08  9.678e-08  5.584e-08
-  gmb      6.923e-07  6.051e-07  9.823e-07
-  cdtot    2.051e-14  3.051e-14  1.351e-14
-  cgtot    1.026e-14  1.580e-14  8.340e-15
-  cstot    2.523e-14  3.627e-14  1.489e-14
-  cbtot    4.499e-14  6.425e-14  2.837e-14
-  cgs      2.754e-15  4.584e-15  2.092e-15
-  cgd      2.754e-15  4.584e-15  2.092e-15
+  id      -1.003e-09 -1.005e-09  1.006e-09
+  ibs      2.090e-22  1.159e-16 -1.880e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5035    -0.7773     0.3084 
+  vds       -0.5035    -0.7773     0.3084 
+  vbs        0.         0.9143     0.     
+  vth       -0.7685    -0.9536     0.5383 
+  vdsat   -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2650     0.1763    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466 
+  gm       2.520e-08  1.818e-08  2.789e-08
+  gds      2.236e-10  5.999e-11  8.862e-11
+  gmb      5.939e-09  3.118e-09  8.586e-09
+  cdtot    3.394e-15  1.573e-15  3.108e-15
+  cgtot    2.894e-15  5.610e-15  5.873e-15
+  cstot    4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.247e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
 
 
 
 
           ***** job concluded
-1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
  ******  
  *mygm
 
@@ -351,17 +258,17 @@
 
   ******  HSPICE Threads Information  ******
   Command Line Threads Count:                      0
-  Available CPU Count:                             4
+  Available CPU Count:                             8
   Actual Model Evaluation(Load) Threads Count:     1
   Actual Solver Threads Count:                     1
 
 
   ******  Circuit Statistics  ******
-  # nodes       =      58  # elements   =      33
+  # nodes       =      49  # elements   =      24
   # resistors   =       0  # capacitors =       0  # inductors   =       0
   # mutual_inds =       0  # vccs       =       0  # vcvs        =       1
-  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      16
-  # curr_srcs   =       0  # diodes     =       1  # bjts        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       8
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
   # jfets       =       0  # mosfets    =      15  # U elements  =       0
   # T elements  =       0  # W elements =       0  # B elements  =       0
   # S elements  =       0  # P elements =       0  # va device   =       0
@@ -370,19 +277,3095 @@
   ******  Runtime Statistics (seconds)  ******
 
   analysis           time    # points   tot. iter  conv.iter
-  op point           0.01           1          18
-  dc sweep           0.19         401        1325
-  readin             0.17
-  errchk             0.06
-  setup              0.04
+  op point           0.00           1          19
+  readin             0.03
+  errchk             0.01
+  setup              0.00
   output             0.00
 
 
-           total memory used          374  kbytes
-           total cpu time            0.50 seconds
-           total elapsed time           1 seconds
-           job started at     15:07:32 01/06/2016
-           job ended   at     15:07:32 01/06/2016
+           total memory used          363  kbytes
+           total cpu time            0.04 seconds
+           total elapsed time        0.20 seconds
+           job started at     18:05:52 02/26/2016
+           job ended   at     18:05:53 02/26/2016
 
 
- Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ 
+
+  ******    alter processing listing tnom=  25.000 temp=  25.000 *****
+ .lib 'test.l' open
+     *.dc va -2 2 0.01
+     .dc diff -1 1 0.01 *sweep cm 1 2 0.2
+     .probe dc i(e1) i(rl) i(mb)
+     *+ idiff = par('i(xgm.x1.mn)-i(xgm.x2.mn)') vdiff = par('v(ggp)-v(ggn)') i(mb1)
+     *+ i(mo1) i(mo2) i(mo3) i(mo4) i(x1.mn) i(x2.mn)
+     *.print dc i(x1.mn) i(x2.mn) i(mb1)
+     .meas dc gm_val derivative i(e1) at  0
+ .endl
+
+ .alter   *use gm as low pass filter
+ $ alter processing continues $
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xgm.                            gm                 1.00 
+        2 xgm.x1.                         gmx                1.00 
+        3 xgm.x2.                         gmx                1.00 
+ **warning** could not find branch element     0:rl              
+      branch - output ignored
+ **warning** could not find branch element     0:mb              
+      branch - output ignored
+ 
+      
+  Opening plot unit= 15
+ file=My-gm.pa1                                                                
+
+ ******  
+ *mygm
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+   gm_val= -2.8164E-09
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3084  0:ggp     =   0.3084  0:inn     =   2.0000 
+ +0:inp     =   2.0000  0:io1     =   2.0096  0:io2     =   2.0000 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.5892  1:bump    = 1.826e-02
+ +1:idn     =   0.3084  1:idp     =   0.3084  1:io1a    =   2.6548 
+ +1:io2a    =   2.6548  1:sdn     =   1.0857  1:sdp     =   1.0857 
+
+
+ maximum nodal capacitance=   9.439E-14         on node     0:vss             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.247e-15
+ +0:inp     = 8.247e-15 0:io1     = 1.419e-14 0:io2     = 4.014e-15
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.459e-14
+ +0:vss     = 9.439e-14 1:bd      = 3.434e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.029e-14 1:idp     = 1.029e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.109e-14 1:sdn     = 8.119e-15 1:sdp     = 8.119e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.0000     2.0000     2.7010     3.3000     0.     
+  current    0.      -2.606e-12 -2.606e-12    0.      -5.225e-09  5.225e-09
+  power      0.       5.212e-12  5.212e-12    0.       1.724e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current -3.469e-18    0.     
+  power      0.         0.     
+
+     total voltage source power dissipation=  1.725e-08       watts
+
+
+
+ **** voltage-controlled voltage sources
+
+
+ subckt             
+ element  0:e1      
+  volts      2.0000 
+  current  9.370e-13
+
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.923e-09  9.141e-10  9.156e-10  1.146e-09  1.145e-09 -1.148e-09
+  ibs      5.971e-22 -2.976e-15 -1.465e-21 -2.143e-21 -2.142e-21  2.661e-22
+  ibd      3.723e-16 -1.071e-14 -3.589e-15 -8.159e-14 -7.726e-14  7.991e-17
+  vgs       -0.5990     0.2901     0.3084     0.3084     0.3084    -0.6452 
+  vds       -1.7108     1.5709   1.826e-02    2.0096     2.0000    -0.6452 
+  vbs        0.      -1.826e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5361    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.964e-02
+  vod        0.1586    -0.2747    -0.2564    -0.2277    -0.2277     0.1688 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.382e-08  2.611e-08  2.591e-08  3.168e-08  3.166e-08  1.895e-08
+  gds      7.091e-11  1.283e-10  3.617e-08  9.564e-11  9.505e-11  4.113e-11
+  gmb      1.376e-08  8.242e-09  8.250e-09  9.754e-09  9.747e-09  4.795e-09
+  cdtot    3.647e-15  4.804e-15  7.405e-15  2.575e-15  2.576e-15  1.441e-15
+  cgtot    3.246e-14  6.266e-15  7.730e-15  5.873e-15  5.873e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.958e-14  1.376e-14  1.840e-14  1.009e-14  1.009e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.148e-09 -1.148e-09 -1.148e-09 -1.003e-09 -1.005e-09  1.006e-09
+  ibs      2.661e-22  2.661e-22  2.661e-22  2.090e-22  1.159e-16 -1.880e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6452    -0.6452    -0.6452    -0.5035    -0.7773     0.3084 
+  vds       -0.6452    -0.6452    -0.6548    -0.5035    -0.7773     0.3084 
+  vbs        0.         0.         0.         0.         0.9143     0.     
+  vth       -0.8140    -0.8140    -0.8140    -0.7685    -0.9536     0.5383 
+  vdsat   -4.964e-02 -4.964e-02 -4.964e-02 -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.1688     0.1688     0.1688     0.2650     0.1763    -0.2299 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3463     0.4466 
+  gm       1.895e-08  1.895e-08  1.895e-08  2.520e-08  1.818e-08  2.789e-08
+  gds      4.113e-11  4.113e-11  4.097e-11  2.236e-10  5.999e-11  8.862e-11
+  gmb      4.795e-09  4.795e-09  4.794e-09  5.939e-09  3.118e-09  8.586e-09
+  cdtot    1.441e-15  1.441e-15  1.437e-15  3.394e-15  1.573e-15  3.108e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  2.894e-15  5.610e-15  5.873e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    7.854e-15  7.854e-15  7.851e-15  8.865e-15  8.247e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -1.003e-09 -1.005e-09  1.006e-09
+  ibs      2.090e-22  1.159e-16 -1.880e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5035    -0.7773     0.3084 
+  vds       -0.5035    -0.7773     0.3084 
+  vbs        0.         0.9143     0.     
+  vth       -0.7685    -0.9536     0.5383 
+  vdsat   -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2650     0.1763    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466 
+  gm       2.520e-08  1.818e-08  2.789e-08
+  gds      2.236e-10  5.999e-11  8.862e-11
+  gmb      5.939e-09  3.118e-09  8.586e-09
+  cdtot    3.394e-15  1.573e-15  3.108e-15
+  cgtot    2.894e-15  5.610e-15  5.873e-15
+  cstot    4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.247e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      49  # elements   =      24
+  # resistors   =       0  # capacitors =       0  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       1
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       8
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      15  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1          19
+  dc sweep           0.05         201         421
+  readin             0.02
+  errchk             0.00
+  setup              0.00
+  output             0.00
+
+
+           total memory used          366  kbytes
+           total cpu time            0.07 seconds
+           total elapsed time        0.08 seconds
+           job started at     18:05:52 02/26/2016
+           job ended   at     18:05:53 02/26/2016
+
+
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******    alter processing listing tnom=  25.000 temp=  25.000 *****
+ .del lib 'test.l' open
+ .lib 'test.l' lp
+     .dc diff -1 1 0.01
+     .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
+
+     vinn inn  io2 dc = 0
+     cl1 io2 gnd 10p
+     .param cm = 2
+     e1  gnd gnd opamp gnd gnd
+     *vr ref gnd dc = 2
+     .probe dc lv18(x2.min) lv19(x2.min)
+     .meas ac noiset find onoise at 10
+     .probe ac i(cl)
+     .noise v(io2) vinp
+     .pz v(io2) vinp
+ .endl
+
+ .alter
+ $ alter processing continues $
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xgm.                            gm                 1.00 
+        2 xgm.x1.                         gmx                1.00 
+        3 xgm.x2.                         gmx                1.00 
+ **warning** invalid circuit pathname x2
+ **warning** invalid circuit pathname x2
+ **Warning** pathname identification problem
+   with output     0:min              ignored
+ **warning** invalid circuit pathname x2
+ **warning** invalid circuit pathname x2
+ **Warning** pathname identification problem
+   with output     0:min              ignored
+ **warning** could not find branch element     0:cl              
+      branch - output ignored
+
+ **warning** both nodes of vcvs element     0:e1              
+             are connected together
+
+ 
+
+ **warning** the following singular supplies were terminated to 1 meg resistor 
+   supply       node1            node2
+  vr                      0:ref              defined in subckt 0                     0:0                defined in subckt 0               
+      
+  Opening plot unit= 15
+ file=My-gm.pa2                                                                
+
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3084  0:ggp     =   0.3084  0:inn     =   1.9989 
+ +0:inp     =   2.0000  0:io1     =   2.0095  0:io2     =   1.9989 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.5891  1:bump    = 1.824e-02
+ +1:idn     =   0.3084  1:idp     =   0.3084  1:io1a    =   2.6547 
+ +1:io2a    =   2.6547  1:sdn     =   1.0856  1:sdp     =   1.0856 
+
+
+ maximum nodal capacitance=   1.000E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.249e-15
+ +0:inp     = 8.247e-15 0:io1     = 1.419e-14 0:io2     = 1.000e-11
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.459e-14
+ +0:vss     = 9.439e-14 1:bd      = 3.434e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.029e-14 1:idp     = 1.029e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.109e-14 1:sdn     = 8.120e-15 1:sdp     = 8.119e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.0000     0.         2.7010     3.3000     0.     
+  current -2.000e-06 -2.606e-12 -2.604e-12    0.      -5.227e-09  5.227e-09
+  power    4.000e-06  5.212e-12    0.         0.       1.725e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current -6.939e-18 -3.469e-18
+  power      0.         0.     
+
+     total voltage source power dissipation=  4.017e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.923e-09  9.141e-10  9.156e-10  1.146e-09  1.144e-09 -1.149e-09
+  ibs      5.971e-22 -2.974e-15 -1.465e-21 -2.145e-21 -2.140e-21  2.663e-22
+  ibd      3.724e-16 -1.071e-14 -3.587e-15 -8.161e-14 -7.673e-14  7.991e-17
+  vgs       -0.5990     0.2901     0.3084     0.3084     0.3084    -0.6453 
+  vds       -1.7109     1.5708   1.824e-02    2.0095     1.9989    -0.6453 
+  vbs        0.      -1.824e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5361    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.964e-02
+  vod        0.1586    -0.2747    -0.2564    -0.2276    -0.2277     0.1688 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.382e-08  2.611e-08  2.591e-08  3.171e-08  3.164e-08  1.896e-08
+  gds      7.091e-11  1.283e-10  3.622e-08  9.570e-11  9.492e-11  4.115e-11
+  gmb      1.376e-08  8.242e-09  8.249e-09  9.761e-09  9.739e-09  4.798e-09
+  cdtot    3.647e-15  4.805e-15  7.405e-15  2.575e-15  2.577e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.958e-14  1.376e-14  1.840e-14  1.009e-14  1.009e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.149e-09 -1.149e-09 -1.149e-09 -1.003e-09 -1.004e-09  1.006e-09
+  ibs      2.663e-22  2.663e-22  2.663e-22  2.088e-22  1.159e-16 -1.879e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6453    -0.6453    -0.6452    -0.5035    -0.7773     0.3084 
+  vds       -0.6453    -0.6453    -0.6558    -0.5035    -0.7773     0.3084 
+  vbs        0.         0.         0.         0.         0.9144     0.     
+  vth       -0.8140    -0.8140    -0.8140    -0.7685    -0.9536     0.5383 
+  vdsat   -4.964e-02 -4.964e-02 -4.964e-02 -4.858e-02 -4.955e-02  4.142e-02
+  vod        0.1688     0.1688     0.1688     0.2650     0.1763    -0.2300 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3463     0.4466 
+  gm       1.896e-08  1.896e-08  1.896e-08  2.519e-08  1.817e-08  2.787e-08
+  gds      4.115e-11  4.115e-11  4.098e-11  2.234e-10  5.995e-11  8.857e-11
+  gmb      4.798e-09  4.798e-09  4.797e-09  5.935e-09  3.116e-09  8.580e-09
+  cdtot    1.441e-15  1.441e-15  1.437e-15  3.394e-15  1.573e-15  3.108e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  2.894e-15  5.610e-15  5.874e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    7.854e-15  7.854e-15  7.850e-15  8.865e-15  8.247e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -1.004e-09 -1.005e-09  1.007e-09
+  ibs      2.091e-22  1.159e-16 -1.881e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5035    -0.7772     0.3084 
+  vds       -0.5035    -0.7772     0.3084 
+  vbs        0.         0.9133     0.     
+  vth       -0.7685    -0.9534     0.5383 
+  vdsat   -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2650     0.1762    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466 
+  gm       2.522e-08  1.819e-08  2.791e-08
+  gds      2.237e-10  6.002e-11  8.868e-11
+  gmb      5.943e-09  3.121e-09  8.592e-09
+  cdtot    3.394e-15  1.574e-15  3.108e-15
+  cgtot    2.894e-15  5.611e-15  5.873e-15
+  cstot    4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.249e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+ ***************************************************
+   ******   pole/zero analysis  
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ 
+ 
+    input =  0:vinp          output = v(io2)
+ 
+       poles (rad/sec)                 poles ( hertz)
+ real            imag            real            imag            
+ -150.478        0.              -23.9494        0.              
+ -822.230k       0.              -130.862k       0.              
+ -1.32735x       0.              -211.255k       0.              
+ -1.59028x       -455.922k       -253.101k       -72.5622k       
+ -1.59028x       455.922k        -253.101k       72.5622k        
+ -2.51447x       815.053k        -400.190k       129.720k        
+ -2.51447x       -815.053k       -400.190k       -129.720k       
+ -5.30324x       0.              -844.037k       0.              
+ -6.68802x       0.              -1.06443x       0.              
+ -7.26199x       0.              -1.15578x       0.              
+ 
+       zeros (rad/sec)                 zeros ( hertz)
+ real            imag            real            imag            
+ 215.728k        0.              34.3342k        0.              
+ -1.18294x       -40.4445        -188.271k       -6.43694        
+ -1.38692x       -278.311k       -220.735k       -44.2945k       
+ -1.38750x       278.382k        -220.828k       44.3058k        
+ -2.51414x       -826.588k       -400.138k       -131.556k       
+ -2.51415x       826.590k        -400.139k       131.556k        
+ -5.34864x       0.              -851.262k       0.              
+ -6.77122x       0.              -1.07767x       0.              
+ -7.23526x       34.0863         -1.15153x       5.42500         
+ 29.0634x        0.              4.62559x        0.              
+ 
+  ***** constant factor = 1.20266u
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =   -2.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3087  0:ggp     =   0.3080  0:inn     =   2.1843 
+ +0:inp     =   2.2000  0:io1     =   2.0086  0:io2     =   2.1843 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.6165  1:bump    = 1.807e-02
+ +1:idn     =   0.3087  1:idp     =   0.3080  1:io1a    =   2.6543 
+ +1:io2a    =   2.6547  1:sdn     =   1.1127  1:sdp     =   1.1135 
+
+
+ maximum nodal capacitance=   1.000E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.802e-14 0:inn     = 8.013e-15
+ +0:inp     = 7.993e-15 0:io1     = 1.419e-14 0:io2     = 1.000e-11
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.461e-14
+ +0:vss     = 9.435e-14 1:bd      = 3.434e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.012e-14 1:idp     = 1.011e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.117e-14 1:sdn     = 8.055e-15 1:sdp     = 8.051e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.2000     0.         2.7010     3.3000     0.     
+  current -2.000e-06 -2.979e-12 -2.948e-12    0.      -5.242e-09  5.242e-09
+  power    4.000e-06  6.553e-12    0.         0.       1.730e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current    0.       3.469e-18
+  power      0.         0.     
+
+     total voltage source power dissipation=  4.017e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.921e-09  9.147e-10  9.162e-10  1.155e-09  1.152e-09 -1.158e-09
+  ibs      5.967e-22 -2.954e-15 -1.466e-21 -2.161e-21 -2.155e-21  2.683e-22
+  ibd      3.585e-16 -1.215e-14 -3.563e-15 -8.178e-14 -2.045e-13  7.991e-17
+  vgs       -0.5990     0.2899     0.3087     0.3087     0.3080    -0.6457 
+  vds       -1.6835     1.5985   1.807e-02    2.0086     2.1843    -0.6457 
+  vbs        0.      -1.807e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5647     0.5648     0.5361     0.5358    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.968e-02
+  vod        0.1586    -0.2748    -0.2561    -0.2274    -0.2278     0.1683 
+  beta     1.949e-05  8.575e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.379e-08  2.613e-08  2.593e-08  3.194e-08  3.185e-08  1.909e-08
+  gds      7.094e-11  1.283e-10  3.675e-08  9.637e-11  1.092e-10  4.145e-11
+  gmb      1.375e-08  8.249e-09  8.253e-09  9.831e-09  9.807e-09  4.831e-09
+  cdtot    3.663e-15  4.794e-15  7.406e-15  2.575e-15  2.545e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.959e-14  1.375e-14  1.840e-14  1.008e-14  1.006e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.158e-09 -1.158e-09 -1.158e-09 -9.927e-10 -9.940e-10  9.961e-10
+  ibs      2.683e-22  2.683e-22  2.683e-22  2.068e-22  1.159e-16 -1.861e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6457    -0.6457    -0.6461    -0.5031    -0.8055     0.3080 
+  vds       -0.6457    -0.6453    -0.4704    -0.5031    -0.8055     0.3080 
+  vbs        0.         0.         0.         0.         1.0865     0.     
+  vth       -0.8140    -0.8140    -0.8143    -0.7685    -0.9793     0.5383 
+  vdsat   -4.968e-02 -4.968e-02 -4.969e-02 -4.858e-02 -4.968e-02  4.142e-02
+  vod        0.1683     0.1683     0.1681     0.2654     0.1738    -0.2303 
+  beta     7.108e-06  7.108e-06  7.107e-06  1.062e-04  1.076e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3449     0.4466 
+  gm       1.909e-08  1.909e-08  1.910e-08  2.495e-08  1.803e-08  2.761e-08
+  gds      4.145e-11  4.145e-11  4.584e-11  2.213e-10  6.122e-11  8.777e-11
+  gmb      4.831e-09  4.831e-09  4.836e-09  5.880e-09  2.954e-09  8.501e-09
+  cdtot    1.441e-15  1.441e-15  1.515e-15  3.394e-15  1.524e-15  3.109e-15
+  cgtot    5.089e-15  5.089e-15  5.088e-15  2.894e-15  5.475e-15  5.874e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.762e-15  3.345e-15
+  cbtot    7.854e-15  7.854e-15  7.928e-15  8.866e-15  7.993e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -1.011e-09 -1.013e-09  1.015e-09
+  ibs      2.107e-22  1.159e-16 -1.896e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5038    -0.8041     0.3087 
+  vds       -0.5038    -0.8041     0.3087 
+  vbs        0.         1.0716     0.     
+  vth       -0.7685    -0.9771     0.5383 
+  vdsat   -4.859e-02 -4.973e-02  4.142e-02
+  vod        0.2647     0.1730    -0.2296 
+  beta     1.062e-04  1.076e-05  1.936e-04
+  gam eff    0.3948     0.3450     0.4466 
+  gm       2.540e-08  1.835e-08  2.812e-08
+  gds      2.253e-10  6.215e-11  8.932e-11
+  gmb      5.984e-09  3.018e-09  8.655e-09
+  cdtot    3.393e-15  1.528e-15  3.108e-15
+  cgtot    2.894e-15  5.485e-15  5.873e-15
+  cstot    4.078e-15  1.768e-15  3.345e-15
+  cbtot    8.864e-15  8.013e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      using more points from fstart to fstop 
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.443e-04       volts
+ **** total equivalent input noise =  1.984e-03      
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   noiset=  1.4064E-04
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =   -1.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3085  0:ggp     =   0.3082  0:inn     =   2.0920 
+ +0:inp     =   2.1000  0:io1     =   2.0091  0:io2     =   2.0920 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.6030  1:bump    = 1.816e-02
+ +1:idn     =   0.3085  1:idp     =   0.3082  1:io1a    =   2.6545 
+ +1:io2a    =   2.6547  1:sdn     =   1.0993  1:sdp     =   1.0997 
+
+
+ maximum nodal capacitance=   1.000E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.127e-15
+ +0:inp     = 8.116e-15 0:io1     = 1.419e-14 0:io2     = 1.000e-11
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.460e-14
+ +0:vss     = 9.437e-14 1:bd      = 3.434e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.020e-14 1:idp     = 1.020e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.113e-14 1:sdn     = 8.086e-15 1:sdp     = 8.084e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.1000     0.         2.7010     3.3000     0.     
+  current -2.000e-06 -2.792e-12 -2.776e-12    0.      -5.234e-09  5.234e-09
+  power    4.000e-06  5.864e-12    0.         0.       1.727e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current    0.       6.939e-18
+  power      0.         0.     
+
+     total voltage source power dissipation=  4.017e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.922e-09  9.144e-10  9.159e-10  1.151e-09  1.148e-09 -1.153e-09
+  ibs      5.969e-22 -2.964e-15 -1.465e-21 -2.153e-21 -2.147e-21  2.673e-22
+  ibd      3.651e-16 -1.140e-14 -3.575e-15 -8.169e-14 -1.278e-13  7.991e-17
+  vgs       -0.5990     0.2900     0.3085     0.3085     0.3082    -0.6455 
+  vds       -1.6970     1.5848   1.816e-02    2.0091     2.0920    -0.6455 
+  vbs        0.      -1.816e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5648     0.5648     0.5361     0.5359    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.966e-02
+  vod        0.1586    -0.2748    -0.2563    -0.2275    -0.2278     0.1685 
+  beta     1.949e-05  8.575e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.380e-08  2.612e-08  2.592e-08  3.182e-08  3.174e-08  1.902e-08
+  gds      7.092e-11  1.283e-10  3.648e-08  9.602e-11  1.010e-10  4.129e-11
+  gmb      1.376e-08  8.246e-09  8.252e-09  9.795e-09  9.772e-09  4.814e-09
+  cdtot    3.655e-15  4.799e-15  7.405e-15  2.575e-15  2.561e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.959e-14  1.375e-14  1.840e-14  1.009e-14  1.007e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.153e-09 -1.153e-09 -1.154e-09 -9.978e-10 -9.990e-10  1.001e-09
+  ibs      2.673e-22  2.673e-22  2.673e-22  2.078e-22  1.159e-16 -1.870e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6455    -0.6455    -0.6457    -0.5033    -0.7915     0.3082 
+  vds       -0.6455    -0.6453    -0.5627    -0.5033    -0.7915     0.3082 
+  vbs        0.         0.         0.         0.         1.0003     0.     
+  vth       -0.8140    -0.8140    -0.8141    -0.7685    -0.9665     0.5383 
+  vdsat   -4.966e-02 -4.966e-02 -4.966e-02 -4.858e-02 -4.962e-02  4.142e-02
+  vod        0.1685     0.1685     0.1685     0.2652     0.1750    -0.2301 
+  beta     7.108e-06  7.108e-06  7.107e-06  1.062e-04  1.081e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3456     0.4466 
+  gm       1.902e-08  1.902e-08  1.902e-08  2.507e-08  1.810e-08  2.774e-08
+  gds      4.129e-11  4.130e-11  4.296e-11  2.224e-10  6.059e-11  8.818e-11
+  gmb      4.814e-09  4.814e-09  4.816e-09  5.909e-09  3.033e-09  8.542e-09
+  cdtot    1.441e-15  1.441e-15  1.475e-15  3.394e-15  1.548e-15  3.108e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  2.894e-15  5.540e-15  5.874e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.796e-15  3.345e-15
+  cbtot    7.854e-15  7.854e-15  7.887e-15  8.865e-15  8.116e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -1.008e-09 -1.009e-09  1.011e-09
+  ibs      2.099e-22  1.159e-16 -1.888e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5036    -0.7908     0.3085 
+  vds       -0.5036    -0.7908     0.3085 
+  vbs        0.         0.9927     0.     
+  vth       -0.7685    -0.9654     0.5383 
+  vdsat   -4.859e-02 -4.964e-02  4.142e-02
+  vod        0.2648     0.1746    -0.2298 
+  beta     1.062e-04  1.081e-05  1.936e-04
+  gam eff    0.3948     0.3456     0.4466 
+  gm       2.530e-08  1.827e-08  2.801e-08
+  gds      2.245e-10  6.107e-11  8.899e-11
+  gmb      5.963e-09  3.067e-09  8.622e-09
+  cdtot    3.393e-15  1.550e-15  3.108e-15
+  cgtot    2.894e-15  5.546e-15  5.873e-15
+  cstot    4.078e-15  1.799e-15  3.345e-15
+  cbtot    8.865e-15  8.127e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      using more points from fstart to fstop 
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.353e-04       volts
+ **** total equivalent input noise =  1.944e-03      
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   noiset=  1.3910E-04
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =    0.000E+00 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3084  0:ggp     =   0.3084  0:inn     =   1.9989 
+ +0:inp     =   2.0000  0:io1     =   2.0095  0:io2     =   1.9989 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.5891  1:bump    = 1.824e-02
+ +1:idn     =   0.3084  1:idp     =   0.3084  1:io1a    =   2.6547 
+ +1:io2a    =   2.6547  1:sdn     =   1.0856  1:sdp     =   1.0856 
+
+
+ maximum nodal capacitance=   1.000E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.249e-15
+ +0:inp     = 8.247e-15 0:io1     = 1.419e-14 0:io2     = 1.000e-11
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.459e-14
+ +0:vss     = 9.439e-14 1:bd      = 3.434e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.029e-14 1:idp     = 1.029e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.109e-14 1:sdn     = 8.120e-15 1:sdp     = 8.119e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.0000     0.         2.7010     3.3000     0.     
+  current -2.000e-06 -2.606e-12 -2.604e-12    0.      -5.227e-09  5.227e-09
+  power    4.000e-06  5.212e-12    0.         0.       1.725e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current  3.469e-18  3.469e-18
+  power      0.         0.     
+
+     total voltage source power dissipation=  4.017e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.923e-09  9.141e-10  9.156e-10  1.146e-09  1.144e-09 -1.149e-09
+  ibs      5.971e-22 -2.974e-15 -1.465e-21 -2.145e-21 -2.140e-21  2.663e-22
+  ibd      3.724e-16 -1.071e-14 -3.587e-15 -8.161e-14 -7.673e-14  7.991e-17
+  vgs       -0.5990     0.2901     0.3084     0.3084     0.3084    -0.6453 
+  vds       -1.7109     1.5708   1.824e-02    2.0095     1.9989    -0.6453 
+  vbs        0.      -1.824e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5361    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.964e-02
+  vod        0.1586    -0.2747    -0.2564    -0.2276    -0.2277     0.1688 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.382e-08  2.611e-08  2.591e-08  3.171e-08  3.164e-08  1.896e-08
+  gds      7.091e-11  1.283e-10  3.622e-08  9.570e-11  9.492e-11  4.115e-11
+  gmb      1.376e-08  8.242e-09  8.249e-09  9.761e-09  9.739e-09  4.798e-09
+  cdtot    3.647e-15  4.805e-15  7.405e-15  2.575e-15  2.577e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.958e-14  1.376e-14  1.840e-14  1.009e-14  1.009e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.149e-09 -1.149e-09 -1.149e-09 -1.003e-09 -1.004e-09  1.006e-09
+  ibs      2.663e-22  2.663e-22  2.663e-22  2.088e-22  1.159e-16 -1.879e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6453    -0.6453    -0.6452    -0.5035    -0.7773     0.3084 
+  vds       -0.6453    -0.6453    -0.6558    -0.5035    -0.7773     0.3084 
+  vbs        0.         0.         0.         0.         0.9144     0.     
+  vth       -0.8140    -0.8140    -0.8140    -0.7685    -0.9536     0.5383 
+  vdsat   -4.964e-02 -4.964e-02 -4.964e-02 -4.858e-02 -4.955e-02  4.142e-02
+  vod        0.1688     0.1688     0.1688     0.2650     0.1763    -0.2300 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3463     0.4466 
+  gm       1.896e-08  1.896e-08  1.896e-08  2.519e-08  1.817e-08  2.787e-08
+  gds      4.115e-11  4.115e-11  4.098e-11  2.234e-10  5.995e-11  8.857e-11
+  gmb      4.798e-09  4.798e-09  4.797e-09  5.935e-09  3.116e-09  8.580e-09
+  cdtot    1.441e-15  1.441e-15  1.437e-15  3.394e-15  1.573e-15  3.108e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  2.894e-15  5.610e-15  5.874e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    7.854e-15  7.854e-15  7.850e-15  8.865e-15  8.247e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -1.004e-09 -1.005e-09  1.007e-09
+  ibs      2.091e-22  1.159e-16 -1.881e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5035    -0.7772     0.3084 
+  vds       -0.5035    -0.7772     0.3084 
+  vbs        0.         0.9133     0.     
+  vth       -0.7685    -0.9534     0.5383 
+  vdsat   -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2650     0.1762    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466 
+  gm       2.522e-08  1.819e-08  2.791e-08
+  gds      2.237e-10  6.002e-11  8.868e-11
+  gmb      5.943e-09  3.121e-09  8.592e-09
+  cdtot    3.394e-15  1.574e-15  3.108e-15
+  cgtot    2.894e-15  5.611e-15  5.873e-15
+  cstot    4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.249e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      using more points from fstart to fstop 
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.246e-04       volts
+ **** total equivalent input noise =  1.904e-03      
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   noiset=  1.3728E-04
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =    1.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3083  0:ggp     =   0.3085  0:inn     =   1.9052 
+ +0:inp     =   1.9000  0:io1     =   2.0099  0:io2     =   1.9052 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.5749  1:bump    = 1.832e-02
+ +1:idn     =   0.3083  1:idp     =   0.3085  1:io1a    =   2.6550 
+ +1:io2a    =   2.6547  1:sdn     =   1.0715  1:sdp     =   1.0712 
+
+
+ maximum nodal capacitance=   1.000E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.379e-15
+ +0:inp     = 8.387e-15 0:io1     = 1.419e-14 0:io2     = 1.000e-11
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.458e-14
+ +0:vss     = 9.441e-14 1:bd      = 3.433e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.039e-14 1:idp     = 1.039e-14 1:io1a    = 2.127e-14
+ +1:io2a    = 1.106e-14 1:sdn     = 8.155e-15 1:sdp     = 8.157e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     1.9000     0.         2.7010     3.3000     0.     
+  current -2.000e-06 -2.420e-12 -2.431e-12    0.      -5.220e-09  5.220e-09
+  power    4.000e-06  4.599e-12    0.         0.       1.723e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current -6.939e-18 -3.469e-18
+  power      0.         0.     
+
+     total voltage source power dissipation=  4.017e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.924e-09  9.138e-10  9.152e-10  1.142e-09  1.140e-09 -1.145e-09
+  ibs      5.973e-22 -2.983e-15 -1.464e-21 -2.137e-21 -2.133e-21  2.654e-22
+  ibd      3.805e-16 -1.009e-14 -3.598e-15 -8.153e-14 -4.437e-14  7.991e-17
+  vgs       -0.5990     0.2902     0.3083     0.3083     0.3085    -0.6450 
+  vds       -1.7251     1.5565   1.832e-02    2.0099     1.9052    -0.6450 
+  vbs        0.      -1.832e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5362    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.962e-02
+  vod        0.1586    -0.2747    -0.2565    -0.2278    -0.2277     0.1690 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.384e-08  2.610e-08  2.590e-08  3.160e-08  3.154e-08  1.890e-08
+  gds      7.089e-11  1.284e-10  3.598e-08  9.540e-11  9.047e-11  4.102e-11
+  gmb      1.377e-08  8.239e-09  8.247e-09  9.729e-09  9.709e-09  4.782e-09
+  cdtot    3.638e-15  4.810e-15  7.405e-15  2.575e-15  2.593e-15  1.441e-15
+  cgtot    3.246e-14  6.266e-15  7.730e-15  5.874e-15  5.873e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.957e-14  1.376e-14  1.840e-14  1.009e-14  1.010e-14  7.855e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.145e-09 -1.145e-09 -1.145e-09 -1.007e-09 -1.009e-09  1.010e-09
+  ibs      2.654e-22  2.654e-22  2.654e-22  2.098e-22  1.159e-16 -1.887e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6450    -0.6450    -0.6448    -0.5036    -0.7627     0.3085 
+  vds       -0.6450    -0.6453    -0.7495    -0.5036    -0.7627     0.3085 
+  vbs        0.         0.         0.         0.         0.8288     0.     
+  vth       -0.8140    -0.8140    -0.8139    -0.7685    -0.9403     0.5383 
+  vdsat   -4.962e-02 -4.962e-02 -4.961e-02 -4.859e-02 -4.948e-02  4.142e-02
+  vod        0.1690     0.1690     0.1691     0.2648     0.1776    -0.2298 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.062e-04  1.091e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3470     0.4466 
+  gm       1.890e-08  1.890e-08  1.890e-08  2.530e-08  1.823e-08  2.799e-08
+  gds      4.102e-11  4.102e-11  3.948e-11  2.244e-10  5.932e-11  8.894e-11
+  gmb      4.782e-09  4.782e-09  4.779e-09  5.961e-09  3.206e-09  8.618e-09
+  cdtot    1.441e-15  1.441e-15  1.402e-15  3.393e-15  1.600e-15  3.108e-15
+  cgtot    5.089e-15  5.089e-15  5.090e-15  2.894e-15  5.686e-15  5.873e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.870e-15  3.345e-15
+  cbtot    7.855e-15  7.855e-15  7.816e-15  8.865e-15  8.387e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -1.001e-09 -1.002e-09  1.004e-09
+  ibs      2.084e-22  1.159e-16 -1.875e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5034    -0.7632     0.3083 
+  vds       -0.5034    -0.7632     0.3083 
+  vbs        0.         0.8337     0.     
+  vth       -0.7685    -0.9411     0.5383 
+  vdsat   -4.858e-02 -4.946e-02  4.142e-02
+  vod        0.2651     0.1779    -0.2300 
+  beta     1.062e-04  1.091e-05  1.936e-04
+  gam eff    0.3948     0.3470     0.4466 
+  gm       2.514e-08  1.812e-08  2.781e-08
+  gds      2.230e-10  5.900e-11  8.839e-11
+  gmb      5.925e-09  3.181e-09  8.563e-09
+  cdtot    3.394e-15  1.599e-15  3.108e-15
+  cgtot    2.894e-15  5.681e-15  5.874e-15
+  cstot    4.078e-15  1.867e-15  3.345e-15
+  cbtot    8.865e-15  8.379e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      using more points from fstart to fstop 
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.126e-04       volts
+ **** total equivalent input noise =  1.862e-03      
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   noiset=  1.3523E-04
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =    2.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3082  0:ggp     =   0.3087  0:inn     =   1.8111 
+ +0:inp     =   1.8000  0:io1     =   2.0103  0:io2     =   1.8111 
+ +0:ref     =   2.0000  0:vb      =   2.7010  0:vdd     =   3.3000 
+ +0:vss     =   0.      1:bd      =   1.5603  1:bump    = 1.840e-02
+ +1:idn     =   0.3082  1:idp     =   0.3087  1:io1a    =   2.6552 
+ +1:io2a    =   2.6547  1:sdn     =   1.0571  1:sdp     =   1.0565 
+
+
+ maximum nodal capacitance=   1.000E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggp     = 1.801e-14 0:inn     = 8.518e-15
+ +0:inp     = 8.537e-15 0:io1     = 1.420e-14 0:io2     = 1.000e-11
+ +0:ref     =   0.      0:vb      = 3.246e-14 0:vdd     = 6.457e-14
+ +0:vss     = 9.444e-14 1:bd      = 3.433e-14 1:bump    = 1.345e-14
+ +1:idn     = 1.049e-14 1:idp     = 1.050e-14 1:io1a    = 2.128e-14
+ +1:io2a    = 1.102e-14 1:sdn     = 8.193e-15 1:sdp     = 8.197e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     1.8000     0.         2.7010     3.3000     0.     
+  current -2.000e-06 -2.235e-12 -2.257e-12    0.      -5.214e-09  5.214e-09
+  power    4.000e-06  4.023e-12    0.         0.       1.721e-08    0.     
+
+ subckt   xgm        xgm       
+ element  1:v0       1:v1      
+  volts      0.         0.     
+  current  3.469e-18    0.     
+  power      0.         0.     
+
+     total voltage source power dissipation=  4.017e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.925e-09  9.134e-10  9.149e-10  1.139e-09  1.137e-09 -1.141e-09
+  ibs      5.976e-22 -2.991e-15 -1.464e-21 -2.130e-21 -2.127e-21  2.645e-22
+  ibd      3.895e-16 -9.520e-15 -3.608e-15 -8.145e-14 -2.491e-14  7.991e-17
+  vgs       -0.5990     0.2903     0.3082     0.3082     0.3087    -0.6448 
+  vds       -1.7397     1.5419   1.840e-02    2.0103     1.8111    -0.6448 
+  vbs        0.      -1.840e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5650     0.5648     0.5361     0.5363    -0.8140 
+  vdsat   -5.104e-02  4.196e-02  4.195e-02  4.143e-02  4.143e-02 -4.961e-02
+  vod        0.1586    -0.2747    -0.2567    -0.2279    -0.2276     0.1692 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.386e-08  2.609e-08  2.589e-08  3.150e-08  3.144e-08  1.884e-08
+  gds      7.088e-11  1.284e-10  3.575e-08  9.512e-11  8.737e-11  4.090e-11
+  gmb      1.377e-08  8.235e-09  8.244e-09  9.698e-09  9.679e-09  4.767e-09
+  cdtot    3.630e-15  4.816e-15  7.405e-15  2.575e-15  2.611e-15  1.441e-15
+  cgtot    3.246e-14  6.266e-15  7.731e-15  5.874e-15  5.873e-15  5.090e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.956e-14  1.377e-14  1.840e-14  1.009e-14  1.012e-14  7.855e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm.x1     xgm.x1     xgm.x1    
+ element  1:mo3      1:mo4a     1:mo4      2:ms       2:min      2:mn      
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.141e-09 -1.142e-09 -1.141e-09 -1.012e-09 -1.013e-09  1.015e-09
+  ibs      2.645e-22  2.645e-22  2.645e-22  2.108e-22  1.159e-16 -1.896e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.6448    -0.6448    -0.6444    -0.5038    -0.7478     0.3087 
+  vds       -0.6448    -0.6453    -0.8437    -0.5038    -0.7478     0.3087 
+  vbs        0.         0.         0.         0.         0.7435     0.     
+  vth       -0.8140    -0.8140    -0.8138    -0.7685    -0.9268     0.5383 
+  vdsat   -4.961e-02 -4.961e-02 -4.959e-02 -4.859e-02 -4.939e-02  4.142e-02
+  vod        0.1692     0.1692     0.1693     0.2646     0.1790    -0.2297 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.062e-04  1.096e-05  1.936e-04
+  gam eff    0.3359     0.3359     0.3359     0.3948     0.3477     0.4466 
+  gm       1.884e-08  1.884e-08  1.884e-08  2.541e-08  1.829e-08  2.811e-08
+  gds      4.090e-11  4.089e-11  3.828e-11  2.254e-10  5.869e-11  8.931e-11
+  gmb      4.767e-09  4.768e-09  4.762e-09  5.987e-09  3.302e-09  8.654e-09
+  cdtot    1.441e-15  1.441e-15  1.369e-15  3.393e-15  1.628e-15  3.108e-15
+  cgtot    5.090e-15  5.090e-15  5.090e-15  2.894e-15  5.767e-15  5.873e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  4.078e-15  1.910e-15  3.345e-15
+  cbtot    7.855e-15  7.855e-15  7.784e-15  8.864e-15  8.537e-15  1.062e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      1.190e-16  1.190e-16  1.190e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn      
+ model    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff
+  id      -9.976e-10 -9.986e-10  1.000e-09
+  ibs      2.078e-22  1.159e-16 -1.869e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5033    -0.7489     0.3082 
+  vds       -0.5033    -0.7489     0.3082 
+  vbs        0.         0.7540     0.     
+  vth       -0.7685    -0.9285     0.5383 
+  vdsat   -4.858e-02 -4.936e-02  4.142e-02
+  vod        0.2652     0.1796    -0.2302 
+  beta     1.062e-04  1.095e-05  1.936e-04
+  gam eff    0.3948     0.3476     0.4466 
+  gm       2.506e-08  1.805e-08  2.772e-08
+  gds      2.223e-10  5.801e-11  8.812e-11
+  gmb      5.907e-09  3.247e-09  8.535e-09
+  cdtot    3.394e-15  1.625e-15  3.108e-15
+  cgtot    2.894e-15  5.757e-15  5.874e-15
+  cstot    4.078e-15  1.905e-15  3.345e-15
+  cbtot    8.865e-15  8.518e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      using more points from fstart to fstop 
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  7.993e-04       volts
+ **** total equivalent input noise =  1.820e-03      
+ ******  
+    *use gm as low pass filter
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   noiset=  1.3295E-04
+
+   meas_variable = noiset
+   mean  = 1.370e-04  varian = 9.309e-12
+   sigma = 3.051e-06  avgdev = 2.360e-06
+   max   = 1.406e-04  min    = 1.330e-04
+    1-sigma = 3.051e-06 median = 1.391e-04
+ 
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+    *use gm as low pass filter
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      49  # elements   =      25
+  # resistors   =       1  # capacitors =       1  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       8
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      15  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.02           1         294
+  dc sweep           0.05         201         441
+  ac analysis        1.34       45005       45005
+  readin             0.01
+  errchk             0.01
+  setup              0.00
+  output             0.00
+
+
+           total memory used          513  kbytes
+           total cpu time            1.43 seconds
+           total elapsed time        1.89 seconds
+           job started at     18:05:52 02/26/2016
+           job ended   at     18:05:55 02/26/2016
+
+
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ 
+
+  ******    alter processing listing tnom=  25.000 temp=  25.000 *****
+ .del lib 'test.l' lp
+ .lib 'test.l' twostagelp
+     .dc diff -1 1 0.01
+     .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
+     xgm vdd vss inp io22 io2 io1 ggp ggn vb gm cc = 500f
+     xgm2 vdd vss io2 io22 io22 io12 ggp2 ggn2 vb gm cc = 500f
+     e1  gnd gnd opamp gnd gnd
+     cl1 io2 gnd 10p
+     cl2  io22 gnd 5p
+     .param cm = 2
+     .pz v(io22) vinp
+     .probe ac vp(io22)
+ .endl
+
+ *.alter
+ *.del lib 'test.l' twostagelp
+ *.lib 'test.l' diode
+
+ .end
+ $ end of alter processing $
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xgm.                            gm                 1.00 
+        2 xgm2.                           gm                 1.00 
+        3 xgm.x1.                         gmx                1.00 
+        4 xgm.x2.                         gmx                1.00 
+        5 xgm2.x1.                        gmx                1.00 
+        6 xgm2.x2.                        gmx                1.00 
+
+ **warning** both nodes of vcvs element     0:e1              
+             are connected together
+
+ 
+
+ **warning** the following singular supplies were terminated to 1 meg resistor 
+   supply       node1            node2
+  vinn                    0:inn              defined in subckt 0                     0:vss              defined in subckt 0               
+  vr                      0:ref              defined in subckt 0                     0:0                defined in subckt 0               
+      
+  Opening plot unit= 15
+ file=My-gm.pa3                                                                
+
+
+ **diagnostic** dc convergence failure, 
+ resetting dcon option to 1 and retrying
+
+ **diagnostic** dc convergence successful
+ you can increase the efficiency of the
+ operating point calculation by setting dcon= 1
+ in the .option statement
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3084  0:ggn2    =   0.3085  0:ggp     =   0.3084 
+ +0:ggp2    =   0.3083  0:inn     =   2.0000  0:inp     =   2.0000 
+ +0:io1     =   2.0095  0:io12    =   2.0094  0:io2     =   2.0016 
+ +0:io22    =   1.9987  0:ref     =   2.0000  0:vb      =   2.7010 
+ +0:vdd     =   3.3000  0:vss     =   0.      1:bd      =   1.5891 
+ +1:bump    = 1.824e-02 1:idn     =   0.3084  1:idp     =   0.3084 
+ +1:io1a    =   2.6547  1:io2a    =   2.6547  1:sdn     =   1.0856 
+ +1:sdp     =   1.0856  2:bd      =   1.5892  2:bump    = 1.821e-02
+ +2:idn     =   0.3085  2:idp     =   0.3083  2:io1a    =   2.6547 
+ +2:io2a    =   2.6547  2:sdn     =   1.0856  2:sdp     =   1.0858 
+
+
+ maximum nodal capacitance=   1.001E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggn2    = 1.948e-14 0:ggp     = 1.801e-14
+ +0:ggp2    = 1.801e-14 0:inn     =   0.      0:inp     = 8.247e-15
+ +0:io1     = 1.419e-14 0:io12    = 1.419e-14 0:io2     = 1.001e-11
+ +0:io22    = 5.021e-12 0:ref     =   0.      0:vb      = 6.492e-14
+ +0:vdd     = 1.292e-13 0:vss     = 1.888e-13 1:bd      = 3.434e-14
+ +1:bump    = 1.345e-14 1:idn     = 1.029e-14 1:idp     = 1.029e-14
+ +1:io1a    = 2.127e-14 1:io2a    = 1.109e-14 1:sdn     = 8.120e-15
+ +1:sdp     = 8.119e-15 2:bd      = 3.434e-14 2:bump    = 1.345e-14
+ +2:idn     = 1.029e-14 2:idp     = 1.029e-14 2:io1a    = 2.127e-14
+ +2:io2a    = 1.109e-14 2:sdn     = 8.120e-15 2:sdp     = 8.119e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.0000     2.0000     2.7010     3.3000     0.     
+  current -2.000e-06 -2.606e-12 -2.000e-06    0.      -1.046e-08  1.046e-08
+  power    4.000e-06  5.213e-12  4.000e-06    0.       3.451e-08    0.     
+
+ subckt   xgm        xgm        xgm2       xgm2      
+ element  1:v0       1:v1       2:v0       2:v1      
+  volts      0.         0.         0.         0.     
+  current -3.469e-18    0.         0.      -3.469e-18
+  power      0.         0.         0.         0.     
+
+     total voltage source power dissipation=  8.035e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.923e-09  9.141e-10  9.156e-10  1.147e-09  1.144e-09 -1.149e-09
+  ibs      5.971e-22 -2.974e-15 -1.465e-21 -2.145e-21 -2.140e-21  2.663e-22
+  ibd      3.724e-16 -1.071e-14 -3.586e-15 -8.161e-14 -7.793e-14  7.991e-17
+  vgs       -0.5990     0.2901     0.3084     0.3084     0.3084    -0.6453 
+  vds       -1.7109     1.5708   1.824e-02    2.0095     2.0016    -0.6453 
+  vbs        0.      -1.824e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5361    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.964e-02
+  vod        0.1586    -0.2747    -0.2564    -0.2276    -0.2277     0.1688 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.382e-08  2.611e-08  2.591e-08  3.171e-08  3.164e-08  1.896e-08
+  gds      7.091e-11  1.283e-10  3.623e-08  9.572e-11  9.508e-11  4.116e-11
+  gmb      1.376e-08  8.242e-09  8.249e-09  9.762e-09  9.740e-09  4.798e-09
+  cdtot    3.647e-15  4.805e-15  7.405e-15  2.575e-15  2.576e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.958e-14  1.376e-14  1.840e-14  1.009e-14  1.009e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm2       xgm2       xgm2      
+ element  1:mo3      1:mo4a     1:mo4      2:mb       2:mb1      2:mb2     
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.1    0:nch.2    0:nch.2   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.149e-09 -1.149e-09 -1.149e-09 -2.923e-09  9.141e-10  9.156e-10
+  ibs      2.663e-22  2.663e-22  2.663e-22  5.971e-22 -2.971e-15 -1.465e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  3.723e-16 -1.072e-14 -3.583e-15
+  vgs       -0.6453    -0.6453    -0.6452    -0.5990     0.2901     0.3085 
+  vds       -0.6453    -0.6453    -0.6531    -1.7108     1.5710   1.821e-02
+  vbs        0.         0.         0.         0.      -1.821e-02    0.     
+  vth       -0.8140    -0.8140    -0.8140    -0.7576     0.5648     0.5648 
+  vdsat   -4.964e-02 -4.964e-02 -4.964e-02 -5.103e-02  4.196e-02  4.196e-02
+  vod        0.1688     0.1688     0.1688     0.1586    -0.2747    -0.2564 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.949e-05  8.575e-04  1.087e-03
+  gam eff    0.3359     0.3359     0.3359     0.4011     0.4675     0.4693 
+  gm       1.896e-08  1.896e-08  1.896e-08  5.382e-08  2.611e-08  2.591e-08
+  gds      4.116e-11  4.116e-11  4.103e-11  7.091e-11  1.283e-10  3.631e-08
+  gmb      4.798e-09  4.798e-09  4.798e-09  1.376e-08  8.242e-09  8.249e-09
+  cdtot    1.441e-15  1.441e-15  1.438e-15  3.647e-15  4.804e-15  7.405e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  3.246e-14  6.267e-15  7.730e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  5.705e-15  6.046e-15  7.445e-15
+  cbtot    7.854e-15  7.854e-15  7.851e-15  3.958e-14  1.376e-14  1.840e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+  cgd      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+
+
+
+ subckt   xgm2       xgm2       xgm2       xgm2       xgm2       xgm2      
+ element  2:mo1      2:mo2      2:mo3a     2:mo3      2:mo4a     2:mo4     
+ model    0:nch.1    0:nch.1    0:pch.7    0:pch.7    0:pch.7    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       1.148e-09  1.142e-09 -1.150e-09 -1.150e-09 -1.150e-09 -1.150e-09
+  ibs     -2.147e-21 -2.137e-21  2.666e-22  2.666e-22  2.666e-22  2.666e-22
+  ibd     -8.163e-14 -7.656e-14  7.991e-17  7.991e-17  7.991e-17  7.991e-17
+  vgs        0.3085     0.3083    -0.6453    -0.6453    -0.6453    -0.6453 
+  vds        2.0094     1.9987    -0.6453    -0.6453    -0.6453    -0.6560 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth        0.5361     0.5361    -0.8140    -0.8140    -0.8140    -0.8140 
+  vdsat    4.143e-02  4.143e-02 -4.965e-02 -4.965e-02 -4.965e-02 -4.964e-02
+  vod       -0.2276    -0.2277     0.1687     0.1687     0.1687     0.1687 
+  beta     1.936e-04  1.936e-04  7.108e-06  7.108e-06  7.108e-06  7.108e-06
+  gam eff    0.4466     0.4466     0.3359     0.3359     0.3359     0.3359 
+  gm       3.174e-08  3.160e-08  1.898e-08  1.898e-08  1.898e-08  1.898e-08
+  gds      9.580e-11  9.480e-11  4.120e-11  4.120e-11  4.120e-11  4.102e-11
+  gmb      9.771e-09  9.729e-09  4.803e-09  4.803e-09  4.803e-09  4.802e-09
+  cdtot    2.575e-15  2.577e-15  1.441e-15  1.441e-15  1.441e-15  1.437e-15
+  cgtot    5.873e-15  5.874e-15  5.089e-15  5.089e-15  5.089e-15  5.089e-15
+  cstot    3.345e-15  3.345e-15  1.800e-15  1.800e-15  1.800e-15  1.800e-15
+  cbtot    1.009e-14  1.009e-14  7.854e-15  7.854e-15  7.854e-15  7.850e-15
+  cgs      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+  cgd      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+
+
+
+ subckt   xgm.x1     xgm.x1     xgm.x1     xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn       4:ms       4:min      4:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.003e-09 -1.004e-09  1.006e-09 -1.004e-09 -1.005e-09  1.007e-09
+  ibs      2.088e-22  1.159e-16 -1.879e-21  2.092e-22  1.159e-16 -1.882e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5034    -0.7773     0.3084    -0.5035    -0.7771     0.3084 
+  vds       -0.5034    -0.7773     0.3084    -0.5035    -0.7771     0.3084 
+  vbs        0.         0.9144     0.         0.         0.9131     0.     
+  vth       -0.7685    -0.9536     0.5383    -0.7685    -0.9534     0.5383 
+  vdsat   -4.858e-02 -4.955e-02  4.142e-02 -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2650     0.1763    -0.2300     0.2650     0.1762    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466     0.3948     0.3463     0.4466 
+  gm       2.518e-08  1.816e-08  2.787e-08  2.522e-08  1.819e-08  2.791e-08
+  gds      2.234e-10  5.994e-11  8.856e-11  2.237e-10  6.002e-11  8.869e-11
+  gmb      5.935e-09  3.116e-09  8.579e-09  5.944e-09  3.122e-09  8.593e-09
+  cdtot    3.394e-15  1.573e-15  3.108e-15  3.394e-15  1.574e-15  3.108e-15
+  cgtot    2.894e-15  5.610e-15  5.874e-15  2.894e-15  5.611e-15  5.873e-15
+  cstot    4.078e-15  1.832e-15  3.345e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.247e-15  1.062e-14  8.865e-15  8.249e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm2.x1    xgm2.x1    xgm2.x1    xgm2.x2    xgm2.x2    xgm2.x2   
+ element  5:ms       5:min      5:mn       6:ms       6:min      6:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.002e-09 -1.003e-09  1.005e-09 -1.005e-09 -1.006e-09  1.008e-09
+  ibs      2.086e-22  1.159e-16 -1.877e-21  2.094e-22  1.159e-16 -1.884e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5034    -0.7775     0.3083    -0.5036    -0.7772     0.3085 
+  vds       -0.5034    -0.7775     0.3083    -0.5036    -0.7772     0.3085 
+  vbs        0.         0.9159     0.         0.         0.9131     0.     
+  vth       -0.7685    -0.9538     0.5383    -0.7685    -0.9534     0.5383 
+  vdsat   -4.858e-02 -4.955e-02  4.142e-02 -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2651     0.1763    -0.2300     0.2649     0.1762    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466     0.3948     0.3463     0.4466 
+  gm       2.516e-08  1.815e-08  2.784e-08  2.525e-08  1.821e-08  2.794e-08
+  gds      2.232e-10  5.990e-11  8.847e-11  2.240e-10  6.008e-11  8.878e-11
+  gmb      5.929e-09  3.112e-09  8.571e-09  5.949e-09  3.125e-09  8.601e-09
+  cdtot    3.394e-15  1.573e-15  3.108e-15  3.394e-15  1.574e-15  3.108e-15
+  cgtot    2.894e-15  5.609e-15  5.874e-15  2.894e-15  5.611e-15  5.873e-15
+  cstot    4.078e-15  1.831e-15  3.345e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.245e-15  1.062e-14  8.865e-15  8.249e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ ***************************************************
+   ******   pole/zero analysis  
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ **warning** underflow 1 time(s) in pole/zero analysis
+ 
+ 
+    input =  0:vinp          output = v(io22)
+ 
+       poles (rad/sec)                 poles ( hertz)
+ real            imag            real            imag            
+ -154.723        136.117         -24.6250        21.6637         
+ -154.723        -136.117        -24.6250        -21.6637        
+ -822.506k       0.              -130.906k       0.              
+ -822.895k       0.              -130.968k       0.              
+ -1.32699x       0.              -211.197k       0.              
+ -1.32741x       0.              -211.264k       0.              
+ -1.58922x       -455.455k       -252.932k       -72.4880k       
+ -1.58922x       455.455k        -252.932k       72.4880k        
+ -1.59185x       -457.342k       -253.351k       -72.7882k       
+ -1.59185x       457.342k        -253.351k       72.7882k        
+ -2.51454x       -815.235k       -400.202k       -129.749k       
+ -2.51454x       815.235k        -400.202k       129.749k        
+ -2.51711x       -815.816k       -400.610k       -129.841k       
+ -2.51711x       815.816k        -400.610k       129.841k        
+ -5.30411x       0.              -844.175k       0.              
+ -5.31089x       0.              -845.255k       0.              
+ -6.68170x       0.              -1.06342x       0.              
+ -6.68730x       0.              -1.06432x       0.              
+ -7.26252x       0.              -1.15587x       0.              
+ -7.26773x       0.              -1.15669x       0.              
+ 
+       zeros (rad/sec)                 zeros ( hertz)
+ real            imag            real            imag            
+ 4.43424k        -28.7518k       705.732         -4.57599k       
+ 4.43424k        28.7518k        705.732         4.57599k        
+ -850.384k       34.0490k        -135.343k       5.41907k        
+ -850.384k       -34.0490k       -135.343k       -5.41907k       
+ -969.898k       -1.41963x       -154.364k       -225.941k       
+ -969.898k       1.41963x        -154.364k       225.941k        
+ -1.32722x       0.              -211.234k       0.              
+ -1.58797x       457.161k        -252.733k       72.7594k        
+ -1.58797x       -457.161k       -252.733k       -72.7594k       
+ -2.04336x       0.              -325.210k       0.              
+ -2.49736x       796.862k        -397.467k       126.825k        
+ -2.49736x       -796.862k       -397.467k       -126.825k       
+ -2.51732x       -815.888k       -400.645k       -129.853k       
+ -2.51732x       815.888k        -400.645k       129.853k        
+ -5.28038x       1.54281x        -840.399k       245.545k        
+ -5.28038x       -1.54281x       -840.399k       -245.545k       
+ -5.31085x       0.              -845.248k       0.              
+ -6.68146x       0.              -1.06339x       0.              
+ -6.69519x       0.              -1.06557x       0.              
+ -7.26773x       0.              -1.15670x       0.              
+ 
+  ***** constant factor = 378.003n
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =   -2.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3087  0:ggn2    =   0.3087  0:ggp     =   0.3080 
+ +0:ggp2    =   0.3080  0:inn     =   1.8000  0:inp     =   2.2000 
+ +0:io1     =   2.0085  0:io12    =   2.0084  0:io2     =   2.2007 
+ +0:io22    =   2.1830  0:ref     =   2.0000  0:vb      =   2.7010 
+ +0:vdd     =   3.3000  0:vss     =   0.      1:bd      =   1.6164 
+ +1:bump    = 1.804e-02 1:idn     =   0.3087  1:idp     =   0.3080 
+ +1:io1a    =   2.6542  1:io2a    =   2.6547  1:sdn     =   1.1126 
+ +1:sdp     =   1.1134  2:bd      =   1.6165  2:bump    = 1.803e-02
+ +2:idn     =   0.3087  2:idp     =   0.3080  2:io1a    =   2.6542 
+ +2:io2a    =   2.6546  2:sdn     =   1.1127  2:sdp     =   1.1135 
+
+
+ maximum nodal capacitance=   1.001E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggn2    = 1.948e-14 0:ggp     = 1.802e-14
+ +0:ggp2    = 1.802e-14 0:inn     =   0.      0:inp     = 7.993e-15
+ +0:io1     = 1.419e-14 0:io12    = 1.419e-14 0:io2     = 1.001e-11
+ +0:io22    = 5.020e-12 0:ref     =   0.      0:vb      = 6.492e-14
+ +0:vdd     = 1.292e-13 0:vss     = 1.887e-13 1:bd      = 3.434e-14
+ +1:bump    = 1.345e-14 1:idn     = 1.012e-14 1:idp     = 1.011e-14
+ +1:io1a    = 2.127e-14 1:io2a    = 1.118e-14 1:sdn     = 8.056e-15
+ +1:sdp     = 8.051e-15 2:bd      = 3.434e-14 2:bump    = 1.345e-14
+ +2:idn     = 1.012e-14 2:idp     = 1.011e-14 2:io1a    = 2.127e-14
+ +2:io2a    = 1.117e-14 2:sdn     = 8.056e-15 2:sdp     = 8.051e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.2000     1.8000     2.7010     3.3000     0.     
+  current -2.000e-06 -2.979e-12 -1.800e-06    0.      -1.049e-08  1.049e-08
+  power    4.000e-06  6.553e-12  3.240e-06    0.       3.461e-08    0.     
+
+ subckt   xgm        xgm        xgm2       xgm2      
+ element  1:v0       1:v1       2:v0       2:v1      
+  volts      0.         0.         0.         0.     
+  current    0.      -6.939e-18    0.      -3.469e-18
+  power      0.         0.         0.         0.     
+
+     total voltage source power dissipation=  7.275e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.921e-09  9.147e-10  9.162e-10  1.156e-09  1.152e-09 -1.159e-09
+  ibs      5.967e-22 -2.951e-15 -1.466e-21 -2.163e-21 -2.156e-21  2.685e-22
+  ibd      3.586e-16 -1.214e-14 -3.560e-15 -8.180e-14 -2.215e-13  7.991e-17
+  vgs       -0.5990     0.2899     0.3087     0.3087     0.3080    -0.6458 
+  vds       -1.6836     1.5984   1.804e-02    2.0085     2.2007    -0.6458 
+  vbs        0.      -1.804e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5647     0.5648     0.5361     0.5358    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.968e-02
+  vod        0.1586    -0.2748    -0.2561    -0.2273    -0.2278     0.1683 
+  beta     1.949e-05  8.575e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.379e-08  2.613e-08  2.592e-08  3.196e-08  3.188e-08  1.911e-08
+  gds      7.094e-11  1.283e-10  3.682e-08  9.644e-11  1.108e-10  4.148e-11
+  gmb      1.375e-08  8.249e-09  8.253e-09  9.839e-09  9.815e-09  4.835e-09
+  cdtot    3.663e-15  4.794e-15  7.406e-15  2.575e-15  2.543e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.729e-15  5.873e-15  5.874e-15  5.088e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.959e-14  1.375e-14  1.840e-14  1.008e-14  1.005e-14  7.853e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm2       xgm2       xgm2      
+ element  1:mo3      1:mo4a     1:mo4      2:mb       2:mb1      2:mb2     
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.1    0:nch.2    0:nch.2   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.159e-09 -1.159e-09 -1.159e-09 -2.921e-09  9.147e-10  9.162e-10
+  ibs      2.685e-22  2.685e-22  2.686e-22  5.967e-22 -2.950e-15 -1.466e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  3.585e-16 -1.214e-14 -3.558e-15
+  vgs       -0.6458    -0.6458    -0.6462    -0.5990     0.2899     0.3087 
+  vds       -0.6458    -0.6453    -0.4540    -1.6835     1.5985   1.803e-02
+  vbs        0.         0.         0.         0.      -1.803e-02    0.     
+  vth       -0.8140    -0.8140    -0.8143    -0.7576     0.5647     0.5648 
+  vdsat   -4.968e-02 -4.968e-02 -4.970e-02 -5.103e-02  4.196e-02  4.196e-02
+  vod        0.1683     0.1683     0.1681     0.1586    -0.2748    -0.2561 
+  beta     7.108e-06  7.108e-06  7.107e-06  1.949e-05  8.575e-04  1.087e-03
+  gam eff    0.3359     0.3359     0.3359     0.4011     0.4675     0.4693 
+  gm       1.911e-08  1.911e-08  1.911e-08  5.379e-08  2.613e-08  2.592e-08
+  gds      4.148e-11  4.148e-11  4.652e-11  7.094e-11  1.283e-10  3.685e-08
+  gmb      4.835e-09  4.835e-09  4.841e-09  1.375e-08  8.249e-09  8.253e-09
+  cdtot    1.441e-15  1.441e-15  1.523e-15  3.663e-15  4.794e-15  7.406e-15
+  cgtot    5.088e-15  5.088e-15  5.088e-15  3.246e-14  6.267e-15  7.729e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  5.705e-15  6.047e-15  7.445e-15
+  cbtot    7.853e-15  7.854e-15  7.935e-15  3.959e-14  1.375e-14  1.840e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+  cgd      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+
+
+
+ subckt   xgm2       xgm2       xgm2       xgm2       xgm2       xgm2      
+ element  2:mo1      2:mo2      2:mo3a     2:mo3      2:mo4a     2:mo4     
+ model    0:nch.1    0:nch.1    0:pch.7    0:pch.7    0:pch.7    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       1.156e-09  1.150e-09 -1.159e-09 -1.159e-09 -1.159e-09 -1.160e-09
+  ibs     -2.164e-21 -2.152e-21  2.686e-22  2.686e-22  2.686e-22  2.687e-22
+  ibd     -8.181e-14 -2.029e-13  7.991e-17  7.991e-17  7.991e-17  7.991e-17
+  vgs        0.3087     0.3080    -0.6458    -0.6458    -0.6458    -0.6462 
+  vds        2.0084     2.1830    -0.6458    -0.6458    -0.6454    -0.4717 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth        0.5361     0.5358    -0.8140    -0.8140    -0.8140    -0.8143 
+  vdsat    4.143e-02  4.143e-02 -4.968e-02 -4.968e-02 -4.968e-02 -4.970e-02
+  vod       -0.2273    -0.2279     0.1682     0.1682     0.1682     0.1681 
+  beta     1.936e-04  1.936e-04  7.108e-06  7.108e-06  7.108e-06  7.107e-06
+  gam eff    0.4466     0.4466     0.3359     0.3359     0.3359     0.3359 
+  gm       3.198e-08  3.181e-08  1.911e-08  1.911e-08  1.911e-08  1.912e-08
+  gds      9.647e-11  1.089e-10  4.149e-11  4.149e-11  4.150e-11  4.585e-11
+  gmb      9.843e-09  9.795e-09  4.837e-09  4.837e-09  4.837e-09  4.842e-09
+  cdtot    2.575e-15  2.546e-15  1.441e-15  1.441e-15  1.441e-15  1.515e-15
+  cgtot    5.873e-15  5.874e-15  5.088e-15  5.088e-15  5.088e-15  5.088e-15
+  cstot    3.345e-15  3.345e-15  1.800e-15  1.800e-15  1.800e-15  1.800e-15
+  cbtot    1.008e-14  1.006e-14  7.853e-15  7.853e-15  7.854e-15  7.927e-15
+  cgs      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+  cgd      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+
+
+
+ subckt   xgm.x1     xgm.x1     xgm.x1     xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn       4:ms       4:min      4:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -9.919e-10 -9.932e-10  9.953e-10 -1.012e-09 -1.014e-09  1.016e-09
+  ibs      2.066e-22  1.159e-16 -1.859e-21  2.108e-22  1.159e-16 -1.897e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5030    -0.8054     0.3080    -0.5038    -0.8039     0.3087 
+  vds       -0.5030    -0.8054     0.3080    -0.5038    -0.8039     0.3087 
+  vbs        0.         1.0866     0.         0.         1.0704     0.     
+  vth       -0.7685    -0.9793     0.5383    -0.7685    -0.9769     0.5383 
+  vdsat   -4.858e-02 -4.968e-02  4.142e-02 -4.859e-02 -4.973e-02  4.142e-02
+  vod        0.2654     0.1738    -0.2303     0.2646     0.1730    -0.2296 
+  beta     1.062e-04  1.076e-05  1.936e-04  1.062e-04  1.077e-05  1.936e-04
+  gam eff    0.3948     0.3449     0.4466     0.3948     0.3450     0.4466 
+  gm       2.493e-08  1.802e-08  2.759e-08  2.542e-08  1.837e-08  2.814e-08
+  gds      2.211e-10  6.118e-11  8.770e-11  2.254e-10  6.219e-11  8.939e-11
+  gmb      5.876e-09  2.952e-09  8.494e-09  5.988e-09  3.021e-09  8.662e-09
+  cdtot    3.394e-15  1.524e-15  3.109e-15  3.393e-15  1.528e-15  3.108e-15
+  cgtot    2.894e-15  5.475e-15  5.874e-15  2.894e-15  5.486e-15  5.873e-15
+  cstot    4.078e-15  1.762e-15  3.345e-15  4.078e-15  1.769e-15  3.345e-15
+  cbtot    8.866e-15  7.993e-15  1.062e-14  8.864e-15  8.015e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm2.x1    xgm2.x1    xgm2.x1    xgm2.x2    xgm2.x2    xgm2.x2   
+ element  5:ms       5:min      5:mn       6:ms       6:min      6:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -9.915e-10 -9.928e-10  9.949e-10 -1.013e-09 -1.014e-09  1.016e-09
+  ibs      2.065e-22  1.159e-16 -1.859e-21  2.109e-22  1.159e-16 -1.898e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5030    -0.8055     0.3080    -0.5038    -0.8039     0.3087 
+  vds       -0.5030    -0.8055     0.3080    -0.5038    -0.8039     0.3087 
+  vbs        0.         1.0872     0.         0.         1.0703     0.     
+  vth       -0.7685    -0.9794     0.5383    -0.7685    -0.9769     0.5383 
+  vdsat   -4.858e-02 -4.968e-02  4.142e-02 -4.859e-02 -4.973e-02  4.142e-02
+  vod        0.2655     0.1738    -0.2304     0.2646     0.1730    -0.2296 
+  beta     1.062e-04  1.076e-05  1.936e-04  1.062e-04  1.077e-05  1.936e-04
+  gam eff    0.3948     0.3449     0.4466     0.3948     0.3450     0.4466 
+  gm       2.492e-08  1.801e-08  2.758e-08  2.542e-08  1.837e-08  2.815e-08
+  gds      2.210e-10  6.116e-11  8.767e-11  2.255e-10  6.221e-11  8.942e-11
+  gmb      5.874e-09  2.951e-09  8.491e-09  5.990e-09  3.022e-09  8.665e-09
+  cdtot    3.394e-15  1.524e-15  3.109e-15  3.393e-15  1.528e-15  3.108e-15
+  cgtot    2.894e-15  5.475e-15  5.874e-15  2.894e-15  5.486e-15  5.873e-15
+  cstot    4.078e-15  1.762e-15  3.345e-15  4.078e-15  1.769e-15  3.345e-15
+  cbtot    8.866e-15  7.992e-15  1.062e-14  8.864e-15  8.015e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =   -1.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3086  0:ggn2    =   0.3086  0:ggp     =   0.3082 
+ +0:ggp2    =   0.3081  0:inn     =   1.9000  0:inp     =   2.1000 
+ +0:io1     =   2.0090  0:io12    =   2.0089  0:io2     =   2.1012 
+ +0:io22    =   2.0913  0:ref     =   2.0000  0:vb      =   2.7010 
+ +0:vdd     =   3.3000  0:vss     =   0.      1:bd      =   1.6029 
+ +1:bump    = 1.815e-02 1:idn     =   0.3086  1:idp     =   0.3082 
+ +1:io1a    =   2.6545  1:io2a    =   2.6547  1:sdn     =   1.0993 
+ +1:sdp     =   1.0997  2:bd      =   1.6030  2:bump    = 1.813e-02
+ +2:idn     =   0.3086  2:idp     =   0.3081  2:io1a    =   2.6545 
+ +2:io2a    =   2.6546  2:sdn     =   1.0993  2:sdp     =   1.0998 
+
+
+ maximum nodal capacitance=   1.001E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggn2    = 1.948e-14 0:ggp     = 1.801e-14
+ +0:ggp2    = 1.801e-14 0:inn     =   0.      0:inp     = 8.116e-15
+ +0:io1     = 1.419e-14 0:io12    = 1.419e-14 0:io2     = 1.001e-11
+ +0:io22    = 5.020e-12 0:ref     =   0.      0:vb      = 6.492e-14
+ +0:vdd     = 1.292e-13 0:vss     = 1.887e-13 1:bd      = 3.434e-14
+ +1:bump    = 1.345e-14 1:idn     = 1.021e-14 1:idp     = 1.020e-14
+ +1:io1a    = 2.127e-14 1:io2a    = 1.113e-14 1:sdn     = 8.087e-15
+ +1:sdp     = 8.084e-15 2:bd      = 3.434e-14 2:bump    = 1.345e-14
+ +2:idn     = 1.021e-14 2:idp     = 1.020e-14 2:io1a    = 2.127e-14
+ +2:io2a    = 1.113e-14 2:sdn     = 8.087e-15 2:sdp     = 8.084e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.1000     1.9000     2.7010     3.3000     0.     
+  current -2.000e-06 -2.792e-12 -1.900e-06    0.      -1.047e-08  1.047e-08
+  power    4.000e-06  5.864e-12  3.610e-06    0.       3.456e-08    0.     
+
+ subckt   xgm        xgm        xgm2       xgm2      
+ element  1:v0       1:v1       2:v0       2:v1      
+  volts      0.         0.         0.         0.     
+  current -3.469e-18  3.469e-18  6.939e-18 -3.469e-18
+  power      0.         0.         0.         0.     
+
+     total voltage source power dissipation=  7.645e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.922e-09  9.144e-10  9.159e-10  1.151e-09  1.148e-09 -1.154e-09
+  ibs      5.969e-22 -2.963e-15 -1.465e-21 -2.153e-21 -2.148e-21  2.674e-22
+  ibd      3.651e-16 -1.139e-14 -3.574e-15 -8.170e-14 -1.341e-13  7.991e-17
+  vgs       -0.5990     0.2900     0.3086     0.3086     0.3082    -0.6455 
+  vds       -1.6971     1.5848   1.815e-02    2.0090     2.1012    -0.6455 
+  vbs        0.      -1.815e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5648     0.5648     0.5361     0.5359    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.966e-02
+  vod        0.1586    -0.2748    -0.2563    -0.2275    -0.2278     0.1685 
+  beta     1.949e-05  8.575e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.380e-08  2.612e-08  2.592e-08  3.183e-08  3.175e-08  1.903e-08
+  gds      7.092e-11  1.283e-10  3.651e-08  9.606e-11  1.018e-10  4.131e-11
+  gmb      1.376e-08  8.246e-09  8.251e-09  9.799e-09  9.776e-09  4.816e-09
+  cdtot    3.655e-15  4.799e-15  7.406e-15  2.575e-15  2.559e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.959e-14  1.375e-14  1.840e-14  1.009e-14  1.007e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm2       xgm2       xgm2      
+ element  1:mo3      1:mo4a     1:mo4      2:mb       2:mb1      2:mb2     
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.1    0:nch.2    0:nch.2   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.154e-09 -1.154e-09 -1.154e-09 -2.922e-09  9.144e-10  9.159e-10
+  ibs      2.674e-22  2.674e-22  2.674e-22  5.969e-22 -2.961e-15 -1.465e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  3.651e-16 -1.140e-14 -3.571e-15
+  vgs       -0.6455    -0.6455    -0.6457    -0.5990     0.2900     0.3086 
+  vds       -0.6455    -0.6453    -0.5535    -1.6970     1.5849   1.813e-02
+  vbs        0.         0.         0.         0.      -1.813e-02    0.     
+  vth       -0.8140    -0.8140    -0.8141    -0.7576     0.5648     0.5648 
+  vdsat   -4.966e-02 -4.966e-02 -4.967e-02 -5.103e-02  4.196e-02  4.196e-02
+  vod        0.1685     0.1685     0.1684     0.1586    -0.2748    -0.2562 
+  beta     7.108e-06  7.108e-06  7.107e-06  1.949e-05  8.575e-04  1.087e-03
+  gam eff    0.3359     0.3359     0.3359     0.4011     0.4675     0.4693 
+  gm       1.903e-08  1.903e-08  1.903e-08  5.380e-08  2.612e-08  2.592e-08
+  gds      4.131e-11  4.131e-11  4.320e-11  7.092e-11  1.283e-10  3.657e-08
+  gmb      4.816e-09  4.816e-09  4.819e-09  1.376e-08  8.246e-09  8.251e-09
+  cdtot    1.441e-15  1.441e-15  1.479e-15  3.655e-15  4.799e-15  7.406e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  3.246e-14  6.267e-15  7.730e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  5.705e-15  6.046e-15  7.445e-15
+  cbtot    7.854e-15  7.854e-15  7.891e-15  3.959e-14  1.375e-14  1.840e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+  cgd      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+
+
+
+ subckt   xgm2       xgm2       xgm2       xgm2       xgm2       xgm2      
+ element  2:mo1      2:mo2      2:mo3a     2:mo3      2:mo4a     2:mo4     
+ model    0:nch.1    0:nch.1    0:pch.7    0:pch.7    0:pch.7    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       1.152e-09  1.146e-09 -1.155e-09 -1.155e-09 -1.155e-09 -1.155e-09
+  ibs     -2.155e-21 -2.144e-21  2.676e-22  2.676e-22  2.676e-22  2.676e-22
+  ibd     -8.172e-14 -1.271e-13  7.991e-17  7.991e-17  7.991e-17  7.991e-17
+  vgs        0.3086     0.3081    -0.6455    -0.6455    -0.6455    -0.6457 
+  vds        2.0089     2.0913    -0.6455    -0.6455    -0.6454    -0.5634 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth        0.5361     0.5359    -0.8140    -0.8140    -0.8140    -0.8141 
+  vdsat    4.143e-02  4.143e-02 -4.966e-02 -4.966e-02 -4.966e-02 -4.967e-02
+  vod       -0.2275    -0.2278     0.1685     0.1685     0.1685     0.1684 
+  beta     1.936e-04  1.936e-04  7.108e-06  7.108e-06  7.108e-06  7.107e-06
+  gam eff    0.4466     0.4466     0.3359     0.3359     0.3359     0.3359 
+  gm       3.185e-08  3.170e-08  1.904e-08  1.904e-08  1.904e-08  1.905e-08
+  gds      9.613e-11  1.009e-10  4.134e-11  4.134e-11  4.134e-11  4.299e-11
+  gmb      9.806e-09  9.761e-09  4.819e-09  4.819e-09  4.819e-09  4.822e-09
+  cdtot    2.575e-15  2.561e-15  1.441e-15  1.441e-15  1.441e-15  1.474e-15
+  cgtot    5.873e-15  5.874e-15  5.089e-15  5.089e-15  5.089e-15  5.089e-15
+  cstot    3.345e-15  3.345e-15  1.800e-15  1.800e-15  1.800e-15  1.800e-15
+  cbtot    1.009e-14  1.007e-14  7.854e-15  7.854e-15  7.854e-15  7.887e-15
+  cgs      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+  cgd      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+
+
+
+ subckt   xgm.x1     xgm.x1     xgm.x1     xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn       4:ms       4:min      4:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -9.974e-10 -9.986e-10  1.001e-09 -1.008e-09 -1.009e-09  1.011e-09
+  ibs      2.077e-22  1.159e-16 -1.869e-21  2.100e-22  1.159e-16 -1.889e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5032    -0.7915     0.3082    -0.5037    -0.7907     0.3086 
+  vds       -0.5032    -0.7915     0.3082    -0.5037    -0.7907     0.3086 
+  vbs        0.         1.0003     0.         0.         0.9920     0.     
+  vth       -0.7685    -0.9665     0.5383    -0.7685    -0.9653     0.5383 
+  vdsat   -4.858e-02 -4.962e-02  4.142e-02 -4.859e-02 -4.964e-02  4.142e-02
+  vod        0.2652     0.1750    -0.2302     0.2648     0.1746    -0.2298 
+  beta     1.062e-04  1.081e-05  1.936e-04  1.062e-04  1.081e-05  1.936e-04
+  gam eff    0.3948     0.3456     0.4466     0.3948     0.3456     0.4466 
+  gm       2.506e-08  1.809e-08  2.773e-08  2.531e-08  1.827e-08  2.802e-08
+  gds      2.223e-10  6.056e-11  8.814e-11  2.245e-10  6.109e-11  8.903e-11
+  gmb      5.906e-09  3.032e-09  8.538e-09  5.965e-09  3.069e-09  8.626e-09
+  cdtot    3.394e-15  1.548e-15  3.108e-15  3.393e-15  1.550e-15  3.108e-15
+  cgtot    2.894e-15  5.540e-15  5.874e-15  2.894e-15  5.547e-15  5.873e-15
+  cstot    4.078e-15  1.796e-15  3.345e-15  4.078e-15  1.799e-15  3.345e-15
+  cbtot    8.865e-15  8.116e-15  1.062e-14  8.865e-15  8.128e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm2.x1    xgm2.x1    xgm2.x1    xgm2.x2    xgm2.x2    xgm2.x2   
+ element  5:ms       5:min      5:mn       6:ms       6:min      6:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -9.966e-10 -9.979e-10  9.998e-10 -1.009e-09 -1.010e-09  1.012e-09
+  ibs      2.076e-22  1.159e-16 -1.868e-21  2.101e-22  1.159e-16 -1.891e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5032    -0.7916     0.3081    -0.5037    -0.7907     0.3086 
+  vds       -0.5032    -0.7916     0.3081    -0.5037    -0.7907     0.3086 
+  vbs        0.         1.0014     0.         0.         0.9919     0.     
+  vth       -0.7685    -0.9667     0.5383    -0.7685    -0.9653     0.5383 
+  vdsat   -4.858e-02 -4.962e-02  4.142e-02 -4.859e-02 -4.965e-02  4.142e-02
+  vod        0.2653     0.1751    -0.2302     0.2648     0.1746    -0.2297 
+  beta     1.062e-04  1.081e-05  1.936e-04  1.062e-04  1.081e-05  1.936e-04
+  gam eff    0.3948     0.3456     0.4466     0.3948     0.3456     0.4466 
+  gm       2.504e-08  1.808e-08  2.771e-08  2.533e-08  1.829e-08  2.804e-08
+  gds      2.221e-10  6.053e-11  8.808e-11  2.247e-10  6.113e-11  8.909e-11
+  gmb      5.902e-09  3.029e-09  8.532e-09  5.969e-09  3.071e-09  8.632e-09
+  cdtot    3.394e-15  1.548e-15  3.109e-15  3.393e-15  1.550e-15  3.108e-15
+  cgtot    2.894e-15  5.540e-15  5.874e-15  2.894e-15  5.547e-15  5.873e-15
+  cstot    4.078e-15  1.795e-15  3.345e-15  4.078e-15  1.799e-15  3.345e-15
+  cbtot    8.866e-15  8.114e-15  1.062e-14  8.865e-15  8.128e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =    0.000E+00 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3084  0:ggn2    =   0.3085  0:ggp     =   0.3084 
+ +0:ggp2    =   0.3083  0:inn     =   2.0000  0:inp     =   2.0000 
+ +0:io1     =   2.0095  0:io12    =   2.0094  0:io2     =   2.0016 
+ +0:io22    =   1.9987  0:ref     =   2.0000  0:vb      =   2.7010 
+ +0:vdd     =   3.3000  0:vss     =   0.      1:bd      =   1.5891 
+ +1:bump    = 1.824e-02 1:idn     =   0.3084  1:idp     =   0.3084 
+ +1:io1a    =   2.6547  1:io2a    =   2.6547  1:sdn     =   1.0856 
+ +1:sdp     =   1.0856  2:bd      =   1.5892  2:bump    = 1.821e-02
+ +2:idn     =   0.3085  2:idp     =   0.3083  2:io1a    =   2.6547 
+ +2:io2a    =   2.6547  2:sdn     =   1.0856  2:sdp     =   1.0858 
+
+
+ maximum nodal capacitance=   1.001E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggn2    = 1.948e-14 0:ggp     = 1.801e-14
+ +0:ggp2    = 1.801e-14 0:inn     =   0.      0:inp     = 8.247e-15
+ +0:io1     = 1.419e-14 0:io12    = 1.419e-14 0:io2     = 1.001e-11
+ +0:io22    = 5.021e-12 0:ref     =   0.      0:vb      = 6.492e-14
+ +0:vdd     = 1.292e-13 0:vss     = 1.888e-13 1:bd      = 3.434e-14
+ +1:bump    = 1.345e-14 1:idn     = 1.029e-14 1:idp     = 1.029e-14
+ +1:io1a    = 2.127e-14 1:io2a    = 1.109e-14 1:sdn     = 8.120e-15
+ +1:sdp     = 8.119e-15 2:bd      = 3.434e-14 2:bump    = 1.345e-14
+ +2:idn     = 1.029e-14 2:idp     = 1.029e-14 2:io1a    = 2.127e-14
+ +2:io2a    = 1.109e-14 2:sdn     = 8.120e-15 2:sdp     = 8.119e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     2.0000     2.0000     2.7010     3.3000     0.     
+  current -2.000e-06 -2.606e-12 -2.000e-06    0.      -1.046e-08  1.046e-08
+  power    4.000e-06  5.213e-12  4.000e-06    0.       3.451e-08    0.     
+
+ subckt   xgm        xgm        xgm2       xgm2      
+ element  1:v0       1:v1       2:v0       2:v1      
+  volts      0.         0.         0.         0.     
+  current  3.469e-18 -3.469e-18 -3.469e-18    0.     
+  power      0.         0.         0.         0.     
+
+     total voltage source power dissipation=  8.035e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.923e-09  9.141e-10  9.156e-10  1.147e-09  1.144e-09 -1.149e-09
+  ibs      5.971e-22 -2.974e-15 -1.465e-21 -2.145e-21 -2.140e-21  2.663e-22
+  ibd      3.724e-16 -1.071e-14 -3.586e-15 -8.161e-14 -7.793e-14  7.991e-17
+  vgs       -0.5990     0.2901     0.3084     0.3084     0.3084    -0.6453 
+  vds       -1.7109     1.5708   1.824e-02    2.0095     2.0016    -0.6453 
+  vbs        0.      -1.824e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5361    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.964e-02
+  vod        0.1586    -0.2747    -0.2564    -0.2276    -0.2277     0.1688 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.382e-08  2.611e-08  2.591e-08  3.171e-08  3.164e-08  1.896e-08
+  gds      7.091e-11  1.283e-10  3.623e-08  9.572e-11  9.508e-11  4.116e-11
+  gmb      1.376e-08  8.242e-09  8.249e-09  9.762e-09  9.740e-09  4.798e-09
+  cdtot    3.647e-15  4.805e-15  7.405e-15  2.575e-15  2.576e-15  1.441e-15
+  cgtot    3.246e-14  6.267e-15  7.730e-15  5.873e-15  5.874e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.958e-14  1.376e-14  1.840e-14  1.009e-14  1.009e-14  7.854e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm2       xgm2       xgm2      
+ element  1:mo3      1:mo4a     1:mo4      2:mb       2:mb1      2:mb2     
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.1    0:nch.2    0:nch.2   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.149e-09 -1.149e-09 -1.149e-09 -2.923e-09  9.141e-10  9.156e-10
+  ibs      2.663e-22  2.663e-22  2.663e-22  5.971e-22 -2.971e-15 -1.465e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  3.723e-16 -1.072e-14 -3.583e-15
+  vgs       -0.6453    -0.6453    -0.6452    -0.5990     0.2901     0.3085 
+  vds       -0.6453    -0.6453    -0.6531    -1.7108     1.5710   1.821e-02
+  vbs        0.         0.         0.         0.      -1.821e-02    0.     
+  vth       -0.8140    -0.8140    -0.8140    -0.7576     0.5648     0.5648 
+  vdsat   -4.964e-02 -4.964e-02 -4.964e-02 -5.103e-02  4.196e-02  4.196e-02
+  vod        0.1688     0.1688     0.1688     0.1586    -0.2747    -0.2564 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.949e-05  8.575e-04  1.087e-03
+  gam eff    0.3359     0.3359     0.3359     0.4011     0.4675     0.4693 
+  gm       1.896e-08  1.896e-08  1.896e-08  5.382e-08  2.611e-08  2.591e-08
+  gds      4.116e-11  4.116e-11  4.103e-11  7.091e-11  1.283e-10  3.631e-08
+  gmb      4.798e-09  4.798e-09  4.798e-09  1.376e-08  8.242e-09  8.249e-09
+  cdtot    1.441e-15  1.441e-15  1.438e-15  3.647e-15  4.804e-15  7.405e-15
+  cgtot    5.089e-15  5.089e-15  5.089e-15  3.246e-14  6.267e-15  7.730e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  5.705e-15  6.046e-15  7.445e-15
+  cbtot    7.854e-15  7.854e-15  7.851e-15  3.958e-14  1.376e-14  1.840e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+  cgd      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+
+
+
+ subckt   xgm2       xgm2       xgm2       xgm2       xgm2       xgm2      
+ element  2:mo1      2:mo2      2:mo3a     2:mo3      2:mo4a     2:mo4     
+ model    0:nch.1    0:nch.1    0:pch.7    0:pch.7    0:pch.7    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       1.148e-09  1.142e-09 -1.150e-09 -1.150e-09 -1.150e-09 -1.150e-09
+  ibs     -2.147e-21 -2.137e-21  2.666e-22  2.666e-22  2.666e-22  2.666e-22
+  ibd     -8.163e-14 -7.656e-14  7.991e-17  7.991e-17  7.991e-17  7.991e-17
+  vgs        0.3085     0.3083    -0.6453    -0.6453    -0.6453    -0.6453 
+  vds        2.0094     1.9987    -0.6453    -0.6453    -0.6453    -0.6560 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth        0.5361     0.5361    -0.8140    -0.8140    -0.8140    -0.8140 
+  vdsat    4.143e-02  4.143e-02 -4.965e-02 -4.965e-02 -4.965e-02 -4.964e-02
+  vod       -0.2276    -0.2277     0.1687     0.1687     0.1687     0.1687 
+  beta     1.936e-04  1.936e-04  7.108e-06  7.108e-06  7.108e-06  7.108e-06
+  gam eff    0.4466     0.4466     0.3359     0.3359     0.3359     0.3359 
+  gm       3.174e-08  3.160e-08  1.898e-08  1.898e-08  1.898e-08  1.898e-08
+  gds      9.580e-11  9.480e-11  4.120e-11  4.120e-11  4.120e-11  4.102e-11
+  gmb      9.771e-09  9.729e-09  4.803e-09  4.803e-09  4.803e-09  4.802e-09
+  cdtot    2.575e-15  2.577e-15  1.441e-15  1.441e-15  1.441e-15  1.437e-15
+  cgtot    5.873e-15  5.874e-15  5.089e-15  5.089e-15  5.089e-15  5.089e-15
+  cstot    3.345e-15  3.345e-15  1.800e-15  1.800e-15  1.800e-15  1.800e-15
+  cbtot    1.009e-14  1.009e-14  7.854e-15  7.854e-15  7.854e-15  7.850e-15
+  cgs      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+  cgd      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+
+
+
+ subckt   xgm.x1     xgm.x1     xgm.x1     xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn       4:ms       4:min      4:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.003e-09 -1.004e-09  1.006e-09 -1.004e-09 -1.005e-09  1.007e-09
+  ibs      2.088e-22  1.159e-16 -1.879e-21  2.092e-22  1.159e-16 -1.882e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5034    -0.7773     0.3084    -0.5035    -0.7771     0.3084 
+  vds       -0.5034    -0.7773     0.3084    -0.5035    -0.7771     0.3084 
+  vbs        0.         0.9144     0.         0.         0.9131     0.     
+  vth       -0.7685    -0.9536     0.5383    -0.7685    -0.9534     0.5383 
+  vdsat   -4.858e-02 -4.955e-02  4.142e-02 -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2650     0.1763    -0.2300     0.2650     0.1762    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466     0.3948     0.3463     0.4466 
+  gm       2.518e-08  1.816e-08  2.787e-08  2.522e-08  1.819e-08  2.791e-08
+  gds      2.234e-10  5.994e-11  8.856e-11  2.237e-10  6.002e-11  8.869e-11
+  gmb      5.935e-09  3.116e-09  8.579e-09  5.944e-09  3.122e-09  8.593e-09
+  cdtot    3.394e-15  1.573e-15  3.108e-15  3.394e-15  1.574e-15  3.108e-15
+  cgtot    2.894e-15  5.610e-15  5.874e-15  2.894e-15  5.611e-15  5.873e-15
+  cstot    4.078e-15  1.832e-15  3.345e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.247e-15  1.062e-14  8.865e-15  8.249e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm2.x1    xgm2.x1    xgm2.x1    xgm2.x2    xgm2.x2    xgm2.x2   
+ element  5:ms       5:min      5:mn       6:ms       6:min      6:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.002e-09 -1.003e-09  1.005e-09 -1.005e-09 -1.006e-09  1.008e-09
+  ibs      2.086e-22  1.159e-16 -1.877e-21  2.094e-22  1.159e-16 -1.884e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5034    -0.7775     0.3083    -0.5036    -0.7772     0.3085 
+  vds       -0.5034    -0.7775     0.3083    -0.5036    -0.7772     0.3085 
+  vbs        0.         0.9159     0.         0.         0.9131     0.     
+  vth       -0.7685    -0.9538     0.5383    -0.7685    -0.9534     0.5383 
+  vdsat   -4.858e-02 -4.955e-02  4.142e-02 -4.858e-02 -4.956e-02  4.142e-02
+  vod        0.2651     0.1763    -0.2300     0.2649     0.1762    -0.2299 
+  beta     1.062e-04  1.086e-05  1.936e-04  1.062e-04  1.086e-05  1.936e-04
+  gam eff    0.3948     0.3463     0.4466     0.3948     0.3463     0.4466 
+  gm       2.516e-08  1.815e-08  2.784e-08  2.525e-08  1.821e-08  2.794e-08
+  gds      2.232e-10  5.990e-11  8.847e-11  2.240e-10  6.008e-11  8.878e-11
+  gmb      5.929e-09  3.112e-09  8.571e-09  5.949e-09  3.125e-09  8.601e-09
+  cdtot    3.394e-15  1.573e-15  3.108e-15  3.394e-15  1.574e-15  3.108e-15
+  cgtot    2.894e-15  5.609e-15  5.874e-15  2.894e-15  5.611e-15  5.873e-15
+  cstot    4.078e-15  1.831e-15  3.345e-15  4.078e-15  1.832e-15  3.345e-15
+  cbtot    8.865e-15  8.245e-15  1.062e-14  8.865e-15  8.249e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =    1.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3083  0:ggn2    =   0.3083  0:ggp     =   0.3085 
+ +0:ggp2    =   0.3085  0:inn     =   2.1000  0:inp     =   1.9000 
+ +0:io1     =   2.0099  0:io12    =   2.0098  0:io2     =   1.9019 
+ +0:io22    =   1.9054  0:ref     =   2.0000  0:vb      =   2.7010 
+ +0:vdd     =   3.3000  0:vss     =   0.      1:bd      =   1.5749 
+ +1:bump    = 1.833e-02 1:idn     =   0.3083  1:idp     =   0.3085 
+ +1:io1a    =   2.6550  1:io2a    =   2.6547  1:sdn     =   1.0715 
+ +1:sdp     =   1.0712  2:bd      =   1.5750  2:bump    = 1.830e-02
+ +2:idn     =   0.3083  2:idp     =   0.3085  2:io1a    =   2.6549 
+ +2:io2a    =   2.6547  2:sdn     =   1.0716  2:sdp     =   1.0714 
+
+
+ maximum nodal capacitance=   1.001E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggn2    = 1.948e-14 0:ggp     = 1.801e-14
+ +0:ggp2    = 1.801e-14 0:inn     =   0.      0:inp     = 8.387e-15
+ +0:io1     = 1.419e-14 0:io12    = 1.419e-14 0:io2     = 1.001e-11
+ +0:io22    = 5.021e-12 0:ref     =   0.      0:vb      = 6.492e-14
+ +0:vdd     = 1.292e-13 0:vss     = 1.888e-13 1:bd      = 3.433e-14
+ +1:bump    = 1.345e-14 1:idn     = 1.039e-14 1:idp     = 1.039e-14
+ +1:io1a    = 2.127e-14 1:io2a    = 1.106e-14 1:sdn     = 8.155e-15
+ +1:sdp     = 8.157e-15 2:bd      = 3.433e-14 2:bump    = 1.345e-14
+ +2:idn     = 1.039e-14 2:idp     = 1.039e-14 2:io1a    = 2.127e-14
+ +2:io2a    = 1.106e-14 2:sdn     = 8.155e-15 2:sdp     = 8.156e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     1.9000     2.1000     2.7010     3.3000     0.     
+  current -2.000e-06 -2.420e-12 -2.100e-06    0.      -1.044e-08  1.044e-08
+  power    4.000e-06  4.599e-12  4.410e-06    0.       3.446e-08    0.     
+
+ subckt   xgm        xgm        xgm2       xgm2      
+ element  1:v0       1:v1       2:v0       2:v1      
+  volts      0.         0.         0.         0.     
+  current    0.       6.939e-18    0.         0.     
+  power      0.         0.         0.         0.     
+
+     total voltage source power dissipation=  8.444e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.924e-09  9.138e-10  9.153e-10  1.142e-09  1.140e-09 -1.145e-09
+  ibs      5.973e-22 -2.983e-15 -1.464e-21 -2.137e-21 -2.133e-21  2.653e-22
+  ibd      3.805e-16 -1.009e-14 -3.598e-15 -8.152e-14 -4.349e-14  7.991e-17
+  vgs       -0.5990     0.2902     0.3083     0.3083     0.3085    -0.6450 
+  vds       -1.7251     1.5566   1.833e-02    2.0099     1.9019    -0.6450 
+  vbs        0.      -1.833e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5649     0.5648     0.5361     0.5362    -0.8140 
+  vdsat   -5.103e-02  4.196e-02  4.196e-02  4.143e-02  4.143e-02 -4.962e-02
+  vod        0.1586    -0.2747    -0.2565    -0.2278    -0.2277     0.1690 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.384e-08  2.610e-08  2.590e-08  3.160e-08  3.153e-08  1.889e-08
+  gds      7.089e-11  1.284e-10  3.597e-08  9.539e-11  9.034e-11  4.102e-11
+  gmb      1.377e-08  8.239e-09  8.247e-09  9.727e-09  9.707e-09  4.782e-09
+  cdtot    3.638e-15  4.810e-15  7.405e-15  2.575e-15  2.594e-15  1.441e-15
+  cgtot    3.246e-14  6.266e-15  7.730e-15  5.874e-15  5.873e-15  5.089e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.957e-14  1.376e-14  1.840e-14  1.009e-14  1.010e-14  7.855e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm2       xgm2       xgm2      
+ element  1:mo3      1:mo4a     1:mo4      2:mb       2:mb1      2:mb2     
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.1    0:nch.2    0:nch.2   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.145e-09 -1.145e-09 -1.145e-09 -2.924e-09  9.137e-10  9.152e-10
+  ibs      2.653e-22  2.653e-22  2.653e-22  5.973e-22 -2.980e-15 -1.464e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  3.804e-16 -1.009e-14 -3.594e-15
+  vgs       -0.6450    -0.6450    -0.6448    -0.5990     0.2902     0.3083 
+  vds       -0.6450    -0.6453    -0.7528    -1.7250     1.5567   1.830e-02
+  vbs        0.         0.         0.         0.      -1.830e-02    0.     
+  vth       -0.8140    -0.8140    -0.8139    -0.7576     0.5649     0.5648 
+  vdsat   -4.962e-02 -4.962e-02 -4.961e-02 -5.103e-02  4.196e-02  4.196e-02
+  vod        0.1690     0.1690     0.1691     0.1586    -0.2747    -0.2565 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.949e-05  8.574e-04  1.087e-03
+  gam eff    0.3359     0.3359     0.3359     0.4011     0.4675     0.4693 
+  gm       1.889e-08  1.890e-08  1.889e-08  5.384e-08  2.610e-08  2.590e-08
+  gds      4.102e-11  4.101e-11  3.943e-11  7.089e-11  1.284e-10  3.606e-08
+  gmb      4.782e-09  4.782e-09  4.778e-09  1.377e-08  8.239e-09  8.247e-09
+  cdtot    1.441e-15  1.441e-15  1.401e-15  3.639e-15  4.810e-15  7.405e-15
+  cgtot    5.089e-15  5.089e-15  5.090e-15  3.246e-14  6.266e-15  7.730e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  5.705e-15  6.046e-15  7.445e-15
+  cbtot    7.855e-15  7.855e-15  7.815e-15  3.957e-14  1.376e-14  1.840e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+  cgd      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+
+
+
+ subckt   xgm2       xgm2       xgm2       xgm2       xgm2       xgm2      
+ element  2:mo1      2:mo2      2:mo3a     2:mo3      2:mo4a     2:mo4     
+ model    0:nch.1    0:nch.1    0:pch.7    0:pch.7    0:pch.7    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       1.144e-09  1.139e-09 -1.146e-09 -1.146e-09 -1.146e-09 -1.146e-09
+  ibs     -2.140e-21 -2.131e-21  2.657e-22  2.657e-22  2.657e-22  2.656e-22
+  ibd     -8.155e-14 -4.438e-14  7.991e-17  7.991e-17  7.991e-17  7.991e-17
+  vgs        0.3083     0.3085    -0.6451    -0.6451    -0.6451    -0.6449 
+  vds        2.0098     1.9054    -0.6451    -0.6451    -0.6453    -0.7492 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth        0.5361     0.5362    -0.8140    -0.8140    -0.8140    -0.8139 
+  vdsat    4.143e-02  4.143e-02 -4.963e-02 -4.963e-02 -4.963e-02 -4.962e-02
+  vod       -0.2277    -0.2277     0.1689     0.1689     0.1689     0.1690 
+  beta     1.936e-04  1.936e-04  7.108e-06  7.108e-06  7.108e-06  7.108e-06
+  gam eff    0.4466     0.4466     0.3359     0.3359     0.3359     0.3359 
+  gm       3.163e-08  3.151e-08  1.892e-08  1.892e-08  1.892e-08  1.891e-08
+  gds      9.550e-11  9.039e-11  4.106e-11  4.106e-11  4.106e-11  3.952e-11
+  gmb      9.739e-09  9.699e-09  4.787e-09  4.787e-09  4.787e-09  4.784e-09
+  cdtot    2.575e-15  2.593e-15  1.441e-15  1.441e-15  1.441e-15  1.402e-15
+  cgtot    5.874e-15  5.873e-15  5.089e-15  5.089e-15  5.089e-15  5.090e-15
+  cstot    3.345e-15  3.345e-15  1.800e-15  1.800e-15  1.800e-15  1.800e-15
+  cbtot    1.009e-14  1.010e-14  7.855e-15  7.855e-15  7.854e-15  7.816e-15
+  cgs      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+  cgd      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+
+
+
+ subckt   xgm.x1     xgm.x1     xgm.x1     xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn       4:ms       4:min      4:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.008e-09 -1.009e-09  1.010e-09 -1.001e-09 -1.002e-09  1.003e-09
+  ibs      2.099e-22  1.159e-16 -1.888e-21  2.084e-22  1.159e-16 -1.875e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5036    -0.7627     0.3085    -0.5034    -0.7632     0.3083 
+  vds       -0.5036    -0.7627     0.3085    -0.5034    -0.7632     0.3083 
+  vbs        0.         0.8288     0.         0.         0.8339     0.     
+  vth       -0.7685    -0.9403     0.5383    -0.7685    -0.9411     0.5383 
+  vdsat   -4.859e-02 -4.948e-02  4.142e-02 -4.858e-02 -4.946e-02  4.142e-02
+  vod        0.2648     0.1776    -0.2298     0.2651     0.1779    -0.2301 
+  beta     1.062e-04  1.091e-05  1.936e-04  1.062e-04  1.091e-05  1.936e-04
+  gam eff    0.3948     0.3470     0.4466     0.3948     0.3470     0.4466 
+  gm       2.530e-08  1.823e-08  2.800e-08  2.514e-08  1.812e-08  2.781e-08
+  gds      2.244e-10  5.932e-11  8.896e-11  2.230e-10  5.899e-11  8.838e-11
+  gmb      5.962e-09  3.206e-09  8.619e-09  5.924e-09  3.181e-09  8.562e-09
+  cdtot    3.393e-15  1.600e-15  3.108e-15  3.394e-15  1.599e-15  3.108e-15
+  cgtot    2.894e-15  5.686e-15  5.873e-15  2.894e-15  5.681e-15  5.874e-15
+  cstot    4.078e-15  1.870e-15  3.345e-15  4.078e-15  1.867e-15  3.345e-15
+  cbtot    8.865e-15  8.387e-15  1.062e-14  8.865e-15  8.378e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm2.x1    xgm2.x1    xgm2.x1    xgm2.x2    xgm2.x2    xgm2.x2   
+ element  5:ms       5:min      5:mn       6:ms       6:min      6:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.006e-09 -1.007e-09  1.009e-09 -1.002e-09 -1.003e-09  1.005e-09
+  ibs      2.096e-22  1.159e-16 -1.885e-21  2.087e-22  1.159e-16 -1.877e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5036    -0.7629     0.3085    -0.5034    -0.7633     0.3083 
+  vds       -0.5036    -0.7629     0.3085    -0.5034    -0.7633     0.3083 
+  vbs        0.         0.8305     0.         0.         0.8338     0.     
+  vth       -0.7685    -0.9406     0.5383    -0.7685    -0.9411     0.5383 
+  vdsat   -4.858e-02 -4.948e-02  4.142e-02 -4.858e-02 -4.947e-02  4.142e-02
+  vod        0.2649     0.1777    -0.2298     0.2650     0.1778    -0.2300 
+  beta     1.062e-04  1.091e-05  1.936e-04  1.062e-04  1.091e-05  1.936e-04
+  gam eff    0.3948     0.3470     0.4466     0.3948     0.3470     0.4466 
+  gm       2.527e-08  1.821e-08  2.797e-08  2.517e-08  1.814e-08  2.784e-08
+  gds      2.242e-10  5.927e-11  8.885e-11  2.232e-10  5.906e-11  8.848e-11
+  gmb      5.955e-09  3.201e-09  8.609e-09  5.931e-09  3.184e-09  8.572e-09
+  cdtot    3.394e-15  1.600e-15  3.108e-15  3.394e-15  1.599e-15  3.108e-15
+  cgtot    2.894e-15  5.684e-15  5.873e-15  2.894e-15  5.681e-15  5.874e-15
+  cstot    4.078e-15  1.869e-15  3.345e-15  4.078e-15  1.867e-15  3.345e-15
+  cbtot    8.865e-15  8.384e-15  1.062e-14  8.865e-15  8.379e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+
+   *** parameter diff             =    2.000E-01 ***
+
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:ggn     =   0.3082  0:ggn2    =   0.3082  0:ggp     =   0.3087 
+ +0:ggp2    =   0.3086  0:inn     =   2.2000  0:inp     =   1.8000 
+ +0:io1     =   2.0103  0:io12    =   2.0102  0:io2     =   1.8021 
+ +0:io22    =   1.8116  0:ref     =   2.0000  0:vb      =   2.7010 
+ +0:vdd     =   3.3000  0:vss     =   0.      1:bd      =   1.5604 
+ +1:bump    = 1.841e-02 1:idn     =   0.3082  1:idp     =   0.3087 
+ +1:io1a    =   2.6552  1:io2a    =   2.6547  1:sdn     =   1.0571 
+ +1:sdp     =   1.0565  2:bd      =   1.5605  2:bump    = 1.837e-02
+ +2:idn     =   0.3082  2:idp     =   0.3086  2:io1a    =   2.6551 
+ +2:io2a    =   2.6547  2:sdn     =   1.0572  2:sdp     =   1.0567 
+
+
+ maximum nodal capacitance=   1.001E-11         on node     0:io2             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:ggn     = 1.948e-14 0:ggn2    = 1.948e-14 0:ggp     = 1.801e-14
+ +0:ggp2    = 1.801e-14 0:inn     =   0.      0:inp     = 8.537e-15
+ +0:io1     = 1.420e-14 0:io12    = 1.420e-14 0:io2     = 1.001e-11
+ +0:io22    = 5.021e-12 0:ref     =   0.      0:vb      = 6.492e-14
+ +0:vdd     = 1.291e-13 0:vss     = 1.889e-13 1:bd      = 3.433e-14
+ +1:bump    = 1.345e-14 1:idn     = 1.049e-14 1:idp     = 1.050e-14
+ +1:io1a    = 2.128e-14 1:io2a    = 1.102e-14 1:sdn     = 8.193e-15
+ +1:sdp     = 8.197e-15 2:bd      = 3.433e-14 2:bump    = 1.345e-14
+ +2:idn     = 1.049e-14 2:idp     = 1.050e-14 2:io1a    = 2.128e-14
+ +2:io2a    = 1.102e-14 2:sdn     = 8.193e-15 2:sdp     = 8.196e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                                    
+ element  0:vr       0:vinp     0:vinn     0:vbias    0:vd       0:vs      
+  volts      2.0000     1.8000     2.2000     2.7010     3.3000     0.     
+  current -2.000e-06 -2.235e-12 -2.200e-06    0.      -1.043e-08  1.043e-08
+  power    4.000e-06  4.023e-12  4.840e-06    0.       3.442e-08    0.     
+
+ subckt   xgm        xgm        xgm2       xgm2      
+ element  1:v0       1:v1       2:v0       2:v1      
+  volts      0.         0.         0.         0.     
+  current    0.         0.         0.      -3.469e-18
+  power      0.         0.         0.         0.     
+
+     total voltage source power dissipation=  8.874e-06       watts
+
+
+
+
+ **** mosfets
+
+
+ subckt   xgm        xgm        xgm        xgm        xgm        xgm       
+ element  1:mb       1:mb1      1:mb2      1:mo1      1:mo2      1:mo3a    
+ model    0:pch.1    0:nch.2    0:nch.2    0:nch.1    0:nch.1    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -2.925e-09  9.134e-10  9.149e-10  1.138e-09  1.137e-09 -1.141e-09
+  ibs      5.976e-22 -2.992e-15 -1.464e-21 -2.130e-21 -2.126e-21  2.644e-22
+  ibd      3.895e-16 -9.521e-15 -3.609e-15 -8.144e-14 -2.357e-14  7.991e-17
+  vgs       -0.5990     0.2903     0.3082     0.3082     0.3087    -0.6448 
+  vds       -1.7396     1.5420   1.841e-02    2.0103     1.8021    -0.6448 
+  vbs        0.      -1.841e-02    0.         0.         0.         0.     
+  vth       -0.7576     0.5650     0.5648     0.5361     0.5363    -0.8140 
+  vdsat   -5.104e-02  4.196e-02  4.195e-02  4.143e-02  4.143e-02 -4.960e-02
+  vod        0.1586    -0.2747    -0.2567    -0.2279    -0.2276     0.1692 
+  beta     1.949e-05  8.574e-04  1.087e-03  1.936e-04  1.936e-04  7.108e-06
+  gam eff    0.4011     0.4675     0.4693     0.4466     0.4466     0.3359 
+  gm       5.386e-08  2.609e-08  2.589e-08  3.149e-08  3.143e-08  1.883e-08
+  gds      7.088e-11  1.284e-10  3.573e-08  9.508e-11  8.714e-11  4.088e-11
+  gmb      1.377e-08  8.235e-09  8.244e-09  9.694e-09  9.676e-09  4.766e-09
+  cdtot    3.630e-15  4.816e-15  7.405e-15  2.575e-15  2.613e-15  1.441e-15
+  cgtot    3.246e-14  6.266e-15  7.731e-15  5.874e-15  5.873e-15  5.090e-15
+  cstot    5.705e-15  6.046e-15  7.445e-15  3.345e-15  3.345e-15  1.800e-15
+  cbtot    3.956e-14  1.377e-14  1.840e-14  1.009e-14  1.012e-14  7.855e-15
+  cgs      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+  cgd      5.582e-16  8.396e-16  1.046e-15  4.270e-16  4.270e-16  1.190e-16
+
+
+
+ subckt   xgm        xgm        xgm        xgm2       xgm2       xgm2      
+ element  1:mo3      1:mo4a     1:mo4      2:mb       2:mb1      2:mb2     
+ model    0:pch.7    0:pch.7    0:pch.7    0:pch.1    0:nch.2    0:nch.2   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.141e-09 -1.141e-09 -1.141e-09 -2.925e-09  9.134e-10  9.149e-10
+  ibs      2.644e-22  2.644e-22  2.644e-22  5.976e-22 -2.988e-15 -1.464e-21
+  ibd      7.991e-17  7.991e-17  7.991e-17  3.894e-16 -9.528e-15 -3.604e-15
+  vgs       -0.6448    -0.6448    -0.6444    -0.5990     0.2903     0.3082 
+  vds       -0.6448    -0.6453    -0.8526    -1.7395     1.5422   1.837e-02
+  vbs        0.         0.         0.         0.      -1.837e-02    0.     
+  vth       -0.8140    -0.8140    -0.8137    -0.7576     0.5650     0.5648 
+  vdsat   -4.960e-02 -4.960e-02 -4.959e-02 -5.104e-02  4.196e-02  4.195e-02
+  vod        0.1692     0.1692     0.1694     0.1586    -0.2747    -0.2566 
+  beta     7.108e-06  7.108e-06  7.108e-06  1.949e-05  8.574e-04  1.087e-03
+  gam eff    0.3359     0.3359     0.3359     0.4011     0.4675     0.4693 
+  gm       1.883e-08  1.883e-08  1.883e-08  5.386e-08  2.609e-08  2.589e-08
+  gds      4.088e-11  4.087e-11  3.818e-11  7.088e-11  1.284e-10  3.583e-08
+  gmb      4.766e-09  4.766e-09  4.760e-09  1.377e-08  8.235e-09  8.244e-09
+  cdtot    1.441e-15  1.441e-15  1.366e-15  3.630e-15  4.816e-15  7.405e-15
+  cgtot    5.090e-15  5.090e-15  5.090e-15  3.246e-14  6.266e-15  7.731e-15
+  cstot    1.800e-15  1.800e-15  1.800e-15  5.705e-15  6.046e-15  7.445e-15
+  cbtot    7.855e-15  7.855e-15  7.781e-15  3.956e-14  1.377e-14  1.840e-14
+  cgs      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+  cgd      1.190e-16  1.190e-16  1.190e-16  5.582e-16  8.396e-16  1.046e-15
+
+
+
+ subckt   xgm2       xgm2       xgm2       xgm2       xgm2       xgm2      
+ element  2:mo1      2:mo2      2:mo3a     2:mo3      2:mo4a     2:mo4     
+ model    0:nch.1    0:nch.1    0:pch.7    0:pch.7    0:pch.7    0:pch.7   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id       1.140e-09  1.136e-09 -1.143e-09 -1.143e-09 -1.143e-09 -1.142e-09
+  ibs     -2.133e-21 -2.125e-21  2.648e-22  2.648e-22  2.648e-22  2.647e-22
+  ibd     -8.147e-14 -2.498e-14  7.991e-17  7.991e-17  7.991e-17  7.991e-17
+  vgs        0.3082     0.3086    -0.6449    -0.6449    -0.6449    -0.6445 
+  vds        2.0102     1.8116    -0.6449    -0.6449    -0.6453    -0.8430 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth        0.5361     0.5363    -0.8140    -0.8140    -0.8140    -0.8138 
+  vdsat    4.143e-02  4.143e-02 -4.961e-02 -4.961e-02 -4.961e-02 -4.960e-02
+  vod       -0.2279    -0.2277     0.1691     0.1691     0.1691     0.1693 
+  beta     1.936e-04  1.936e-04  7.108e-06  7.108e-06  7.108e-06  7.108e-06
+  gam eff    0.4466     0.4466     0.3359     0.3359     0.3359     0.3359 
+  gm       3.153e-08  3.141e-08  1.886e-08  1.886e-08  1.886e-08  1.885e-08
+  gds      9.520e-11  8.730e-11  4.093e-11  4.093e-11  4.093e-11  3.832e-11
+  gmb      9.707e-09  9.670e-09  4.772e-09  4.772e-09  4.772e-09  4.766e-09
+  cdtot    2.575e-15  2.611e-15  1.441e-15  1.441e-15  1.441e-15  1.370e-15
+  cgtot    5.874e-15  5.873e-15  5.090e-15  5.090e-15  5.090e-15  5.090e-15
+  cstot    3.345e-15  3.345e-15  1.800e-15  1.800e-15  1.800e-15  1.800e-15
+  cbtot    1.009e-14  1.012e-14  7.855e-15  7.855e-15  7.855e-15  7.784e-15
+  cgs      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+  cgd      4.270e-16  4.270e-16  1.190e-16  1.190e-16  1.190e-16  1.190e-16
+
+
+
+ subckt   xgm.x1     xgm.x1     xgm.x1     xgm.x2     xgm.x2     xgm.x2    
+ element  3:ms       3:min      3:mn       4:ms       4:min      4:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.012e-09 -1.013e-09  1.015e-09 -9.972e-10 -9.982e-10  9.999e-10
+  ibs      2.109e-22  1.159e-16 -1.896e-21  2.077e-22  1.159e-16 -1.868e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5038    -0.7478     0.3087    -0.5032    -0.7490     0.3082 
+  vds       -0.5038    -0.7478     0.3087    -0.5032    -0.7490     0.3082 
+  vbs        0.         0.7435     0.         0.         0.7545     0.     
+  vth       -0.7685    -0.9268     0.5383    -0.7685    -0.9286     0.5383 
+  vdsat   -4.859e-02 -4.940e-02  4.142e-02 -4.858e-02 -4.936e-02  4.142e-02
+  vod        0.2646     0.1790    -0.2296     0.2652     0.1796    -0.2302 
+  beta     1.062e-04  1.096e-05  1.936e-04  1.062e-04  1.095e-05  1.936e-04
+  gam eff    0.3948     0.3477     0.4466     0.3948     0.3476     0.4466 
+  gm       2.542e-08  1.830e-08  2.812e-08  2.506e-08  1.804e-08  2.771e-08
+  gds      2.255e-10  5.871e-11  8.934e-11  2.223e-10  5.799e-11  8.809e-11
+  gmb      5.989e-09  3.303e-09  8.657e-09  5.905e-09  3.246e-09  8.532e-09
+  cdtot    3.393e-15  1.628e-15  3.108e-15  3.394e-15  1.625e-15  3.109e-15
+  cgtot    2.894e-15  5.767e-15  5.873e-15  2.894e-15  5.757e-15  5.874e-15
+  cstot    4.078e-15  1.910e-15  3.345e-15  4.078e-15  1.905e-15  3.345e-15
+  cbtot    8.864e-15  8.537e-15  1.062e-14  8.865e-15  8.518e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ subckt   xgm2.x1    xgm2.x1    xgm2.x1    xgm2.x2    xgm2.x2    xgm2.x2   
+ element  5:ms       5:min      5:mn       6:ms       6:min      6:mn      
+ model    0:pch.2    0:pch.4    0:nch.1    0:pch.2    0:pch.4    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -1.011e-09 -1.012e-09  1.014e-09 -9.986e-10 -9.996e-10  1.001e-09
+  ibs      2.106e-22  1.159e-16 -1.894e-21  2.080e-22  1.159e-16 -1.871e-21
+  ibd      2.059e-16  1.159e-16 -3.438e-15  2.059e-16  1.159e-16 -3.438e-15
+  vgs       -0.5038    -0.7481     0.3086    -0.5033    -0.7490     0.3082 
+  vds       -0.5038    -0.7481     0.3086    -0.5033    -0.7490     0.3082 
+  vbs        0.         0.7454     0.         0.         0.7544     0.     
+  vth       -0.7685    -0.9271     0.5383    -0.7685    -0.9286     0.5383 
+  vdsat   -4.859e-02 -4.939e-02  4.142e-02 -4.858e-02 -4.937e-02  4.142e-02
+  vod        0.2647     0.1790    -0.2297     0.2652     0.1795    -0.2301 
+  beta     1.062e-04  1.096e-05  1.936e-04  1.062e-04  1.095e-05  1.936e-04
+  gam eff    0.3948     0.3477     0.4466     0.3948     0.3476     0.4466 
+  gm       2.539e-08  1.828e-08  2.809e-08  2.509e-08  1.807e-08  2.775e-08
+  gds      2.252e-10  5.865e-11  8.923e-11  2.226e-10  5.807e-11  8.820e-11
+  gmb      5.981e-09  3.297e-09  8.646e-09  5.913e-09  3.250e-09  8.544e-09
+  cdtot    3.393e-15  1.628e-15  3.108e-15  3.394e-15  1.625e-15  3.108e-15
+  cgtot    2.894e-15  5.765e-15  5.873e-15  2.894e-15  5.757e-15  5.874e-15
+  cstot    4.078e-15  1.909e-15  3.345e-15  4.078e-15  1.905e-15  3.345e-15
+  cbtot    8.864e-15  8.533e-15  1.062e-14  8.865e-15  8.518e-15  1.062e-14
+  cgs      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+  cgd      3.751e-16  1.922e-16  4.270e-16  3.751e-16  1.922e-16  4.270e-16
+
+
+
+ 
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09-SP1 32-BIT (Nov 24 2008) linux ******               
+ ******  
+ *mygm
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             8
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      91  # elements   =      44
+  # resistors   =       2  # capacitors =       2  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      10
+  # curr_srcs   =       0  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      30  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.06           1         298
+  dc sweep           0.07         201         449
+  ac analysis        1.24       45005       45005
+  readin             0.01
+  errchk             0.02
+  setup              0.00
+  output             0.00
+
+
+           total memory used          678  kbytes
+           total cpu time            1.40 seconds
+           total elapsed time        1.70 seconds
+           job started at     18:05:52 02/26/2016
+           job ended   at     18:05:56 02/26/2016
+
+
+ Init: hspice initialization file: /usr/cad/synopsys/hspice/cur/hspice/hspice.ini
+ lic: Release hspice token(s) 

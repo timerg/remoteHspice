@@ -30,7 +30,13 @@ Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
 Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
 .ends
 
-
+.subckt OP vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 6u  L = 5u  m = 1
+M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
+M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 1u    m = 1
+M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
+.ends
 ******
 
 ***current mirror***
@@ -52,7 +58,7 @@ mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
 .ends
 
 Xcmb vdd vss cp cp2 cp3 cp4 cn CMB
-XOP_fc vdd vss vinp vinn vop cp cp2 cn OP_fc
+
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -114,5 +120,9 @@ vts vst gnd dc = 0.6
 *.protect
 *.lib 'mm0355v.l' ss
 *.unprotect
+
+XOP vdd vss vinp vinn vop cp cp2 cn OP_fc
+.alter
+XOP vdd vss vinp vinn vop cn OP
 
 .end
