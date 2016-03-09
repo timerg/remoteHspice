@@ -1,7 +1,7 @@
 
 .lib inw_dc                *#0
     .param ins_ = 0
-    ins vdd nwd dc = ins_  ac = 1
+    ins nwd vss dc = ins_  ac = 1
     vfc to_out vnw dc = vdif *ac = 1
     .dc ins_ dec 10 10n 1u
 
@@ -9,7 +9,7 @@
     It vst vss dc = 'pbI+ins_'
     vtg vgt gnd dc = 1
     vtd vdt gnd dc = 1.5
-    .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt)
+    .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt) lx7(mnw)
     .ic v(vnw) = 0.6
     *.options  gmindc=   1.000E-09
 
@@ -30,16 +30,16 @@
     *Mp  out vgp vdd vdd pch w = 5u l = 1u m = 1
     *vpg vgp gnd dc = 2.5      * 1.178u
     vfc to_out vnw dc = vdif ac = 1
-    .dc wx 0.4u 20u 0.1u
-    .ac dec 1000 1 1g
-    Mt vdt vgt vst vst nch w = wx l = 0.4u m = 1
+    .dc wx 0.4u 40u 0.4u
+    .ac dec 1000 1 1g *sweep wx 0.4u 40u 8u
+    Mt vdt vgt vst vst nch w = wx l = 0.5u m = mx
     It vst vss dc = 'pbI'
     vtg vgt gnd dc = 1
-    vtd vdt gnd dc = 1.5
-    .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt)
-    .probe ac out=par('v(ti_out)')
+    vtd vdt gnd dc = 1
+    .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt) lx7(mnw)
+    .probe ac out=par('v(ti_out)') lx7(mnw)
     *.ic v(gm_in) = 2 v(gm_out) = 2 v(out) = 2
-    .option dcon = 1
+    *.option dcon = 1
 .endl
 
 .lib  vsn           *#2
@@ -61,13 +61,12 @@
 
 .lib Tri            *#3
     .ic v(vnw) = 0.6
-    XTri vdd vss opb ti_in ti_out  cz  Tr rld=100k
     vc2 ti_in inx dc = 0
     vc3 gm_in gnd dc = 0
     .param ins_ = 0
     ins vdd inx dc = ins_ ac = 1
     Rin inx gnd 100x
-    *.pz v(ti_out) ins
+    .pz v(ti_out) ins
     .dc ins_ dec 1000 100n 100u
     .ac dec 1000 1 1g *sweep ins_ dec 1 100n 100u
     .probe ac out=par('v(ti_out)')
@@ -81,7 +80,7 @@
     .dc vc3 0 3.3 0.01
     .ac dec 1000 1 1g *sweep vc3 1.8 2.2 0.1
     *.pz v(gm_out) vc3
-    .probe ac out = par('v(gm_out)')
+    .probe ac out = par('v(gm_out)') vp(gm_out)
 .endl
 
 .lib InS            *#5
@@ -100,18 +99,17 @@
 .endl
 
 .lib OPout          *#6
-    XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
-    *XTro vdd vss to_in opb to_out  cz  Trx
+    **XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
+    **XTro vdd vss to_in opb to_out  cz  Trx
     *XTro vdd vss opb to_in to_out cz Trx2
     vc4 to_in gnd dc = 2 ac = 1
     .dc vc4 0 3.3 0.01
-    .ac dec 1000 1 1g sweep vc3 0.4 2.8 0.4
-    .probe ac out=par('v(to_out)')
+    .ac dec 1000 1 1g *sweep vc3 0.4 2.8 0.4
+    .probe ac out=par('v(to_out)') vp(to_out)
 .endl
 
 .lib Ien            *#7
     .ic v(vnw) = 0.6
-    XiEn vdd vss opb   iEn_in iEn_out cx  eb iEn
     veb eb gnd dc = 2.4
     vc1 iEn_in inx dc = 0
     vc2 ti_in  gnd dc = 0
@@ -130,7 +128,8 @@
 .lib Fd
     .ac dec 1000 1 1g
     vc3 gm_in gnd   dc = 2 ac = 1
-
+    Cc1 to_out gnd 0p
+    vfc vnw gnd dc = 0
 .endl
 
 .lib Av
@@ -138,6 +137,14 @@
     vfc vnw gnd dc = 0.4 ac = 1
     .dc vfc 0.2 0.6 0.1
 
+.endl
+
+.lib Loop
+    .ac  dec 1000 1 1g
+    vc3 gm_in gnd dc = 2 ac = 1
+    .probe ac vp(ti_out) lx7(mnw) vp(gm_out) vp(to_out)
+    .pz v(ti_out) vc3
+    .ic v(vnw) = 15.096e-01
 .endl
 
 .lib Tran

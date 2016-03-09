@@ -18,6 +18,7 @@ M3	1	1	 vss vss nch W = 1u   L = 5u  m = 1
 M4	2	1	 vss vss nch W = 1u   L = 5u  m = 1
 *R1  2   gnd  700k
 .ends
+
 ******current mirror***
 .subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
 Iin cp  vss dc = 1u
@@ -55,7 +56,7 @@ veb eb gnd dc = '3.3-0.58'      *100n
 *veb eb gnd dc = '3.3-0.7'      *1u
 *veb eb gnd dc = '0.835'      *10u
 
-Xcmb vdd vss cz cp2 cp3 cx cn CMB
+XCMB vdd vss cp cp2 cp3 cp4 cn CMB
 
 
 XOP1 vdd vss vinn vinp cx vop OP_a
@@ -68,7 +69,7 @@ vinn vinn gnd dc = 'comon+diff' *ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
-Iin vdd vinp dc = 10n  ac = 1  sin(1u 10n 1k 1ns)
+Iin vdd vinp dc = 100n  *ac = 1  sin(1u 10n 1k 1ns)
 Rin vinp gnd 100x
 
 ***output***
@@ -92,13 +93,10 @@ vb      opb     gnd dc = comon
 
 ***Test***
 Mt  vdt vgt vst vst pch w = 5u l = 0.4u
-It  vdd vst dc = 10n
+It  vdd vst dc = 10u
 vtg vgt gnd dc = 2v
 vtd vdt gnd dc = 1v
 
-XTest vdd vss in2 ip2 cx out_t OP_a
-Vi in2 gnd dc = 2
-Vi2 ip2 gnd dc = 2 ac = 1
 
 .op
 
@@ -114,14 +112,12 @@ Vi2 ip2 gnd dc = 2 ac = 1
 ******AC*******
 .ac dec 100 1 1g *sweep
 .probe ac i(ro) vp(vop2)
-*.pz i(ro) iin
+.pz i(ro) iin
 .noise i(ro) Iin
 
 ******Trans******
 *.tran 100ns 2ms
 *.probe tran i(me1) i(me2)
-
-
 
 
 

@@ -3,8 +3,8 @@
 .lib 'mm0355v.l' TT
 *.lib 'rf018.l' TT
 .unprotect
-.options ABSTOL=1e-7 RELTOL=1e-7
-+ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2 *CONVERGE=1 dcon=2
+.options ABSTOL=1e-7 RELTOL=1e-7 unwrap = 1
++ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  *CONVERGE=1 * gmindc=1.000E-10 dcon=2
 
 ***subckt***
 ******iEnlarge******
@@ -81,16 +81,16 @@ Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
 .ends
 ******OP: Two stage******
 .subckt Trx2 vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
-ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
+Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
+M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
+M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
+ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
+ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 C1  2  vop 1p
 *C2  1  von 1p
-*Ro vop vss 20k
+*Ro vop vdd 80k
 .ends
 
 ******current mirror******
@@ -112,27 +112,37 @@ mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
 
 Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
+******HP*******
+*.subckt HP vdd vss in out
+*R1 in out 100k
+*L1 out vss 1m
+*.ends
+
 ***netlist***
 XTri vdd vss opb ti_in ti_out  cz  Tr rld=100k
-Xgm  vdd vss gm_in gm_out gm_c  cx  gm
-Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
+Xgm  vdd vss gm_in gm_out gm_out  cx  gm
+*Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
 XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-*XTro vdd vss opb to_in to_out cz Trx2
-Cg  gm_c gnd 10p
-Cg2  gm_out gnd 5p
+*XTro vdd vss to_in opb to_out cz Trx2
+*Cg  gm_c gnd 10p
+Cg2  gm_out gnd 10p
 XiEn vdd vss opb iEn_in iEn_out cx  eb iEn
-veb eb gnd dc = 2.6
+veb eb gnd dc = 2.4
 
 ***NW Input Stage***
-.param pbI = 1u
+.param pbI = 100n
 Ip vdd out dc = pbI
-Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
-vng vgn gnd dc = 1.8
-.param wx = 1u
-Mnw nwd vnw vss vsn nch w = wx l = 0.4u m = 1
-vsn vsn gnd dc = 0
+*Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
+*vng vgn gnd dc = 2.5
+.param wx = 6u mx = 1
+Mnw out vnw nws vsn nch w = wx l = 0.5u m = mx
+vws nws vss dc = 1
+vsn vsn vss dc = 1
+
+
+
 
 vc1 out     iEn_in  dc = 0
 vc2 iEn_out ti_in   dc = 0
@@ -152,7 +162,8 @@ Vs vss gnd dc = 0
 
 
 ***Compensation***
-Cc1 to_out gnd 100p
+*Cc1 ti_out gnd 10p
+*Rol  to_out gnd 1k
 
 
 .probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
@@ -165,53 +176,61 @@ Cc1 to_out gnd 100p
 .op
 
 ***cloase loop test***
-.alter  *Inw_dc    #0
-.lib 'Test.l' Inw_dc
-
-.alter  *Inw_ac     #0
-.del lib 'Test.l' Inw_dc
-.lib 'Test.l' Inw_ac
-
+*.alter  *Inw_dc    #0
+*.lib 'Test.l' Inw_dc
+*
+*.alter  *Inw_ac     #0
+*.del lib 'Test.l' Inw_dc
+*.lib 'Test.l' Inw_ac
+*
 .alter  *wx     #1
 .del lib 'Test.l' Inw_ac
 .lib 'Test.l' wx
-**
-.alter  *vsn(sweep v on bulk)       #2
-.del lib 'Test.l' wx
-.lib 'Test.l' vsn
-
-***Single block Test***
-.alter *Tri     #3
-.del lib 'Test.l' vsn
-.lib 'Test.l' Tri
 *
-.alter *GM-C        #4
-.del lib 'Test.l' Tri
-.lib 'Test.l' GMC
-
-
-.alter * inputStage     #5
-.del lib 'Test.l' GMC
-.lib 'Test.l' InS
-
-
-.alter *OPout       #6
-.del lib 'Test.l' Ins
-.lib 'Test.l' OPout
-
+.alter
+.del lib 'Test.l' wx
+.lib 'Test.l' Loop
+***
+*.alter  *vsn(sweep v on bulk)       #2
+*.del lib 'Test.l' wx
+*.lib 'Test.l' vsn
+*
+****Single block Test***
+*.alter *Tri     #3
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' Tri
+**
+*.alter *GM-C        #4
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' GMC
+*
+*
+*.alter * inputStage     #5
+*.del lib 'Test.l' GMC
+*.lib 'Test.l' InS
+*
+*
+*.alter *OPout       #6
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' OPout
+*
 .alter *iEn
-.del lib 'Test.l' OPout
+.del lib 'Test.l' Loop
 .lib 'Test.l' Ien
-
-.alter *total feedackPart(OP + Gm)
-.del lib 'Test.l' Ien
-.lib 'Test.l' Fd
-
-.alter *Av part
-.del lib 'Test.l' Fd
-.lib 'Test.l' Av
-
-*.alter *Tran
+*
+*.alter *total feedackPart(OP + Gm)
 *.del lib 'Test.l' Ien
+*.lib 'Test.l' Fd
+*
+*.alter *Av part
+*.del lib 'Test.l' Fd
+*.lib 'Test.l' Av
+*
+
+
+*
+*.alter *Tran
+*.del lib 'Test.l' Loop
 *.lib 'Test.l' Tran
+
 .end

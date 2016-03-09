@@ -82,31 +82,31 @@ vts vst gnd dc = 3.3
 *.noise v(vop) vinn 100
 **
 ****Open loop wi loading Test***
-****.alter TrImp_Ol_wiload
-*vinp vinp gnd dc = 'comon-diff' *ac = 1
-*vinn in gnd dc = 'comon+diff' ac = 1 180
-*Rin  in vinn 20k
-*RL   vop  gnd 20k
-*.ac dec 1000 0.1 1g
-**.tf v(voa) vinp
-*.pz v(vop) vinn
-*.probe dc I(m1) I(m2)	I(mt)
-*.probe ac vp(vop)
-*+gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')
-*+gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
-*.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
-*.meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
-*.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-*.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-*
-*.noise v(vop) vinn 100
+.alter *TrImp_Ol_wiload
+vinp vinp gnd dc = 'comon-diff' *ac = 1
+vinn in gnd dc = 'comon+diff' ac = 1 180
+Rin  in vinn 10K
+RL   vop  gnd 10K
+.ac dec 1000 0.1 1g
+*.tf v(voa) vinp
+.pz v(vop) vinn
+.probe dc I(m1) I(m2)	I(mt)
+.probe ac vp(vop)
++gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')
++gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
+.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
+.meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
+.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
+.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
+
+.noise v(vop) vinn 100
 
 ****cloase loop feedback test***
-****.alter TrImp_IdcRTest
+.alter *TrImp_IdcRTest
 vinp vinp gnd  dc = 'comon' *ac = 1
-Iin  vdd vinn dc = 10u ac = 1
+Iin  vdd vinn dc = 1u ac = 1
 *Rin  vinp vss 100g
-RL   vop    vinn 20k
+RL   vop    vinn 10k
 .dc sweep Iin dec 50 1n 100u
 *.dc Iin 100n 1000n 10n
 .probe i(ma1)

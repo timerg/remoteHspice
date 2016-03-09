@@ -21,21 +21,28 @@
 +diff			= 0
 ***netlist***
 ***1st stage***
+.subckt fstStage_a vdd vss vinn vinp 1 2 cp cn
 Mb	b	cp	vdd	vdd	pch	W = 31u  L = 1u	  m = 2
 M1	1	Vinn	b		b		pch	W = 10u L = 0.4u m = 1
 M2	2	Vinp	b		b		pch	W = 10u L = 0.4u m = 1
 M3	1	cn		vss	vss	nch	W = 4.2u L = 0.4u m = 2
 M4	2	cn		vss	vss	nch	W = 4.2u L = 0.4u m = 2
-
+.ends
+.subckt fstStage_b vdd vss vinn vinp 2 cp
+.ends
 
 ***2nd stage***
+.subckt sdSatge_a vdd vss 1 2 vop
 m1pa	voa	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
 m1pb	von	von	voa	voa	pch	w = 4u l = 0.4u    m = 2
 m2pa	vo2	voa	vdd	vdd	pch	w = 4u l = 0.4u    m = 2
 m2pb	vop	von	vo2 vo2	pch	w = 4u l = 0.4u    m = 2
 m3n	    von	1   vss vss nch w = 15u   l = 0.4u    m = 2
 m4n	    vop	2   vss vss nch w = 15u   l = 0.4u    m = 2
+.ends
 
+Xfst vdd vss vinn vinp 1 2 cp cn fstStage_a
+Xsd  vdd vss 1 2 vop sdSatge_a
 ***compensation***
 *Ct	gnd		2   100f
 *Con	gnd	von 50f
@@ -114,9 +121,9 @@ mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
 *.tf v(voa) vinp
 .pz v(vop) vinp
 *.pz v(vop) viac
-.probe dc I(m1) I(m2)	I(mt)
-.probe ac cap(von)
-+gain1st=par('Vdb(2, 1)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2,1)')
+.probe dc I(Xfst.m1) I(Xfst.m2)	I(mt)
+.probe ac cap(Xsd.von)
++gain1st=par('Vdb(2, 1)-Vdb(vinp,vinn)')	par('I(Xfst.m1)-I(Xfst.m2)')	phase1st=par('vp(2,1)')
 +gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
 .meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
 .meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
