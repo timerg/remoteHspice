@@ -1,13 +1,13 @@
 ***MyOp_2stage_aboveTH
 .protect
-.lib 'mm0355v.l' ff
+.lib 'mm0355v.l' tt
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=1 reltol=1e-5
 
 ***param***
 .param
-+comon		= 2
++comon		= 1
 +bias		= 2.4
 +bias2		= 2.4
 +supplyp	= 3.3
@@ -15,29 +15,39 @@
 +diff			= 0
 ***netlist***
 ***1st stage***
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
+Mb	b	cz	 vdd vdd pch W = 10u  L = 5u  m = 1
+M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
+M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
+M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
 
 
 ***2nd stage***
-ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2   *use 21u when in new model
+ma1 vop cz vdd vdd pch W = 4u L = 0.5u m = 2
+ma2 vop 2  vss vss nch W = 1u L = 1u m = 2   *use 21u when in new model
 ***compensation***
 *C1  2 vop 20f   *~ 60db
-C1  2 vop 600f   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
+C1  2 vop 1p   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
 ******
 
 ***current mirror***
-Ic  cp vss dc = 500n
-mc0 cp cp vdd vdd pch w = 5u l = 0.4u m = 7
-mc1 c0 cp vdd vdd pch w = 5u l = 0.4u m = 2
-mc2 cn cn c0  c0  pch w = 1u l = 0.4u m = 1
-mc3 cn cn vss vss nch w = 5.1u l = 0.4u m = 3
-mcx  cz cz vdd vdd pch w = 1u l = 1u m = 1
-mcz  cz cn vss vss nch w = 10u l = 1u m = 3
+.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+
+mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.ends
+
+Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -85,8 +95,8 @@ vts vst gnd dc = 3.3
 .alter *TrImp_Ol_wiload
 vinp vinp gnd dc = 'comon-diff' *ac = 1
 vinn in gnd dc = 'comon+diff' ac = 1 180
-Rin  in vinn 10K
-RL   vop  gnd 10K
+Rin  in vinn 50K
+RL   vop  gnd 50K
 .ac dec 1000 0.1 1g
 *.tf v(voa) vinp
 .pz v(vop) vinn
@@ -106,8 +116,8 @@ RL   vop  gnd 10K
 vinp vinp gnd  dc = 'comon' *ac = 1
 Iin  vdd vinn dc = 1u ac = 1
 *Rin  vinp vss 100g
-RL   vop    vinn 10k
-.dc sweep Iin dec 50 1n 100u
+RL   vop    vinn 50k
+.dc Iin dec 50 1n 200u
 *.dc Iin 100n 1000n 10n
 .probe i(ma1)
 .ac dec 1000 0.1 1g

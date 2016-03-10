@@ -30,7 +30,7 @@
     *Mp  out vgp vdd vdd pch w = 5u l = 1u m = 1
     *vpg vgp gnd dc = 2.5      * 1.178u
     vfc to_out vnw dc = vdif ac = 1
-    .dc wx 0.4u 40u 0.4u
+    .dc wx 0.4u 40u 0.4u sweep pbI dec 1 100n 10u
     .ac dec 1000 1 1g *sweep wx 0.4u 40u 8u
     Mt vdt vgt vst vst nch w = wx l = 0.5u m = mx
     It vst vss dc = 'pbI'

@@ -9,31 +9,30 @@
 ***subckt***
 ******iEnlarge******
 .subckt iEn vdd vss vinn vinp vout cz eb
-Mb	b	cz	 vdd vdd pch   W = 5u  L = 5u  m = 1
-M1	von	Vinp b	 b	 pch   W = 1u  L = 5u  m = 1
-M2	vop	Vinn b	 b	 pch   W = 1u  L = 5u  m = 1
-M3	von	von	 vss vss nch   W = 1u  L = 5u  m = 1
-M4	vop	von	 vss vss nch   W = 1u  L = 5u    m = 1
+Mb	b	cz	 vdd vdd pch   W = 10u  L = 3u   m = 1
+M1	von	Vinp b	 b	 pch   W = 5u   L = 3u   m = 3
+M2	vop	Vinn b	 b	 pch   W = 5u   L = 3u   m = 3
+M3	von	von	 vss vss nch   W = 1u   L = 3u   m = 1
+M4	vop	von	 vss vss nch   W = 1u   L = 3u   m = 1
 
 Me1p vinp eb vdd vdd pch   w = 10u l = 0.4u
 Me2p vout eb vdd vdd pch   w = 10u l = 0.4u m = 10
 Me1n vinp vop vss vss nch  w = 2u l = 1u
 Me2n vout vop vss vss nch  w = 2u l = 1u m = 10
-*Rc  xx   vop 100k
-Cc  vinp vop  500f
-*Ct  vout gnd 300f
+
+Cc  2 xx 20p
+R1  xx vss 10k
 .ends
 ******Tr******
-.subckt Tr vdd vss vinp vinn vop cz rld=20k
-Mb	b	cz	 vdd vdd pch W = 5u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 3u   L = 5u  m = 2
-M2	2	Vinp b	 b	 pch W = 3u   L = 5u  m = 2
-M3	1	1	 vss vss nch W = 3u   L = 5u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 5u    m = 1
-ma1 vop cz vdd vdd pch W = 8u L = 1u m = 2
-ma2 vop 2  vss vss nch W = 17.3u L = 1u m = 2
+.subckt Tr vdd vss vinp vinn vop cz rld=50k
+Mb	b	cz	 vdd vdd pch W = 10u  L = 5u  m = 1
+M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
+M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
+M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
+ma1 vop cz vdd vdd pch   W = 4u L = 0.5u m = 2
+ma2 vop 2  vss vss nch   W = 1u L = 1u m = 2
 C1  2  vop 1p
-*C2  1  von 1p
 RL   vop    vinn rld
 .ends
 ******GM******
@@ -119,7 +118,7 @@ Xcmb vdd vss cz cp2 cp3 cx cn CMB
 *.ends
 
 ***netlist***
-XTri vdd vss opb ti_in ti_out  cz  Tr rld=100k
+XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=50k
 Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 *Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
@@ -128,7 +127,7 @@ XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
 *XTro vdd vss to_in opb to_out cz Trx2
 *Cg  gm_c gnd 10p
 Cg2  gm_out gnd 10p
-XiEn vdd vss opb iEn_in iEn_out cx  eb iEn
+XiEn vdd vss opb1 iEn_in iEn_out cx  eb iEn
 veb eb gnd dc = 2.4
 
 ***NW Input Stage***
@@ -146,13 +145,14 @@ vsn vsn vss dc = 1
 
 vc1 out     iEn_in  dc = 0
 vc2 iEn_out ti_in   dc = 0
-vc3 ti_out  gm_in   dc = 0
+vc3 ti_out  gm_in   dc = -1
 vc4 gm_out  to_in   dc = 0
 vfc to_out vnw dc = vdif
 
 
 
-vopbias opb gnd dc = 2 *ac = 1 *180
+vopbias  opb  gnd dc = 2 *ac = 1 *180
+vopbias1 opb1 gnd dc = 1 *ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
