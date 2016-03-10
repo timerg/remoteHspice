@@ -20,7 +20,7 @@ Me2p vout eb vdd vdd pch   w = 10u l = 0.4u m = 10
 Me1n vinp vop vss vss nch  w = 2u l = 1u
 Me2n vout vop vss vss nch  w = 2u l = 1u m = 10
 *Rc  xx   vop 100k
-Cc  vinp vop  10f
+Cc  vinp vop  500f
 *Ct  vout gnd 300f
 .ends
 ******Tr******

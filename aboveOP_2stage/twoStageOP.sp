@@ -1,6 +1,6 @@
 ***MyOp_2stage_aboveTH
 .protect
-.lib 'mm0355v.l' tt
+.lib 'mm0355v.l' ss
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=1
@@ -13,21 +13,24 @@
 +supplyp	= 3.3
 +supplyn	= 0
 +diff			= 0
++wx             = 10u
 ***netlist***
 ***1st stage***
 .subckt OP vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
-M1	1	Vinn b	 b	 pch W = 1u   L = 5u   m = 1
-M2	2	Vinp b	 b	 pch W = 1u   L = 5u   m = 1
-M3	1	1	 vss vss nch W = 1u   L = 1u   m = 1
-M4	2	1	 vss vss nch W = 1u   L = 1u   m = 1
+Mb	b	cz	 vdd vdd pch W = wx  L = 3u   m = 1
+M1	1	Vinn b	 b	 pch W = 5u   L = 1u   m = 3
+M2	2	Vinp b	 b	 pch W = 5u   L = 1u   m = 3
+M3	1	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+*Cc  2   gnd  100f
 .ends
 
 
 
 ***2nd stage***
 .subckt sdStage vdd vss 2 vop cz
-ma1 vop cz vdd vdd pch W = 2u L = 0.5u m = 1
+ma1 vop cz vdd vdd pch W = 3u L = 0.5u m = 1
+*Ra1 vop vdd 100k
 ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
 .ends
 
@@ -37,7 +40,7 @@ ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
 XOP  vdd vss vinp vinn 2 cz OP
 XOP2 vdd vss 2 vop b0 sdStage
 ***compensation***
-C2 2 vop 10p
+*C2 2 vop 10p
 
 ******
 
@@ -95,10 +98,10 @@ vts vst gnd dc = 0
 .op
 
 ***sweep***
-.dc diff -0.1 0.1 0.0001 sweep bias 2.2 2.3 0.1
+.dc diff -0.1 0.1 0.0001 *sweep bias wx 1u 12u 2u
 
 ***probe&measuring***
-.ac dec 1000 1 1g sweep *bias 2.2 2.3 0.1
+.ac dec 1000 1 1g sweep wx 1u 12u 2u
 *.tf v(voa) vinp
 .pz v(vop) vinp
 .probe dc I(m1) I(m2)	I(mt)
