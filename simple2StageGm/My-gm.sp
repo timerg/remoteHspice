@@ -16,8 +16,8 @@ Mn  id  gg  vss vss nch w = 2u    l = 1u m = 2
 *******Circuits**********
 *Mb  bd  vb  vdd vdd pch w = 3u l = 10u   m = 1
 Mbx 1   vb  vdd vdd pch w = 6u l = 8u   m = 1
-Mby bd   vb  1   1   pch w = 6u l = 8u   m = 1
-*Mbz bd  vb  2   2   pch w = 6u l = 8u   m = 1
+Mby 2   vb  1   1   pch w = 6u l = 8u   m = 1
+Mbz bd  vb  2   2   pch w = 6u l = 8u   m = 1
 
 X1  vdd vss inp bd ggp idp sdp gmx
 X2  vdd vss inn bd ggn idn sdn gmx

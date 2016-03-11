@@ -37,20 +37,24 @@ RL   vop    vinn rld
 .ends
 ******GM******
 .subckt gm vdd vss inp inn io2  vb
-Mb  bd  vb  vdd vdd pch w = 3u l = 10u   m = 1
+Mbx 1   vb  vdd vdd pch w = 6u l = 8u   m = 1
+Mby 2   vb  1   1   pch w = 6u l = 8u   m = 1
+Mbz bd  vb  2   2   pch w = 6u l = 8u   m = 1
 .subckt gmx vdd vss in bd gg id sd
 Ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 1
 Min id  id  sd  in  pch w = 1u    l = 5u m = 1
 Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
 .ends
-Mb1  bd   ggp  bump vss nch w = 4u l = 1u m = 1
-Mb2  bump ggn  vss  vss  nch w = 5u l = 1u m = 1
-Mo1  io1  ggn  vss  vss  nch w = 2u l = 2u m = 1
-Mo2  io2  ggp  vss  vss  nch w = 2u l = 2u m = 1
-Mo3a io1a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
-Mo3  io1  io1  io1a io1a pch w = 0.6u l = 5u m = 1
-Mo4a io2a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
-Mo4  io2  io1  io2a io2a pch w = 0.6u l = 5u m = 1
+Mb1  bd   ggp  bump vss  nch w = 7u l = 1u m = 2
+Mb2  bump ggn  vss  vss  nch w = 9u l = 1u m = 2
+Mo1  io1  ggn  vss  vss  nch w = 5u l = 0.5u m = 2
+Mo2  io2  ggp  vss  vss  nch w = 5u l = 0.5u m = 2
+*Mo3a io1a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
+*Mo3  io1  io1  io1a io1a pch w = 0.6u l = 5u m = 1
+*Mo4a io2a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
+*Mo4  io2  io1  io2a io2a pch w = 0.6u l = 5u m = 1
+Mo3  io1 io1 vdd  vdd  pch w = 0.6u l = 6u m = 1
+Mo4  io2 io1 vdd  vdd  pch w = 0.6u l = 6u m = 1
 Xgmx1  vdd vss inp bd ggp idp sdp gmx
 Xgmx2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
@@ -145,8 +149,8 @@ vsn vsn vss dc = 1
 
 vc1 out     iEn_in  dc = 0
 vc2 iEn_out ti_in   dc = 0
-vc3 ti_out  gm_in   dc = -1
-vc4 gm_out  to_in   dc = 0
+vc3 ti_out  gm_in   dc = 0
+vc4 gm_out  to_in   dc = -1
 vfc to_out vnw dc = vdif
 
 
