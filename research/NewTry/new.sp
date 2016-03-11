@@ -41,20 +41,21 @@ Mbx 1   vb  vdd vdd pch w = 6u l = 8u   m = 1
 Mby 2   vb  1   1   pch w = 6u l = 8u   m = 1
 Mbz bd  vb  2   2   pch w = 6u l = 8u   m = 1
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 1
-Min id  id  sd  in  pch w = 1u    l = 5u m = 1
-Mn  id  gg  vss vss nch w = 2u    l = 2u m = 1
+Ms  sd  sd  bd  bd  pch w = 2u    l = 1u m = 2
+Min id  id  sd  in  pch w = 2u    l = 1u m = 2
+Mn  id  gg  vss vss nch w = 2u    l = 1u m = 2
 .ends
-Mb1  bd   ggp  bump vss  nch w = 7u l = 1u m = 2
-Mb2  bump ggn  vss  vss  nch w = 9u l = 1u m = 2
+Mb1  bd   ggp  bump vss  nch w = 8u l = 0.5u m = 2
+Mb2  bump ggn  vss  vss  nch w = 5u l = 0.5u m = 2
 Mo1  io1  ggn  vss  vss  nch w = 5u l = 0.5u m = 2
 Mo2  io2  ggp  vss  vss  nch w = 5u l = 0.5u m = 2
-*Mo3a io1a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
-*Mo3  io1  io1  io1a io1a pch w = 0.6u l = 5u m = 1
-*Mo4a io2a io1a vdd  vdd  pch w = 0.6u l = 5u m = 1
-*Mo4  io2  io1  io2a io2a pch w = 0.6u l = 5u m = 1
-Mo3  io1 io1 vdd  vdd  pch w = 0.6u l = 6u m = 1
-Mo4  io2 io1 vdd  vdd  pch w = 0.6u l = 6u m = 1
+Mo3  1a  io1 vdd  vdd  pch w = 1u l = 2u m = 1
+Mo3a 1b  io1 1a   1a   pch w = 1u l = 2u m = 1
+Mo3b io1 io1 1b   1b   pch w = 1u l = 2u m = 1
+Mo4  2a  io1 vdd  vdd  pch w = 1u l = 2u m = 1
+Mo4a 2b  io1 2a   2a   pch w = 1u l = 2u m = 1
+Mo4b io2 io1 2b   2b   pch w = 1u l = 2u m = 1
+
 Xgmx1  vdd vss inp bd ggp idp sdp gmx
 Xgmx2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
@@ -135,14 +136,14 @@ XiEn vdd vss opb1 iEn_in iEn_out cx  eb iEn
 veb eb gnd dc = 2.4
 
 ***NW Input Stage***
-.param pbI = 100n
+.param pbI = 10u
 Ip vdd out dc = pbI
 *Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
 *vng vgn gnd dc = 2.5
 .param wx = 6u mx = 1
 Mnw out vnw nws vsn nch w = wx l = 0.5u m = mx
-vws nws vss dc = 1
-vsn vsn vss dc = 1
+vws nws vss dc = 0
+vsn vsn vss dc = 0
 
 
 
@@ -160,7 +161,7 @@ vopbias1 opb1 gnd dc = 1 *ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
-+vdif       = 0
++vdif       = 2.5
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 

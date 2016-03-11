@@ -1,6 +1,6 @@
 *MyGm
 .protect
-.lib 'mm0355v.l' TT DIO
+.lib 'mm0355v.l' tt DIO
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7
 + POST=1 CAPTAB=1 ACCURATE=1 INGOLD=1 unwrap = 1
@@ -9,7 +9,7 @@
 *******SUBCKT************
 .subckt gm  vdd vss inp inn io2 io1 ggp ggn vb Cc = 0
 .subckt gmx vdd vss in bd gg id sd
-Ms  sd  sd bd  bd  pch w = 2u    l = 1u m = 2
+Ms  sd  sd  bd  bd  pch w = 2u    l = 1u m = 2
 Min id  id  sd  in  pch w = 2u    l = 1u m = 2
 Mn  id  gg  vss vss nch w = 2u    l = 1u m = 2
 .ends
@@ -24,8 +24,8 @@ X2  vdd vss inn bd ggn idn sdn gmx
 V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 ********Bump*********
-Mb1  bd   ggp  bump vss nch w = 7u l = 1u m = 2   *slightly adjust bump centerization
-Mb2  bump ggn  vss  vss  nch w = 9u l = 1u m = 2    *lowering Length to lower vth. i guess this help to release vds supression
+Mb1  bd   ggp  bump vss  nch w = 8u l = 0.5u m = 2   *slightly adjust bump centerization
+Mb2  bump ggn  vss  vss  nch w = 5u l = 0.5u m = 2    *lowering Length to lower vth. i guess this help to release vds supression
 ******Second Stage*****
 Mo1  io1  ggn  vss  vss  nch w = 5u l = 0.5u m = 2
 Mo2  io2  ggp  vss  vss  nch w = 5u l = 0.5u m = 2
@@ -35,8 +35,12 @@ Mo2  io2  ggp  vss  vss  nch w = 5u l = 0.5u m = 2
 *Mo4  io2a io1a vdd  vdd  pch w = 0.6u l = 6u m = 1
 *Mo4a io2b io1b io2a io2a pch w = 0.6u l = 6u m = 1
 *Mo4b io2  io1  io2b io2b pch w = 0.6u l = 6u m = 1
-Mo3  io1 io1 vdd  vdd  pch w = 0.6u l = 6u m = 1
-Mo4  io2 io1 vdd  vdd  pch w = 0.6u l = 6u m = 1
+Mo3  1a  io1 vdd  vdd  pch w = 1u l = 2u m = 1
+Mo3a 1b  io1 1a   1a   pch w = 1u l = 2u m = 1
+Mo3b io1 io1 1b   1b   pch w = 1u l = 2u m = 1
+Mo4  2a  io1 vdd  vdd  pch w = 1u l = 2u m = 1
+Mo4a 2b  io1 2a   2a   pch w = 1u l = 2u m = 1
+Mo4b io2 io1 2b   2b   pch w = 1u l = 2u m = 1
 
 *Cc   io1 gnd  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
 *Rc   ggn xx  1k
