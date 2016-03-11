@@ -3,7 +3,7 @@
 .lib Open
     *.dc va -2 2 0.01
     .dc diff -1 1 0.01 *sweep cm 1 2 0.2
-    .probe dc I(e1) I(rl) I(mb)
+    .probe dc I(e1) I(rl) I(mb) lx7(Xgm.X1.Min) lx7(Xgm.X2.Min) I(Xgm.X1.Min)
     *+ Idiff = par('I(Xgm.X1.mn)-I(Xgm.X2.mn)') vdiff = par('v(ggp)-v(ggn)') I(mb1)
     *+ I(mo1) I(mo2) I(mo3) I(mo4) I(x1.mn) I(x2.mn)
     *.print dc I(x1.mn) I(x2.mn) I(mb1)
@@ -11,12 +11,11 @@
 .endl
 
 .lib Lp
-    .dc diff -1 1 0.01
+    .dc diff -2 2 0.01
     .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
 
     Vinn inn  io2 dc = 0
     Cl1 io2 gnd 10p
-    .param cm = 2
     E1  gnd gnd OPAMP gnd gnd
     *Vr ref gnd dc = 2
     .probe dc lv18(x2.min) lv19(x2.min)
@@ -34,7 +33,6 @@
     E1  gnd gnd OPAMP gnd gnd
     Cl1 io2 gnd 10p
     Cl2  io22 gnd 5p
-    .param cm = 2
     .pz v(io22) vinp
     .probe ac vp(io22)
 .endl

@@ -13,9 +13,10 @@
 +supplyp	= 3.3
 +supplyn	= 0
 +diff			= 0
++wx         = 10u
 ***netlist***
 ***1st stage***
-Mb	b	cz	 vdd vdd pch W = 10u  L = 5u  m = 1
+Mb	b	cz	 vdd vdd pch W = wx  L = 5u  m = 1
 M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
@@ -109,7 +110,7 @@ RL   vop  gnd 50K
 .meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 .meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
-.noise v(vop) vinn 100
+*.noise v(vop) vinn 100
 
 ****cloase loop feedback test***
 .alter *TrImp_IdcRTest
@@ -120,9 +121,9 @@ RL   vop    vinn 50k
 .dc Iin dec 50 1n 200u
 *.dc Iin 100n 1000n 10n
 .probe i(ma1)
-.ac dec 1000 0.1 1g
+.ac dec 1000 0.1 1g *sweep wx 5u 17u 3u
 .pz v(vop) Iin
-.noise v(vop) Iin 100
+*.noise v(vop) Iin 100
 
 ***probe&measuring***
 
