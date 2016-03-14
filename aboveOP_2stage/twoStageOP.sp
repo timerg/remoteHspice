@@ -17,30 +17,54 @@
 ***netlist***
 ***1st stage***
 .subckt OP vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = wx  L = 3u   m = 1
-M1	1	Vinn b	 b	 pch W = 5u   L = 1u   m = 3
-M2	2	Vinp b	 b	 pch W = 5u   L = 1u   m = 3
+Mb	b	cz	 vdd vdd pch W = 10u  L = 3u   m = 1
+M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 3
+M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 3
 M3	1	1	 vss vss nch W = 2u   L = 0.8u   m = 1
 M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
 *Cc  2   gnd  100f
 .ends
 
+.subckt OP_a vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
+M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
+M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
+.ends
 
+.subckt OP_b vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
+M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
+M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
+.ends
+
+.subckt OP_ca vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 10u  L = 3u   m = 1
+M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 3
+M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 3
+M3	1	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+.ends
 
 ***2nd stage***
 .subckt sdStage vdd vss 2 vop cz
-ma1 vop cz vdd vdd pch W = 3u L = 0.5u m = 1
+ma1 vop cz vdd vdd pch W = 3.5u L = 5u m = 3
 *Ra1 vop vdd 100k
-ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
+ma2 vop 2  vss vss nch W = 4u L = 5u m = 2
+.ends
+.subckt sdStage_a vdd vss 2 vop cz
+ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
+ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 .ends
 
 
-
-
 XOP  vdd vss vinp vinn 2 cz OP
-XOP2 vdd vss 2 vop b0 sdStage
+XOP2 vdd vss 2 vop cz sdStage
 ***compensation***
-*C2 2 vop 10p
+C2 2 vop 1p
 
 ******
 
@@ -98,10 +122,10 @@ vts vst gnd dc = 0
 .op
 
 ***sweep***
-.dc diff -0.1 0.1 0.0001 *sweep bias wx 1u 12u 2u
+.dc diff -0.002 0.002 0.00001 *sweep bias wx 1u 12u 2u
 
 ***probe&measuring***
-.ac dec 1000 1 1g sweep wx 1u 12u 2u
+.ac dec 1000 1 1g *sweep wx 1u 12u 2u
 *.tf v(voa) vinp
 .pz v(vop) vinp
 .probe dc I(m1) I(m2)	I(mt)

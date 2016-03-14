@@ -4,7 +4,7 @@
 *.lib 'rf018.l' TT
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7 unwrap = 1
-+ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  *CONVERGE=1 * gmindc=1.000E-10 dcon=2
++ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  CONVERGE=1 *dcon=1 * gmindc=1.000E-10
 
 ***subckt***
 ******iEnlarge******
@@ -20,7 +20,7 @@ Me2p vout eb vdd vdd pch   w = 10u l = 0.4u m = 10
 Me1n vinp vop vss vss nch  w = 2u l = 1u
 Me2n vout vop vss vss nch  w = 2u l = 1u m = 10
 
-Cc  2 xx 20p
+Cc  vop xx 20p
 R1  xx vss 10k
 .ends
 ******Tr******
@@ -85,13 +85,13 @@ Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
 .ends
 ******OP: Two stage******
 .subckt Trx2 vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
-M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
-M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
-M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
-M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
-ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
-ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
+Mb	b	cz	 vdd vdd pch W = 10u  L = 3u   m = 1
+M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 3
+M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 3
+M3	1	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+ma1 vop cz vdd vdd pch W = 3.5u L = 5u m = 3
+ma2 vop 2  vss vss nch W = 4u L = 5u m = 2
 C1  2  vop 1p
 *C2  1  von 1p
 *Ro vop vdd 80k
@@ -127,31 +127,47 @@ XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=50k
 Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 *Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
-XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
+*XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-*XTro vdd vss to_in opb to_out cz Trx2
+XTro vdd vss opb to_in to_out cz Trx2
 *Cg  gm_c gnd 10p
 Cg2  gm_out gnd 10p
-XiEn vdd vss opb1 iEn_in iEn_out cx  eb iEn
-veb eb gnd dc = 2.4
+*XiEn vdd vss opb1 iEn_in iEn_out cz  mpx iEn
+*veb eb gnd dc = 2.4
 
 ***NW Input Stage***
-.param pbI = 10u
-Ip vdd out dc = pbI
+.subckt OPnw vdd vss vinp vinn vop cz
+Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
+M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
+M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
+ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
+ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
+.ends
+XOPnw vdd vss mpy opb1 mpx cz OPnw
+
+.param pbI = 100n
+Ip mpy vss dc = pbI
+Mpb mpy mpx vdd vdd pch w = 5u l = 0.4u
+*Mp  out mpx vdd vdd pch w = 5u l = 0.4u
+
+Inw vdd out dc = pbI
+
 *Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
 *vng vgn gnd dc = 2.5
-.param wx = 6u mx = 1
-Mnw out vnw nws vsn nch w = wx l = 0.5u m = mx
+.param wx = 20u mx = 1
+Mnw out vnw nws vsn nch w = wx l = 1u m = mx
 vws nws vss dc = 0
 vsn vsn vss dc = 0
 
 
 
 
-vc1 out     iEn_in  dc = 0
-vc2 iEn_out ti_in   dc = 0
-vc3 ti_out  gm_in   dc = 0
-vc4 gm_out  to_in   dc = -1
+vc1 out     ti_in  dc = 0
+*vc2 iEn_out ti_in   dc = 0
+*vc3 ti_out  gm_in   dc = 0
+vc4 ti_out  to_in   dc = -1
 vfc to_out vnw dc = vdif
 
 
@@ -161,7 +177,7 @@ vopbias1 opb1 gnd dc = 1 *ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
-+vdif       = 2.5
++vdif       = 0
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 
@@ -178,7 +194,7 @@ Vs vss gnd dc = 0
 .ic i(mnw)=PbI
 
 
-.op
+
 
 ***cloase loop test***
 *.alter  *Inw_dc    #0
@@ -215,13 +231,13 @@ Vs vss gnd dc = 0
 *.lib 'Test.l' InS
 *
 *
-*.alter *OPout       #6
-*.del lib 'Test.l' Loop
-*.lib 'Test.l' OPout
-*
-.alter *iEn
+.alter *OPout       #6
 .del lib 'Test.l' Loop
-.lib 'Test.l' Ien
+.lib 'Test.l' OPout
+**
+*.alter *iEn
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' Ien
 *
 *.alter *total feedackPart(OP + Gm)
 *.del lib 'Test.l' Ien

@@ -1,6 +1,7 @@
 *Test for Gm
 
 .lib Open
+    .op
     *.dc va -2 2 0.01
     .dc diff -1 1 0.01 *sweep cm 1 2 0.2
     .probe dc I(e1) I(rl) I(mb) lx7(Xgm.X1.Min) lx7(Xgm.X2.Min) I(Xgm.X1.Min)
@@ -8,33 +9,40 @@
     *+ I(mo1) I(mo2) I(mo3) I(mo4) I(x1.mn) I(x2.mn)
     *.print dc I(x1.mn) I(x2.mn) I(mb1)
     .meas dc Gm_val DERIVATIVE i(e1) at  0
+    E1   io2 gnd OPAMP ref io2
+    Vr ref gnd dc = cm
 .endl
 
 .lib Lp
+    .op
     .dc diff -2 2 0.01
     .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
 
     Vinn inn  io2 dc = 0
     Cl1 io2 gnd 10p
-    E1  gnd gnd OPAMP gnd gnd
-    *Vr ref gnd dc = 2
     .probe dc lv18(x2.min) lv19(x2.min)
     .meas ac noiset find onoise at 10
     .probe ac i(cl)
-    .noise v(io2) vinp
-    .pz v(io2) vinp
+    *.noise v(io2) vinp
+    *.pz v(io2) vinp
 .endl
 
 .lib twoStageLp
+    .op
     .dc diff -1 1 0.01
     .ac dec 1000 1 1g sweep diff -0.2 0.2 0.1
     Xgm vdd vss inp io22 io2 io1 ggp ggn vb gm cc = 500f
     Xgm2 vdd vss io2 io22 io22 io12 ggp2 ggn2 vb gm cc = 500f
-    E1  gnd gnd OPAMP gnd gnd
     Cl1 io2 gnd 10p
     Cl2  io22 gnd 5p
-    .pz v(io22) vinp
+    *.pz v(io22) vinp
     .probe ac vp(io22)
+.endl
+
+.lib Vv
+    .op
+    .dc diff -1 1 0.001
+
 .endl
 
 .lib Diode

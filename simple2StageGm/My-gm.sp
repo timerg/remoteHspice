@@ -7,7 +7,7 @@
 ***netlist***
 
 *******SUBCKT************
-.subckt gm  vdd vss inp inn io2 io1 ggp ggn vb Cc = 0
+.subckt gm  vdd vss inp inn io2 io1 ggp ggn sdp sdn vb Cc = 0
 .subckt gmx vdd vss in bd gg id sd
 Ms  sd  sd  bd  bd  pch w = 2u    l = 1u m = 2
 Min id  id  sd  in  pch w = 2u    l = 1u m = 2
@@ -27,8 +27,8 @@ V1  idn ggn dc = 0
 Mb1  bd   ggp  bump vss  nch w = 8u l = 0.5u m = 2   *slightly adjust bump centerization
 Mb2  bump ggn  vss  vss  nch w = 5u l = 0.5u m = 2    *lowering Length to lower vth. i guess this help to release vds supression
 ******Second Stage*****
-Mo1  io1  ggn  vss  vss  nch w = 5u l = 0.5u m = 2
-Mo2  io2  ggp  vss  vss  nch w = 5u l = 0.5u m = 2
+Mo1  io1  sdp  vss  vss  nch w = 5u l = 0.5u m = 2
+Mo2  io2  sdn  vss  vss  nch w = 5u l = 0.5u m = 2
 *Mo3  io1a io1a vdd  vdd  pch w = 0.6u l = 6u m = 1
 *Mo3a io1b io1b io1a io1a pch w = 0.6u l = 6u m = 1
 *Mo3b io1  io1  io1b io1b pch w = 0.6u l = 6u m = 1
@@ -46,14 +46,13 @@ Mo4b io2 io1 2b   2b   pch w = 1u l = 2u m = 1
 *Rc   ggn xx  1k
 .ends
 
-Xgm vdd vss inp inn io2 io1 ggp ggn vb gm cc = 500f
+Xgm vdd vss inp inn io2 io1 ggp ggn sdp sdn vb gm cc = 500f
 
 *******Output Load**************
 *E1 idn gnd OPAMP ref idn
 *Vr ref gnd dc = 0.383
 *RL idn gnd 5k
-E1   io2 gnd OPAMP ref io2
-Vr ref gnd dc = cm
+
 
 *******Input******************
 .param diff = 0 cm = 1
@@ -69,7 +68,6 @@ vs      vss gnd dc = 0
 
 
 *******
-.op
 
 .alter
 .lib 'Test.l' Open
@@ -81,6 +79,10 @@ vs      vss gnd dc = 0
 *.alter
 *.del lib 'Test.l' Lp
 *.lib 'Test.l' twoStageLp
+
+.alter
+.del lib 'Test.l' Lp
+.lib 'Test.l' Vv
 
 *.alter
 *.del lib 'Test.l' twoStageLp

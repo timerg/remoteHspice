@@ -56,11 +56,13 @@ Me1 vinp vop vss vss nch w = 3u l = 1u            *decide by noise:
 Me2 vout vop vss vss nch w = 3u l = 1u m = 10    *Id ~45n, In~0.8n
 *veb eb gnd dc = '3.3-0.5'      *10n
 *veb eb gnd dc = '3.3-0.55'      *100n
-*veb eb gnd dc = 2.7
+veb eb gnd dc = 2.735             *200n
 *veb eb gnd dc = '3.3-0.7'      *1u
-*veb eb gnd dc = 2.5      *10u
+*veb eb gnd dc = 2.4      *10u
 *veb  eb cp4  dc = 0
-veb  eb cp  dc = 0
+*veb  eb cp  dc = 0
+
+
 
 XCMB vdd vss cp cp2 cp3 cp4 cn CMB
 

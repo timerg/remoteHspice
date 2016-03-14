@@ -15,7 +15,7 @@
     vc  vop gnd dc = 0.4795 ac = 1
     .pz v(op_out) vc
     .ac dec 100 1 1g *sweep rx 10k 100k 20k
-    .probe ac i(ro) vp(vop2) vp(op_out)
+    .probe ac i(ro) vp(vop2) vp(op_out) lx7(me1)
     *Cc  vop gnd 10p
     *Cc2 op_out gnd 10p
     .ic v(vop)=0.4795  v(vinp)=1
