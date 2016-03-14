@@ -30,8 +30,9 @@ M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
 M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
-ma1 vop cz vdd vdd pch   W = 4u L = 0.5u m = 2
-ma2 vop 2  vss vss nch   W = 1u L = 1u m = 2
+ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 4
+ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 6
+
 C1  2  vop 1p
 RL   vop    vinn rld
 .ends
@@ -150,9 +151,11 @@ XOPnw vdd vss mpy opb1 mpx cz OPnw
 .param pbI = 100n
 Ip mpy vss dc = pbI
 Mpb mpy mpx vdd vdd pch w = 5u l = 0.4u
-*Mp  out mpx vdd vdd pch w = 5u l = 0.4u
 
-Inw vdd out dc = pbI
+Mp  out mpx vdd vdd pch w = 5u l = 0.4u
+*vpx px gnd dc = 2.735
+
+*Inw vdd out dc = pbI
 
 *Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
 *vng vgn gnd dc = 2.5
@@ -177,7 +180,7 @@ vopbias1 opb1 gnd dc = 1 *ac = 1 *180
 .param
 +comon		= 2
 +diff		= 0
-+vdif       = 0
++vdif       = 0.5
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 
@@ -220,7 +223,7 @@ Vs vss gnd dc = 0
 *.alter *Tri     #3
 *.del lib 'Test.l' Loop
 *.lib 'Test.l' Tri
-**
+***
 *.alter *GM-C        #4
 *.del lib 'Test.l' Loop
 *.lib 'Test.l' GMC
@@ -231,9 +234,9 @@ Vs vss gnd dc = 0
 *.lib 'Test.l' InS
 *
 *
-.alter *OPout       #6
-.del lib 'Test.l' Loop
-.lib 'Test.l' OPout
+*.alter *OPout       #6
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' OPout
 **
 *.alter *iEn
 *.del lib 'Test.l' Loop

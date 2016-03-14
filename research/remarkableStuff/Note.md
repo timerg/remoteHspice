@@ -27,3 +27,8 @@
 * When doing layout, need to be aware of OP_out since it has very large gain
 
 * When bias nw with 100n, Ibias seems hard to go into it bf impedance prob
+
+
+### 3/14
+* To minimize offset current, adjust Tri part. Don't let it exist big offset current on rld
+    But minwhile: keep 2nd stage I large enough to cover V it need. *(I_mp2nd x rld = Vop)*

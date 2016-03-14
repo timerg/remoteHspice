@@ -31,7 +31,7 @@
     .op
     vfc to_out vnw dc = vdif ac = 1
     .dc wx 0.4u 40u 0.4u *sweep vsn 1 2 0.2 *pbI dec 1 100n 10u
-    .ac dec 1000 1 1g *sweep wx 0.4u 40u 8u
+    .ac dec 1000 1 10x *sweep wx 0.4u 40u 8u
     Mt vdt vgt vst vst nch w = wx l = 0.5u m = mx
     It vst vss dc = 'pbI'
     vtg vgt gnd dc = 1
@@ -39,7 +39,7 @@
     .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt) lx7(mnw) lx9(mnw) par'-i(mp)' lx5(mnw) lx6(mnw)
     .probe ac out=par('v(ti_out)') lx7(mnw)
     *.ic v(gm_in) = 2 v(gm_out) = 2 v(out) = 2
-    *.option dcon = 1
+    .option dcon = 1
 .endl
 
 .lib  vsn           *#2
@@ -62,16 +62,18 @@
 
 .lib Tri            *#3
     .op
-    .ic v(vnw) = 0.6
-    vc2 ti_in inx dc = 0
-    vc3 gm_in gnd dc = 0
+    *.ic v(vnw) = 0.6
+    vc1 ti_in inx dc = 0
+    vc4 to_in gnd dc = 0
     .param ins_ = 0
     ins vdd inx dc = ins_ ac = 1
     Rin inx gnd 100x
-    .pz v(ti_out) ins
-    .dc ins_ dec 1000 100n 100u
+    *.pz v(ti_out) ins
+
+    .dc ins dec 1000 100n 100u
     .ac dec 1000 1 1g *sweep ins_ dec 1 100n 100u
     .probe ac out=par('v(ti_out)')
+    .option dcon= 1
 .endl
 
 .lib GMC           *#4
@@ -145,16 +147,15 @@
     .ac dec 1000 1 1g
     vfc vnw gnd dc = 0.4 ac = 1
     .dc vfc 0.2 0.6 0.1
-
 .endl
 
 .lib Loop
     .op
     .ac  dec 1000 1 1g sweep pbI dec 1 100n 10u
-    vc3 gm_in gnd dc = 1.153 ac = 1
+    vc4  to_in  gnd dc = 2 ac = 1
     .probe ac vp(ti_out) lx7(mnw) vp(gm_out) vp(to_out)
     *.pz v(ti_out) vc3
-    .ic I(mnw) = pbI
+    *.ic I(mnw) = pbI
 .endl
 
 .lib Tran

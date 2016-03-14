@@ -24,8 +24,12 @@ M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
 
 
 ***2nd stage***
-ma1 vop cz vdd vdd pch W = 4u L = 0.5u m = 2
-ma2 vop 2  vss vss nch W = 1u L = 1u m = 2   *use 21u when in new model
+*ma1 vop cz vdd vdd pch W = 4u L = 1u m = 1
+*ma2 vop 2  vss vss nch W = 5.4u L = 1u m = 2   *use 21u when in new model
+
+ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 4
+ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 6
+
 ***compensation***
 *C1  2 vop 20f   *~ 60db
 C1  2 vop 1p   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
@@ -73,57 +77,17 @@ vts vst gnd dc = 3.3
 ****sweep***
 *
 ****input***
-.op
-**.alter TrImp_Ol_woload
-*vinp vinp gnd dc = 'comon-diff' *ac = 1
-*vinn vinn gnd dc = 'comon+diff' ac = 1 *180
-*.dc diff -0.5 0.5 0.01
-*.ac dec 1000 0.1 1g
-**.tf v(voa) vinp
-*.pz v(vop) vinn
-*.probe dc I(m1) I(m2)	I(mt)
-*.probe ac vp(vop)
-*+gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')
-*+gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
-*.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
-*.meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
-*.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-*.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
+.alter *TrImp_Ol_woload
+.lib 'Test.l' OPwoload
 
-*.noise v(vop) vinn 100
-**
-****Open loop wi loading Test***
 .alter *TrImp_Ol_wiload
-vinp vinp gnd dc = 'comon-diff' *ac = 1
-vinn in gnd dc = 'comon+diff' ac = 1 180
-Rin  in vinn 50K
-RL   vop  gnd 50K
-.ac dec 1000 0.1 1g
-*.tf v(voa) vinp
-.pz v(vop) vinn
-.probe dc I(m1) I(m2)	I(mt)
-.probe ac vp(vop)
-+gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')
-+gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
-.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
-.meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
-.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-
-*.noise v(vop) vinn 100
+.del lib 'Test.l' OPwoload
+.lib 'Test.l' OPwiload
 
 ****cloase loop feedback test***
 .alter *TrImp_IdcRTest
-vinp vinp gnd  dc = 'comon' *ac = 1
-Iin  vdd vinn dc = 1u ac = 1
-*Rin  vinp vss 100g
-RL   vop    vinn 50k
-.dc Iin dec 50 1n 200u
-*.dc Iin 100n 1000n 10n
-.probe i(ma1)
-.ac dec 1000 0.1 1g *sweep wx 5u 17u 3u
-.pz v(vop) Iin
-*.noise v(vop) Iin 100
+.del lib 'Test.l' OPwiload
+.lib 'Test.l' Cloop
 
 ***probe&measuring***
 
