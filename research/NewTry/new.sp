@@ -30,10 +30,9 @@ M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
 M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
-ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 4
-ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 6
-
-C1  2  vop 1p
+ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 2
+ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
+C1  2  vop 500f
 RL   vop    vinn rld
 .ends
 ******GM******
@@ -89,13 +88,14 @@ Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
 Mb	b	cz	 vdd vdd pch W = 10u  L = 3u   m = 1
 M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 3
 M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 3
-M3	1	1	 vss vss nch W = 2u   L = 0.8u   m = 1
-M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
-ma1 vop cz vdd vdd pch W = 3.5u L = 5u m = 3
-ma2 vop 2  vss vss nch W = 4u L = 5u m = 2
-C1  2  vop 1p
-*C2  1  von 1p
-*Ro vop vdd 80k
+M3	1	1	 vss vss nch W = 2u   L = 2u   m = 1
+M4	2	1	 vss vss nch W = 2u   L = 2u   m = 1
+ma1 vop cz vdd vdd pch W = 4u L = 1u m = 4
+ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
+*ma1 vop cz vdd vdd pch W = 4u L = 2u m = 4
+*ma2 vop 2  vss vss nch W = 4u L = 2u m = 2
+Cc xx vop 30p
+Rc 2  xx  10k
 .ends
 
 ******current mirror******
@@ -124,15 +124,15 @@ Xcmb vdd vss cz cp2 cp3 cx cn CMB
 *.ends
 
 ***netlist***
-XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=50k
-Xgm  vdd vss gm_in gm_out gm_out  cx  gm
+XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=100k
+*Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 *Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
 *XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-XTro vdd vss opb to_in to_out cz Trx2
+XTro vdd vss opb1 to_in to_out cz Trx2
 *Cg  gm_c gnd 10p
-Cg2  gm_out gnd 10p
+*Cg2  gm_out gnd 10p
 *XiEn vdd vss opb1 iEn_in iEn_out cz  mpx iEn
 *veb eb gnd dc = 2.4
 
@@ -160,17 +160,18 @@ Mp  out mpx vdd vdd pch w = 5u l = 0.4u
 *Mc  out vgn nwd vss nch w = 10u  l = 1u m = 1
 *vng vgn gnd dc = 2.5
 .param wx = 20u mx = 1
-Mnw out vnw nws vsn nch w = wx l = 1u m = mx
+Mnw  out vnw nws vsn nch w = wx l = 20u m = mx
+*vws nws vss dc = 0
+*vsn vsn vss dc = 0.3
 vws nws vss dc = 0
-vsn vsn vss dc = 0
-
+vsn vsn vss dc = 1
 
 
 
 vc1 out     ti_in  dc = 0
 *vc2 iEn_out ti_in   dc = 0
 *vc3 ti_out  gm_in   dc = 0
-vc4 ti_out  to_in   dc = -1
+vc4 ti_out  to_in   dc = 0
 vfc to_out vnw dc = vdif
 
 
@@ -178,9 +179,9 @@ vfc to_out vnw dc = vdif
 vopbias  opb  gnd dc = 2 *ac = 1 *180
 vopbias1 opb1 gnd dc = 1 *ac = 1 *180
 .param
-+comon		= 2
++comon		= 1
 +diff		= 0
-+vdif       = 0.5
++vdif       = 0.8
 Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 

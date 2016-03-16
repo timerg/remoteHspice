@@ -20,8 +20,8 @@
 Mb	b	cz	 vdd vdd pch W = 10u  L = 3u   m = 1
 M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 3
 M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 3
-M3	1	1	 vss vss nch W = 2u   L = 0.8u   m = 1
-M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
+M3	1	1	 vss vss nch W = 2u   L = 2u   m = 1
+M4	2	1	 vss vss nch W = 2u   L = 2u   m = 1
 *Cc  2   gnd  100f
 .ends
 
@@ -51,20 +51,20 @@ M4	2	1	 vss vss nch W = 2u   L = 0.8u   m = 1
 
 ***2nd stage***
 .subckt sdStage vdd vss 2 vop cz
-ma1 vop cz vdd vdd pch W = 3.5u L = 5u m = 3
-*Ra1 vop vdd 100k
-ma2 vop 2  vss vss nch W = 4u L = 5u m = 2
+ma1 vop cz vdd vdd pch W = 4u L = 2u m = 4
+ma2 vop 2  vss vss nch W = 4u L = 2u m = 2
 .ends
 .subckt sdStage_a vdd vss 2 vop cz
-ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
-ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
+ma1 vop cz vdd vdd pch W = 3.8u L = 1u m = 4
+ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
 .ends
 
 
 XOP  vdd vss vinp vinn 2 cz OP
-XOP2 vdd vss 2 vop cz sdStage
+XOP2 vdd vss 2 vop cz sdStage_a
 ***compensation***
-C2 2 vop 1p
+Cc xx vop 1p
+Rc 2  xx  15k
 
 ******
 

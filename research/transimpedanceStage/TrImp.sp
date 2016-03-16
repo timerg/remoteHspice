@@ -20,19 +20,20 @@ Mb	b	cz	 vdd vdd pch W = wx  L = 5u  m = 1
 M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
-M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
+M4	2	1	 vss vss nch W = 3u   L = 1u    m = 1
 
 
 ***2nd stage***
 *ma1 vop cz vdd vdd pch W = 4u L = 1u m = 1
 *ma2 vop 2  vss vss nch W = 5.4u L = 1u m = 2   *use 21u when in new model
 
-ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 4
-ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 6
+ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 2
+ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
 
 ***compensation***
 *C1  2 vop 20f   *~ 60db
-C1  2 vop 1p   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
+Cc 2 vop 100f   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
+*Rc 2  xx  50k
 ******
 
 ***current mirror***

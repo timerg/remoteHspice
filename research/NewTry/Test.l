@@ -30,8 +30,8 @@
 .lib wx             *#1
     .op
     vfc to_out vnw dc = vdif ac = 1
-    .dc wx 0.4u 40u 0.4u *sweep vsn 1 2 0.2 *pbI dec 1 100n 10u
-    .ac dec 1000 1 10x *sweep wx 0.4u 40u 8u
+    .dc wx 0.4u 40u 0.4u *sweep pbI dec 1 10n 10u
+    .ac dec 1000 1 10g sweep pbI dec 1 10n 10u
     Mt vdt vgt vst vst nch w = wx l = 0.5u m = mx
     It vst vss dc = 'pbI'
     vtg vgt gnd dc = 1
@@ -151,11 +151,21 @@
 
 .lib Loop
     .op
-    .ac  dec 1000 1 1g sweep pbI dec 1 100n 10u
-    vc4  to_in  gnd dc = 2 ac = 1
-    .probe ac vp(ti_out) lx7(mnw) vp(gm_out) vp(to_out)
+    .ac  dec 1000 1 1g *sweep pbI dec 1 100n 10u
+    .param pbI = 10n
+    vc4  to_in  gnd dc = 1 ac = 1
+    .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(gm_out) vp(to_out) i(mnw)
+
     *.pz v(ti_out) vc3
-    *.ic I(mnw) = pbI
+    .ic I(mnw) = pbI
+    + v(vnw) = 1.565e-01
+    *+ v(vnw) = 2.331e-01
+    *+v(vnw) = 3.577e-01
+    *+ v(vnw) = 6.570e-01
+
+    .meas ac ph_0db find vp(ti_out) when v(ti_out) = 1          * r = ph
+    .meas ac ph_start find vp(ti_out) at = 1    * r = 180 || 0
+    .meas ac pM param = 'ph_0db - (ph_start - 180)'      *r = f
 .endl
 
 .lib Tran
