@@ -7,7 +7,7 @@
 
 ***param***
 .param
-+comon		= 1
++comon		= 0.802
 +bias		= 2.4
 +bias2		= 2.4
 +supplyp	= 3.3
@@ -37,23 +37,38 @@ Cc 2 vop 100f   *100f=~60db for RL added; but should be 600f for iEn added to ge
 ******
 
 ***current mirror***
-.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
-Iin cp  vss dc = 1u
-mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
-mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
-mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
-mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
-mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
-mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
-mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+*.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
+*Iin cp  vss dc = 1u
+*mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
+*mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+*mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
+*mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
+*mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
+*mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
+*mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
+*mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
+*mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
+*
+*mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
+*mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+*.ends
+*
+*Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
-mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
-mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.subckt CMB_beta4 vdd vss 1 4
+M1 1   1   vdd vdd pch w = 20u l = 5u m = 1
+M2 2   1   vdd vdd pch w = 20u l = 5u m = 1
+M3 3   3   1   1   pch w = 20u l = 1u m = 1
+M4 4   3   2   2   pch w = 20u l = 1u m = 1
+M5 3   4   rx  vss nch w = '3.5u * 4' l = 5u m = 1
+M6 4   4   vss vss nch w = '3.5u * 1' l = 5u m = 1
+Msus1a s0  s1  vdd vdd pch w = 1u l = 5u m = 1
+Msus1b s1  s1  s0  s0  pch w = 1u l = 5u m = 1
+Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
+Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
+r1 rx vss 25k
 .ends
-
-Xcmb vdd vss cz cp2 cp3 cx cn CMB
+Xcmb vdd vss cz opb1 CMB_beta4
 
 ***source***
 vd		vdd 	gnd dc supplyp

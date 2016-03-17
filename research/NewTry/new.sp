@@ -1,10 +1,11 @@
 *inputStage
+*About convergence https://www.ee.iitb.ac.in/~trivedi/Downloads/spice/convergence.html
 .protect
 .lib 'mm0355v.l' TT
 *.lib 'rf018.l' TT
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7 unwrap = 1
-+ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  CONVERGE=1 *dcon=1 * gmindc=1.000E-10
++ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  CONVERGE=1  *dcon=1 * gmindc=1.000E-10
 
 ***subckt***
 ******iEnlarge******
@@ -119,13 +120,17 @@ Rc 2  xx  10k
 .subckt CMB_beta4 vdd vss 1 4
 M1 1   1   vdd vdd pch w = 20u l = 5u m = 1
 M2 2   1   vdd vdd pch w = 20u l = 5u m = 1
-M3 3   3   1   1   pch w = 20u l = 5u m = 1
-M4 4   3   2   2   pch w = 20u l = 5u m = 1
+M3 3   3   1   1   pch w = 20u l = 1u m = 1
+M4 4   3   2   2   pch w = 20u l = 1u m = 1
 M5 3   4   rx  vss nch w = '3.5u * 4' l = 5u m = 1
 M6 4   4   vss vss nch w = '3.5u * 1' l = 5u m = 1
+Msus1a s0  s1  vdd vdd pch w = 1u l = 5u m = 1
+Msus1b s1  s1  s0  s0  pch w = 1u l = 5u m = 1
+Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
+Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
 r1 rx vss 25k
 .ends
-Xcmb vdd vss cz opb1 CMB_beta4
+Xcmb vdd vss cz opbx CMB_beta4
 ******HP*******
 *.subckt HP vdd vss in out
 *R1 in out 100k
@@ -157,7 +162,7 @@ ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 .ends
 XOPnw vdd vss mpy opb1 mpx cz OPnw
 
-.param pbI = 10n
+.param pbI = 10u
 Ip mpy vss dc = pbI
 Mpb mpy mpx vdd vdd pch w = 5u l = 0.4u
 
@@ -190,8 +195,9 @@ vopbias  opb  gnd dc = 2 *ac = 1 *180
 .param
 +comon		= 1
 +diff		= 0
-+vdif       = 0.8
++vdif       = 0
 Vd vdd gnd dc = 3.3
+*Vd vdd gnd pulse 0 3.3         *try pseudo trans
 Vs vss gnd dc = 0
 
 

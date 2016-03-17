@@ -21,7 +21,6 @@
     .param ins_ = 0
     ins vdd nwd dc = ins_  ac = 1
     vfc to_out vnw dc = vdif *ac = 1
-
     .ac dec 1000 1 1g *sweep ins_ dec 1 10n 10u
     *.pz v(ti_out) ins
     .probe ac i(mnw)
@@ -153,7 +152,8 @@
     .op
     .ac  dec 1000 1 1g *sweep pbI dec 1 100n 10u
     .param pbI = 10u
-    vc4  to_in  gnd dc = 1 ac = 1
+    vc4  to_in  gnd dc = 1 *ac = 1
+    vb  cz vss dc = 2.3552 ac = 1
     .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(gm_out) vp(to_out) i(mnw)
 
     *.pz v(ti_out) vc3
@@ -161,7 +161,7 @@
     *+ v(vnw) = 1.565e-01
     *+ v(vnw) = 2.331e-01
     *+v(vnw) = 3.577e-01
-    + v(vnw) = 6.570e-01
+    + v(vnw) = 6.574e-01
 
     .meas ac ph_0db find vp(ti_out) when v(ti_out) = 1          * r = ph
     .meas ac ph_start find vp(ti_out) at = 1    * r = 180 || 0

@@ -2,7 +2,8 @@
 
 .lib OPwoload
     .op
-    vinp vinp gnd dc = 'comon-diff' *ac = 1
+    *vinp vinp gnd dc = 'comon-diff' *ac = 1
+    vopb vinp opb1 dc = 0
     vinn vinn gnd dc = 'comon+diff' ac = 1 *180
     .dc diff -0.1 0.1 0.0001
     .ac dec 1000 0.1 100g
@@ -23,7 +24,8 @@
 
 .lib OPwiload
     .op
-    vinp vinp gnd dc = 'comon' *ac = 1
+    *vinp vinp gnd dc = 'comon' *ac = 1
+    vopb vinp opb1 dc = 0
     vinn in gnd dc = 'comon+diff' ac = 1 180
     Rin  in vinn 100K
     RL   vop  gnd 100K
@@ -44,7 +46,8 @@
 
 .lib Cloop
     .op
-    vinp vinp gnd  dc = 'comon' *ac = 1
+    *vinp vinp gnd  dc = 'comon' *ac = 1
+    vopb vinp opb1 dc = 0
     Iin  vdd vinn dc = 0 ac = 1
     *Rin  vinp vss 100g
     RL   vop    vinn 100k
@@ -52,7 +55,7 @@
     *.dc Iin 100n 10u 10n
     .probe i(ma1)
     .ac dec 1000 0.1 100g *sweep wx 5u 17u 3u
-    .pz v(vop) Iin
+    *.pz v(vop) Iin
     .meas ac gain_c max v(vop)
     .meas ac bw when v(vop) = 'gain_c/1.414'
     *.noise v(vop) Iin 100
