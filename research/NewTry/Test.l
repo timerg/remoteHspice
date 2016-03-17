@@ -109,10 +109,10 @@
     **XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
     **XTro vdd vss to_in opb to_out  cz  Trx
     *XTro vdd vss opb to_in to_out cz Trx2
-    vc4 to_in gnd dc = 2 ac = 1
+    vc4 to_in gnd dc = 1 ac = 1
     vfc vss vnw dc = vdif
     .dc vc4 0 3.3 0.001
-    .ac dec 1000 1 1g *sweep vc3 0.4 2.8 0.4
+    .ac dec 1000 1 1g *sweep vc4 0.9 1.1 0.1
     .probe ac out=par('v(to_out)') vp(to_out)
 .endl
 
@@ -152,16 +152,16 @@
 .lib Loop
     .op
     .ac  dec 1000 1 1g *sweep pbI dec 1 100n 10u
-    .param pbI = 10n
+    .param pbI = 10u
     vc4  to_in  gnd dc = 1 ac = 1
     .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(gm_out) vp(to_out) i(mnw)
 
     *.pz v(ti_out) vc3
     .ic I(mnw) = pbI
-    + v(vnw) = 1.565e-01
+    *+ v(vnw) = 1.565e-01
     *+ v(vnw) = 2.331e-01
     *+v(vnw) = 3.577e-01
-    *+ v(vnw) = 6.570e-01
+    + v(vnw) = 6.570e-01
 
     .meas ac ph_0db find vp(ti_out) when v(ti_out) = 1          * r = ph
     .meas ac ph_start find vp(ti_out) at = 1    * r = 180 || 0
