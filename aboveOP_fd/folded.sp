@@ -41,23 +41,18 @@ M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
 
 ***current mirror***
 
-.subckt CMB vdd vss cp cp2 cp3 cp4 cn    *cp = 2.4; cp2 = 1.25; cp3 = 0.6; cp4 = 2.7
-Iin cp  vss dc = 1u
-mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
-mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
-mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
-mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
-mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
-mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
-mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
-
-mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
-mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
+.subckt CMB_bete5 vdd vss cp cn cp2
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u m = 1
+mc1 cn  cp  vdd vdd pch w = 5.1u l = 5u m = 4
+mc2 cn  cn  vss vss nch w = 3.2u  l = 5u m = 1
+***(366n)
+mc3 cp2 cp2 vdd vdd pch w = 5.1u l = 5u m = 3
+mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
+mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
+mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
+r1  rx  vss 25k
 .ends
-
-Xcmb vdd vss cp cp2 cp3 cp4 cn CMB
+Xcmb   vdd vss cp cn cp2 CMB_bete5
 
 
 ***source***

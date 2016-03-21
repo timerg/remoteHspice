@@ -108,7 +108,7 @@
     **XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
     **XTro vdd vss to_in opb to_out  cz  Trx
     *XTro vdd vss opb to_in to_out cz Trx2
-    vc4 to_in gnd dc = 1 ac = 1
+    vc4 to_in gnd dc = 0.802 ac = 1
     vfc vss vnw dc = vdif
     .dc vc4 0 3.3 0.001
     .ac dec 1000 1 1g *sweep vc4 0.9 1.1 0.1
@@ -150,10 +150,10 @@
 
 .lib Loop
     .op
-    .ac  dec 1000 1 1g *sweep pbI dec 1 100n 10u
+    .ac  dec 1000 1 100g *sweep pbI dec 1 100n 10u
     .param pbI = 10u
-    vc4  to_in  gnd dc = 1 *ac = 1
-    vb  cz vss dc = 2.3552 ac = 1
+    vc4  to_in  gnd dc = 1 ac = 1
+    vb  cz vss dc = 2.3552 *ac = 1
     .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(gm_out) vp(to_out) i(mnw)
 
     *.pz v(ti_out) vc3
@@ -161,7 +161,7 @@
     *+ v(vnw) = 1.565e-01
     *+ v(vnw) = 2.331e-01
     *+v(vnw) = 3.577e-01
-    + v(vnw) = 6.574e-01
+    + v(vnw) = 6.573e-01
 
     .meas ac ph_0db find vp(ti_out) when v(ti_out) = 1          * r = ph
     .meas ac ph_start find vp(ti_out) at = 1    * r = 180 || 0
@@ -177,4 +177,18 @@
     .meas tran out_max max v(ti_out)
     .meas tran out_min min v(ti_out)
     .meas tran amp param = '(out_max - out_min)/2'
+.endl
+
+.lib openMode
+    .op
+    .ac  dec 1000 1 1g *sweep pbI dec 1 100n 10u
+    vfc vnw vss dc = vin *ac = 1
+    vb opb0 opb1 dc = 0 ac = 1
+
+    .param pbI = 10n
+    + vin = 1.690e-01
+    *+ vin = 2.331e-01
+    *+ vin = 3.577e-01
+    *+ vin = 6.574e-01
+    .noise v(ti_out) vfc 100
 .endl

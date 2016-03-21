@@ -1,11 +1,11 @@
 *inputStage
 *About convergence https://www.ee.iitb.ac.in/~trivedi/Downloads/spice/convergence.html
 .protect
-.lib 'mm0355v.l' TT
+.lib 'mm0355v.l' tt
 *.lib 'rf018.l' TT
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7 unwrap = 1
-+ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  CONVERGE=1  *dcon=1 * gmindc=1.000E-10
++ POST=1 CAPTAB=1 ACCURATE=1 INGOLD=2  *CONVERGE=1  *dcon=1 * gmindc=1.000E-10
 
 ***subckt***
 ******iEnlarge******
@@ -91,7 +91,7 @@ M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 1
 M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 1
 M3	1	1	 vss vss nch W = 2u   L = 2u   m = 1
 M4	2	1	 vss vss nch W = 2u   L = 2u   m = 1
-ma1 vop cz vdd vdd pch W = 4u L = 1u m = 2
+ma1 vop cz vdd vdd pch W = 4u L = 1u m = 1
 ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
 *ma1 vop cz vdd vdd pch W = 4u L = 2u m = 4
 *ma2 vop 2  vss vss nch W = 4u L = 2u m = 2
@@ -130,7 +130,8 @@ Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
 Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
 r1 rx vss 25k
 .ends
-Xcmb vdd vss cz opbx CMB_beta4
+Xcmb vdd vss cz opb0 CMB_beta4
+vb opb0 opb1 dc = 0
 ******HP*******
 *.subckt HP vdd vss in out
 *R1 in out 100k
@@ -162,7 +163,7 @@ ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 .ends
 XOPnw vdd vss mpy opb1 mpx cz OPnw
 
-.param pbI = 10u
+.param pbI = 10n
 Ip mpy vss dc = pbI
 Mpb mpy mpx vdd vdd pch w = 5u l = 0.4u
 
@@ -193,7 +194,7 @@ vfc to_out vnw dc = vdif
 vopbias  opb  gnd dc = 2 *ac = 1 *180
 *vopbias1 opb1 gnd dc = 0.8 *ac = 1 *180
 .param
-+comon		= 1
++comon		= 0.8
 +diff		= 0
 +vdif       = 0
 Vd vdd gnd dc = 3.3
@@ -201,16 +202,12 @@ Vd vdd gnd dc = 3.3
 Vs vss gnd dc = 0
 
 
-***Compensation***
-*Cc1 ti_out gnd 10p
-*Rol  to_out gnd 1k
-
 
 .probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
 + par'lx7(mc)/lx8(mc)/lx8(mnw)'
 
 ***IC***        *this help converge
-.ic i(mnw)=PbI v(opb1) = 0.802
+.ic i(mnw)=PbI *v(opb1) = 0.802
 
 
 
@@ -230,15 +227,19 @@ Vs vss gnd dc = 0
 .alter
 .del lib 'Test.l' wx
 .lib 'Test.l' Loop
+
+.alter
+.del lib 'Test.l' Loop
+.lib 'Test.l' openMode
 ***
 *.alter  *vsn(sweep v on bulk)       #2
 *.del lib 'Test.l' wx
 *.lib 'Test.l' vsn
 *
 ****Single block Test***
-.alter *Tri     #3
-.del lib 'Test.l' Loop
-.lib 'Test.l' Tri
+*.alter *Tri     #3
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' Tri
 ***
 *.alter *GM-C        #4
 *.del lib 'Test.l' Loop
@@ -250,9 +251,9 @@ Vs vss gnd dc = 0
 *.lib 'Test.l' InS
 *
 *
-*.alter *OPout       #6
-*.del lib 'Test.l' Loop
-*.lib 'Test.l' OPout
+.alter *OPout       #6
+.del lib 'Test.l' Loop
+.lib 'Test.l' OPout
 **
 *.alter *iEn
 *.del lib 'Test.l' Loop
