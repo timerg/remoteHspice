@@ -1,7 +1,7 @@
 *inputStage
 *About convergence https://www.ee.iitb.ac.in/~trivedi/Downloads/spice/convergence.html
 .protect
-.lib 'mm0355v.l' tt
+.lib 'mm0355v.l' sf
 *.lib 'rf018.l' TT
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7 unwrap = 1
@@ -74,15 +74,21 @@ M4	2	1	 vss vss nch W = 1u  L = 5u    m = 1
 .ends
 ******OP: folded cascode*******
 .subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
-Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
-M1	1	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
-M2	2	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
-My1 von von  vdd vdd pch w = 3u   L = 5u  m = 1
-My2 vop von  vdd vdd pch w = 3u   L = 5u  m = 1
-M3	von cp2	 1   vss nch W = 3u   L = 3u  m = 1
-M4	vop	cp2	 2   vss nch W = 3u   L = 3u  m = 1
-Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
-Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
+***input stage***
+Mn	1	Vinn b	 b	 nch W = 3u   L = 1u  m = 2
+Mp	2	Vinp b	 b	 nch W = 3u   L = 1u  m = 2
+Mb1	b	cn	 01  vss nch W = 1u   L = 3u  m = 1
+Mb2	01	cn	 vss  vss nch W = 1u   L = 3u  m = 1
+***output stage***
+m1  1   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
+m2  2   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
+M3	von cp2	1   1   pch W = 5u   L = 1u  m = 2      * gm*rds = 50 (id = 200n)
+M4	vop	cp2	2   2   pch W = 5u   L = 1u  m = 2
+M5  von	cn  5   vss nch W = 5u   L = 1u  m = 2
+M6  vop	cn  6   vss nch W = 5u   L = 1u  m = 2
+M7  5   von vss vss nch W = 3u   L = 5u  m = 1
+M8  6   von vss vss nch W = 3u   L = 5u  m = 1
+C1  vop vss 5p
 .ends
 ******OP: Two stage******
 .subckt Trx2 vdd vss vinp vinn vop cz
@@ -117,20 +123,33 @@ Rc 2  xx  10k
 *.ends
 *Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
-.subckt CMB_beta4 vdd vss 1 4
-M1 1   1   vdd vdd pch w = 20u l = 5u m = 1
-M2 2   1   vdd vdd pch w = 20u l = 5u m = 1
-M3 3   3   1   1   pch w = 20u l = 1u m = 1
-M4 4   3   2   2   pch w = 20u l = 1u m = 1
-M5 3   4   rx  vss nch w = '3.5u * 4' l = 5u m = 1
-M6 4   4   vss vss nch w = '3.5u * 1' l = 5u m = 1
-Msus1a s0  s1  vdd vdd pch w = 1u l = 5u m = 1
-Msus1b s1  s1  s0  s0  pch w = 1u l = 5u m = 1
-Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
-Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
-r1 rx vss 25k
+*.subckt CMB_beta4 vdd vss 1 4
+*M1 1   1   vdd vdd pch w = 20u l = 5u m = 1
+*M2 2   1   vdd vdd pch w = 20u l = 5u m = 1
+*M3 3   3   1   1   pch w = 20u l = 1u m = 1
+*M4 4   3   2   2   pch w = 20u l = 1u m = 1
+*M5 3   4   rx  vss nch w = '3.5u * 4' l = 5u m = 1
+*M6 4   4   vss vss nch w = '3.5u * 1' l = 5u m = 1
+*Msus1a s0  s1  vdd vdd pch w = 1u l = 5u m = 1
+*Msus1b s1  s1  s0  s0  pch w = 1u l = 5u m = 1
+*Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
+*Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
+*r1 rx vss 25k
+*.ends
+*Xcmb vdd vss cz opb0 CMB_beta4
+.subckt CMB_bete5 vdd vss cp cn cp2
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u m = 1
+mc1 cn  cp  vdd vdd pch w = 5.1u l = 5u m = 4
+mc2 cn  cn  vss vss nch w = 3.2u  l = 5u m = 1
+***(366n)
+mc3 cp2 cp2 vdd vdd pch w = 5.1u l = 5u m = 3
+mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
+mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
+mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
+r1  rx  vss 25k
 .ends
-Xcmb vdd vss cz opb0 CMB_beta4
+Xcmb   vdd vss cz opb0 cp2 CMB_bete5
 vb opb0 opb1 dc = 0
 ******HP*******
 *.subckt HP vdd vss in out
@@ -143,9 +162,9 @@ XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=100k
 *Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 *Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
-*XTro vdd vss to_in opb to_out cz cp2 cn OP_fc
+XTro vdd vss to_in opb1 to_out cz cp2 Opb1 OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-XTro vdd vss opb1 to_in to_out cz Trx2
+*XTro vdd vss opb1 to_in to_out cz Trx2
 *Cg  gm_c gnd 10p
 *Cg2  gm_out gnd 10p
 *XiEn vdd vss opb1 iEn_in iEn_out cz  mpx iEn
@@ -163,7 +182,7 @@ ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 .ends
 XOPnw vdd vss mpy opb1 mpx cz OPnw
 
-.param pbI = 10n
+.param pbI = 1u
 Ip mpy vss dc = pbI
 Mpb mpy mpx vdd vdd pch w = 5u l = 0.4u
 
@@ -251,9 +270,9 @@ Vs vss gnd dc = 0
 *.lib 'Test.l' InS
 *
 *
-.alter *OPout       #6
-.del lib 'Test.l' Loop
-.lib 'Test.l' OPout
+*.alter *OPout       #6
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' OPout
 **
 *.alter *iEn
 *.del lib 'Test.l' Loop

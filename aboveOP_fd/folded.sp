@@ -18,16 +18,19 @@
 
 .subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
 ***input stage***
-Mb	b	cp	 vdd vdd pch W = 6u   L = 5u  m = 1
-M1	1	Vinp b	 b	 pch W = 3u   L = 3u  m = 1
-M2	2	Vinn b	 b	 pch W = 3u   L = 3u  m = 1
+Mn	1	Vinn b	 b	 nch W = 3u   L = 1u  m = 2
+Mp	2	Vinp b	 b	 nch W = 3u   L = 1u  m = 2
+Mb1	b	cn	 01  vss nch W = 1u   L = 3u  m = 1
+Mb2	01	cn	 vss  vss nch W = 1u   L = 3u  m = 1
 ***output stage***
-My1 von von  vdd vdd pch w = 3u   L = 5u  m = 1
-My2 vop von  vdd vdd pch w = 3u   L = 5u  m = 1
-M3	von cp2	 1   vss nch W = 3u   L = 3u  m = 1
-M4	vop	cp2	 2   vss nch W = 3u   L = 3u  m = 1
-Mz1 1	cn	 vss vss nch W = 5u   L = 3u  m = 2
-Mz2	2	cn	 vss vss nch W = 5u   L = 3u  m = 2
+m1  1   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
+m2  2   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
+M3	von cp2	1   1   pch W = 5u   L = 1u  m = 2      * gm*rds = 50 (id = 200n)
+M4	vop	cp2	2   2   pch W = 5u   L = 1u  m = 2
+M5  von	cn  5   vss nch W = 5u   L = 1u  m = 2
+M6  vop	cn  6   vss nch W = 5u   L = 1u  m = 2
+M7  5   von vss vss nch W = 3u   L = 5u  m = 1
+M8  6   von vss vss nch W = 3u   L = 5u  m = 1
 .ends
 
 .subckt OP vdd vss vinp vinn 2 cz
@@ -38,10 +41,10 @@ M3	1	1	 vss vss nch W = 1u   L = 1u    m = 1
 M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
 .ends
 ******
-
 ***current mirror***
 
 .subckt CMB_bete5 vdd vss cp cn cp2
+Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u m = 1
 mc1 cn  cp  vdd vdd pch w = 5.1u l = 5u m = 4
 mc2 cn  cn  vss vss nch w = 3.2u  l = 5u m = 1
@@ -53,6 +56,11 @@ mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
 r1  rx  vss 25k
 .ends
 Xcmb   vdd vss cp cn cp2 CMB_bete5
+
+
+XOP    vdd vss vinp vinn vop cp cp2 cn  OP_fc
+
+
 
 
 ***source***
@@ -67,13 +75,15 @@ vinp vinp gnd dc = 'comon+diff' ac = 1
 vinn vinn gnd dc = 'comon-diff' *ac = 1 180
 
 ***test***
-*mt	vdt	vgt	vss	vss	nch	w = 3.5u   l = 5u m = 1
-mt	vgt	vgt	vst	vst	nch w = 10u l = 1u m = 1
-*mt	vdt	vgt	vst	vst	pch	w = 12u   l = 5u m = 1
-vtd	vdt	gnd dc = 2
-vtg	vgt	gnd dc = 1.4
-vts vst gnd dc = 0.6
+Mt vdt vgt vst vst nch w = 5u l = 1u m = 1
+*vtd vdt gnd dc =
+vtg vgt cp2  dc = 1.7441
+vts vst gnd dc = 0
+*vtb vbt gnd
+It vdd vdt dc = 200n
+*Im3,4 : 2.352e-07
 
+*.dc It 0n 300n 1n
 
 ***Open loop wi loading Test***
 
@@ -90,7 +100,7 @@ vts vst gnd dc = 0.6
 .op
 
 ***sweep***
-.dc diff -0.2 0.2 0.001
+.dc diff -0.2 0.2 0.0001
 
 ***probe&measuring***
 .ac dec 1000 0.1 1g
@@ -116,8 +126,8 @@ vts vst gnd dc = 0.6
 *.lib 'mm0355v.l' ss
 *.unprotect
 
-XOP vdd vss vinp vinn vop cp cp2 cn OP_fc
-.alter
-XOP vdd vss vinp vinn vop cn OP
+*XOP vdd vss vinp vinn vop cp cp2 cn OP_fc
+*.alter
+*XOP vdd vss vinp vinn vop cn OP
 
 .end
