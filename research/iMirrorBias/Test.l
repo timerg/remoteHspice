@@ -11,9 +11,9 @@
 .lib Closed
     .op
     .ac dec 1000 1 10g
-    Xib vdd vss  opb1 mpx mpy Ibias rin = 1k
-    XOP1 vdd vss mpy opb1 1 vop opb1 OPnw2
-    Vaci 4 opb1 dc = 0 ac = 1
+    Xib vdd vss  Opb1 mpx mpy Ibias rin = 1k
+    XOP1 vdd vss mpy opb1 1 vop Opb1 OPnw2
+    Vaci cn opb1 dc = 0 ac = 1
     Vopx vop mpx dc = 0
     .noise v(mpx) vaci
 
@@ -24,14 +24,17 @@
     .ac dec 1000 1 10g
     Xib vdd vss  opb1 mpx mpy Ibias rin = 1k
     XOP1 vdd vss mpy opb1 1 vop opb1 OPnw2
-    Vaci 4 opb1 dc = 0
-    Vopx mpx vss dc = 1.9216 ac = 1     *tt(rin, dc): (1k,  1.9216) (10x, 2.7065)
+    Vaci cn opb1 dc = 0
+    Vopx mpx vss dc = 1.9371 ac = 1     *tt(rin, dc): (1k,  1.9371) (20k, 2.3440)
     *Vopx mpx vss dc = 2.073  ac = 1     *ff(rin, dc): (1k,  2.073)
     *Vopx mpx vss dc = 1.7390  ac = 1     *ss(rin, dc): (1k,  1.7390)
     *Vopx mpx vss dc = 2.0248  ac = 1     *sf(rin, dc): (1k,  2.0248)
 
     .probe ac vp(vop)
     .pz v(vop) vopx
+    .meas ac ph_0db find vp(vop) when v(vop) = 1          * r = ph
+    .meas ac ph_start find vp(vop) at = 1    * r = 180 || 0
+    .meas ac pM param = 'ph_0db - (ph_start - 180)'      *r = f
 .endl
 
 .lib IbOPtest

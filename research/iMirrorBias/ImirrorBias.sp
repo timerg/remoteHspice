@@ -82,7 +82,6 @@ r1  rx  vss 25k
 mp mpy mpx vdd vdd pch w = 5u   l =  1u
 *(id, vgs, gm, rds): (10n, -0.5423, 2.363e-07, 574x); (10u, -0.9871,  7.141e-05, 1.67x)
 mn mpy opb1 rx vss nch w = 3.5u l =  1u m = 5
-
 r1 rx  vss rin
 .ends
 
@@ -105,7 +104,12 @@ M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 Mbx	b	opb1 bx  vss nch W = 1u   L = 5u  m = 1
 Mby	bx	opb1 by  vss nch W = 1u   L = 5u  m = 1
 Mbz	by	opb1 vss vss nch W = 1u   L = 5u  m = 1
-C1  vinp vop 100f
+C1  yy 1   400f
+R1  vinp yy 1x
+C2  xx   2   1p
+Rz  vss  xx 25k
+*C3   vinp vss 1p
+*C4   by vss 1p
 .ends
 
 * vgsi + vdsb = 0.8; 0.8 - vth < vdsb
@@ -124,8 +128,8 @@ Xcmb   vdd vss cp cn cp2 CMB_bete5 wp = 5u
 
 
 *** Compensation ***
-*C1  xx mpy 0.1p
-*R1  mpx xx 10k
+*C1  vss mpy 1p
+*R1  mpx xx 25k
 
 *C2  xx 1   100f
 *R2  mpy xx  100k
@@ -160,13 +164,13 @@ vs		vss 	gnd dc supplyn
 .lib 'Test.l'  NoIb
 
 
-*.alter
-*.del lib 'Test.l'  NoIb
-*.lib 'Test.l' Closed
+.alter
+.del lib 'Test.l'  NoIb
+.lib 'Test.l' Closed
 *
-*.alter
-*.del lib 'Test.l' Closed
-*.lib 'Test.l' Loop
+.alter
+.del lib 'Test.l' Closed
+.lib 'Test.l' Loop
 *
 *.alter
 *.del lib 'Test.l' Loop
