@@ -1,0 +1,15 @@
+{
+  "uploadOnSave": true,
+  "deleteLocal": false,
+  "hostname": "daisy.ee.nthu.edu.tw",
+  "port": "22",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**",
+    "mm0355v.l"
+  ],
+  "transport": "scp",
+  "target": "./remoteHspice/research/NewTry/",
+  "username": "m103061608",
+  "password": "abcd5818033"
+}

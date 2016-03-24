@@ -75,7 +75,6 @@ mc3 cp2 cp2 vdd vdd pch w = 5.1u l = 5u m = 3
 mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
 mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
 mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
-r1  rx  vss 25k
 .ends
 
 .subckt Ibias vdd vss opb1 mpx mpy rin = 10k
@@ -100,16 +99,11 @@ M1	1	Vinp b	 vss nch W = 2u   L = 1u  m = 6
 M2	2	Vinn b	 vss nch W = 2u   L = 1u  m = 6
 M3	1	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
-*Mb  b   opb1 vss vss nch W = 1u   L = 15u m = 1
 Mbx	b	opb1 bx  vss nch W = 1u   L = 5u  m = 1
 Mby	bx	opb1 by  vss nch W = 1u   L = 5u  m = 1
 Mbz	by	opb1 vss vss nch W = 1u   L = 5u  m = 1
-C1  yy 1   400f
-R1  vinp yy 1x
-C2  xx   2   1p
-Rz  vss  xx 25k
-*C3   vinp vss 1p
-*C4   by vss 1p
+C1  1 vss 500f
+C2  vinp   2   30f
 .ends
 
 * vgsi + vdsb = 0.8; 0.8 - vth < vdsb

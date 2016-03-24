@@ -171,22 +171,30 @@ XTro vdd vss to_in opb1 to_out cz cp2 Opb1 OP_fc
 *veb eb gnd dc = 2.4
 
 ***NW Input Stage***
-.subckt OPnw vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 12u  L = 10u  m = 1
-M1	1	Vinn b	 b	 pch W = 1u   L = 5u  m = 1
-M2	2	Vinp b	 b	 pch W = 1u   L = 5u  m = 1
-M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
-M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
-ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
-ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
+.subckt OPnw vdd vss vinp vinn 2 cz
+M1	1	Vinp b	 vss nch W = 2u   L = 1u  m = 6
+M2	2	Vinn b	 vss nch W = 2u   L = 1u  m = 6
+M3	1	1	 vdd vdd pch W = 2u   L = 1u  m = 1
+M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
+Mbx	b	cz bx  vss nch W = 1u   L = 5u  m = 1
+Mby	bx	cz by  vss nch W = 1u   L = 5u  m = 1
+Mbz	by	cz vss vss nch W = 1u   L = 5u  m = 1
+C1  1 vss 500f
+C2  vinp   2   30f
 .ends
-XOPnw vdd vss mpy opb1 mpx cz OPnw
+.subckt Ibias vdd vss opb1 mpx mpy rin = 10k
+mp mpy mpx vdd vdd pch w = 5u   l =  1u
+*(id, vgs, gm, rds): (10n, -0.5423, 2.363e-07, 574x); (10u, -0.9871,  7.141e-05, 1.67x)
+mn mpy opb1 rx vss nch w = 3.5u l =  1u m = 5
+r1 rx  vss rin
+.ends
+XOPnw vdd vss mpy opb1 mpx Opb1 OPnw
+*XIb ibias
 
 .param pbI = 1u
 Ip mpy vss dc = pbI
-Mpb mpy mpx vdd vdd pch w = 5u l = 0.4u
-
-Mp  out mpx vdd vdd pch w = 5u l = 0.4u
+Mpb mpy mpx vdd vdd pch w = 5u l = 1u
+Mp  out mpx vdd vdd pch w = 5u l = 1u
 *vpx px gnd dc = 2.735
 
 *Inw vdd out dc = pbI
@@ -210,7 +218,6 @@ vfc to_out vnw dc = vdif
 
 
 
-vopbias  opb  gnd dc = 2 *ac = 1 *180
 *vopbias1 opb1 gnd dc = 0.8 *ac = 1 *180
 .param
 +comon		= 0.8

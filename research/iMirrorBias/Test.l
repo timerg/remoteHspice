@@ -26,12 +26,13 @@
     XOP1 vdd vss mpy opb1 1 vop opb1 OPnw2
     Vaci cn opb1 dc = 0
     Vopx mpx vss dc = 1.9371 ac = 1     *tt(rin, dc): (1k,  1.9371) (20k, 2.3440)
-    *Vopx mpx vss dc = 2.073  ac = 1     *ff(rin, dc): (1k,  2.073)
-    *Vopx mpx vss dc = 1.7390  ac = 1     *ss(rin, dc): (1k,  1.7390)
-    *Vopx mpx vss dc = 2.0248  ac = 1     *sf(rin, dc): (1k,  2.0248)
+    *Vopx mpx vss dc =  2.0867 ac = 1     *ff(rin, dc): (1k,  2.0867)
+    *Vopx mpx vss dc =  1.7878  ac = 1     *ss(rin, dc): (1k,  1.7878)
+    *Vopx mpx vss dc = 1.8294  ac = 1     *fs(rin, dc): (1k,  1.8294)
+    *Vopx mpx vss dc = 2.0440  ac = 1     *fs(rin, dc): (1k,  2.0440)
 
     .probe ac vp(vop)
-    .pz v(vop) vopx
+    *.pz v(vop) vopx
     .meas ac ph_0db find vp(vop) when v(vop) = 1          * r = ph
     .meas ac ph_start find vp(vop) at = 1    * r = 180 || 0
     .meas ac pM param = 'ph_0db - (ph_start - 180)'      *r = f

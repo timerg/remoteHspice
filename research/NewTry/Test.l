@@ -194,6 +194,7 @@
 .lib openMode
     .op
     .ac  dec 1000 1 1g *sweep pbI dec 1 100n 10u
+    vc4 to_in gnd   dc = 0.8
     vfc vnw vss dc = vin ac = 1
     *vb opb0 opb1 dc = 0 ac = 1
 
