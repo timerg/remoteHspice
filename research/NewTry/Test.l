@@ -197,10 +197,10 @@
     vfc vnw vss dc = vin ac = 1
     *vb opb0 opb1 dc = 0 ac = 1
 
-    .param pbI = 10n
-    + vin = 1.682e-01
+    .param pbI = 1u
+    *+ vin = 1.682e-01
     *+ vin = 2.331e-01
-    *+ vin = 3.577e-01
+    + vin = 5.025e-01
     *+ vin = 6.573e-01
     *.noise v(ti_out) vfc 100
 .endl

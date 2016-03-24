@@ -1,7 +1,7 @@
 *inputStage
 *About convergence https://www.ee.iitb.ac.in/~trivedi/Downloads/spice/convergence.html
 .protect
-.lib 'mm0355v.l' sf
+.lib 'mm0355v.l' tt
 *.lib 'rf018.l' TT
 .unprotect
 .options ABSTOL=1e-7 RELTOL=1e-7 unwrap = 1
@@ -226,7 +226,7 @@ Vs vss gnd dc = 0
 + par'lx7(mc)/lx8(mc)/lx8(mnw)'
 
 ***IC***        *this help converge
-.ic i(mnw)=PbI *v(opb1) = 0.802
+*.ic i(mnw)=PbI *v(opb1) = 0.802
 
 
 
