@@ -1,10 +1,13 @@
 
 .lib NoIb
-    *.op
+    .op
+    Iin cp  vss dc = 1u *ac = 1
     .dc wp 1u 20u 0.1u  *sweep rr dec 5 10k 100k
     .ac dec 1000 1 10g
     .probe dc I(Xcmb_d.m1) I(Xcmb_d.m2)
     vd		vdd 	gnd dc supplyp ac = 1
+    .probe ac outnoise
+    .noise i(xcmb.mc1) vd
 .endl
 
 

@@ -67,11 +67,11 @@ Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
 .ends
 
 .subckt CMB_bete5 vdd vss cp cn cp2 wp = 5u
-mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u m = 1
-mc1 cn  cp  vdd vdd pch w = 5.1u l = 5u m = 4
-mc2 cn  cn  vss vss nch w = 3.2u  l = 5u m = 1
+mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
+mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
+mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 ***(366n)
-mc3 cp2 cp2 vdd vdd pch w = 5.1u l = 5u m = 3
+mc3 cp2 cp2 vdd vdd pch w = 1.5u l = 1u m = 3
 mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
 mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
 mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
