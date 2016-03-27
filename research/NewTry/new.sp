@@ -26,14 +26,15 @@ R1  xx vss 10k
 .ends
 ****Tr******
 .subckt Tr vdd vss vinp vinn vop cz rld=50k
-Mb	b	cz	 vdd vdd pch W = 10u  L = 5u  m = 1
+Mb	b	cz	 vdd vdd pch W = 1.5  L = 1u  m = 2
 M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
-M3	1	1	 vss vss nch W = 1u   L = 1u  m = 1
-M4	2	1	 vss vss nch W = 1u L = 1u    m = 1
-ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 2
+M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
+M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
+ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 24
 ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
-C1  2  vop 500f
+Cc  xx  vop 50f
+Rc  2   xx  20k
 RL   vop    vinn rld
 .ends
 ******GM******
@@ -140,13 +141,13 @@ Rc 2  xx  10k
 *r1 rx vss 25k
 *.ends
 *Xcmb vdd vss cz opb0 CMB_beta4
-.subckt CMB_bete5 vdd vss cp cn cp2 wp = 5u
+.subckt CMB_bete5 vdd vss cp cn wp = 5u
 Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
 mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
-Xcmb   vdd vss cz opb0 cp2 CMB_bete5
+Xcmb   vdd vss cz opb0 CMB_bete5
 vb opb0 opb1 dc = 0
 ******HP*******
 *.subckt HP vdd vss in out
