@@ -73,21 +73,24 @@ M4	2	1	 vss vss nch W = 1u  L = 5u    m = 1
 *Ro  2  vss 1000k
 .ends
 ******OP: folded cascode*******
-.subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
+
+.subckt OP_fc vdd vss vinp vinn vop cp cn
 ***input stage***
-Mn	1	Vinn b	 b	 nch W = 3u   L = 1u  m = 2
-Mp	2	Vinp b	 b	 nch W = 3u   L = 1u  m = 2
-Mb1	b	cn	 01  vss nch W = 1u   L = 3u  m = 1
-Mb2	01	cn	 vss  vss nch W = 1u   L = 3u  m = 1
+Mn	1	Vinn b	 b	 nch W = 3u   L = 5u  m = 2
+Mp	2	Vinp b	 b	 nch W = 3u   L = 5u  m = 2
+Mb 	b	cn2	 vss  vss nch W = 5u   L = 1u  m = 4
 ***output stage***
-m1  1   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
-m2  2   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
-M3	von cp2	1   1   pch W = 5u   L = 1u  m = 2      * gm*rds = 50 (id = 200n)
-M4	vop	cp2	2   2   pch W = 5u   L = 1u  m = 2
-M5  von	cn  5   vss nch W = 5u   L = 1u  m = 2
-M6  vop	cn  6   vss nch W = 5u   L = 1u  m = 2
+m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+m2  2   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
+M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
+M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
+M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
 M7  5   von vss vss nch W = 3u   L = 5u  m = 1
 M8  6   von vss vss nch W = 3u   L = 5u  m = 1
+mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+mc2 cp2 cn  cn2 cn2 nch w = 3.5u l = 1u   m = 3
+mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
 C1  vop vss 5p
 .ends
 ******OP: Two stage******
@@ -142,11 +145,6 @@ Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
 mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
-***(366n)
-mc3 cp2 cp2 vdd vdd pch w = 1.5u l = 1u m = 3
-mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
-mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
-mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
 .ends
 Xcmb   vdd vss cz opb0 cp2 CMB_bete5
 vb opb0 opb1 dc = 0
@@ -161,7 +159,7 @@ XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=100k
 *Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 *Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
-XTro vdd vss to_in opb1 to_out cz cp2 Opb1 OP_fc
+XTro vdd vss to_in opb1 to_out cz  Opb1 OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
 *XTro vdd vss opb1 to_in to_out cz Trx2
 *Cg  gm_c gnd 10p

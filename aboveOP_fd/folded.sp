@@ -16,22 +16,49 @@
 +diff			= 0
 ***netlist***
 
-.subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
+*.subckt OP_fc vdd vss vinp vinn vop cp cp2 cn
+****input stage***
+*Mn	1	Vinn b	 b	 nch W = 3u   L = 1u  m = 2
+*Mp	2	Vinp b	 b	 nch W = 3u   L = 1u  m = 2
+*Mb1	b	cn	 01  vss nch W = 1u   L = 4u  m = 2
+*Mb2	01	cn	 02  vss nch W = 1u   L = 4u  m = 2
+*Mb3	02	cn	 vss vss nch W = 1u   L = 4u  m = 2
+****output stage***
+*m1  1   cp2 vdd vdd pch w = 3u   l = 2u  m = 3
+*m2  2   cp2 vdd vdd pch w = 3u   l = 2u  m = 3
+*M3	von cp	1   1   pch W = 5u   L = 1u  m = 2      * gm*rds = 50 (id = 200n)
+*M4	vop	cp	2   2   pch W = 5u   L = 1u  m = 2
+*M5  von	cn  5   vss nch W = 5u   L = 1u  m = 2
+*M6  vop	cn  6   vss nch W = 5u   L = 1u  m = 2
+*M7  5   von vss vss nch W = 3u   L = 5u  m = 1
+*M8  6   von vss vss nch W = 3u   L = 5u  m = 1
+*.ends
+.subckt OP_fc vdd vss vinp vinn vop cp cn
 ***input stage***
-Mn	1	Vinn b	 b	 nch W = 3u   L = 1u  m = 2
-Mp	2	Vinp b	 b	 nch W = 3u   L = 1u  m = 2
-Mb1	b	cn	 01  vss nch W = 1u   L = 3u  m = 1
-Mb2	01	cn	 vss  vss nch W = 1u   L = 3u  m = 1
+Mn	1	Vinn b	 b	 nch W = 3u   L = 5u  m = 2
+Mp	2	Vinp b	 b	 nch W = 3u   L = 5u  m = 2
+Mb 	b	cn2	 vss  vss nch W = 5u   L = 1u  m = 4
 ***output stage***
-m1  1   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
-m2  2   cp2 vdd vdd pch w = 5.1u l = 5u  m = 4
-M3	von cp2	1   1   pch W = 5u   L = 1u  m = 2      * gm*rds = 50 (id = 200n)
-M4	vop	cp2	2   2   pch W = 5u   L = 1u  m = 2
-M5  von	cn  5   vss nch W = 5u   L = 1u  m = 2
-M6  vop	cn  6   vss nch W = 5u   L = 1u  m = 2
+m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+m2  2   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
+M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
+M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
+M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
 M7  5   von vss vss nch W = 3u   L = 5u  m = 1
 M8  6   von vss vss nch W = 3u   L = 5u  m = 1
+mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+mc2 cp2 cn  cn2 cn2 nch w = 3.5u l = 1u   m = 3
+mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
 .ends
+
+
+
+*mc4 2 cp3 vdd vdd pch w = 5u l = 0.5u m = 1
+*mc5 3 cp  2   2   pch w = 5u l = 0.5u m = 1
+*Mc6	3 cn  cn2 vss nch W = 3.5u l = 1u  m = 1
+*Mc7	cn2 cn2 vss vss nch W = 3.5u l = 5u  m = 1
+
 
 .subckt OP vdd vss vinp vinn 2 cz
 Mb	b	cz	 vdd vdd pch W = 6u  L = 5u  m = 1
@@ -43,22 +70,38 @@ M4	2	1	 vss vss nch W = 1u   L = 1u    m = 1
 ******
 ***current mirror***
 
-.subckt CMB_bete5 vdd vss cp cn cp2
+*.subckt CMB_bete5 vdd vss cp cn cp2
+*Iin cp  vss dc = 1u
+*mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u m = 1
+*mc1 cn  cp  vdd vdd pch w = 5.1u l = 5u m = 4
+*mc2 cn  cn  vss vss nch w = 3.2u  l = 5u m = 1
+****(366n)
+*mc3 cp2 cp2 vdd vdd pch w = 5.1u l = 5u m = 3
+*mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
+*mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
+*mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
+*r1  rx  vss 25k
+*.ends
+.subckt CMB_bete5 vdd vss cp cn cp2 wp = 5u
 Iin cp  vss dc = 1u
-mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u m = 1
-mc1 cn  cp  vdd vdd pch w = 5.1u l = 5u m = 4
-mc2 cn  cn  vss vss nch w = 3.2u  l = 5u m = 1
+mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
+mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
+mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 ***(366n)
-mc3 cp2 cp2 vdd vdd pch w = 5.1u l = 5u m = 3
-mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
-mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
-mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
-r1  rx  vss 25k
+*mc3 cp2 cp2 vdd vdd pch w = 1.5u l = 1u m = 3
+*mc4 cp2 cn  1   vss nch w = 1u  l = 5u m = 1
+*mc5 1   cn  2   vss nch w = 1u  l = 5u m = 1
+*mc6 2   cn vss  vss nch w = 1u  l = 5u m = 1
 .ends
+
+*vcp2 cp2 gnd dc = 2.5454
+
+
+
 Xcmb   vdd vss cp cn cp2 CMB_bete5
 
 
-XOP    vdd vss vinp vinn vop cp cp2 cn  OP_fc
+XOP    vdd vss vinp vinn vop cp cn  OP_fc
 
 
 
@@ -100,7 +143,7 @@ It vdd vdt dc = 200n
 .op
 
 ***sweep***
-.dc diff -0.2 0.2 0.0001
+.dc diff -0.01 0.01 0.00001
 
 ***probe&measuring***
 .ac dec 1000 0.1 1g
@@ -115,7 +158,7 @@ It vdd vdt dc = 200n
 *.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 *.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
-*.noise v(vop) vinp 100
+.noise v(vop) vinp 100
 
 *.alter
 *.protect
