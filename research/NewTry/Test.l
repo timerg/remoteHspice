@@ -161,7 +161,7 @@
     *+ v(vnw) = 1.682e-01
     *+ v(vnw) = 2.331e-01
     *+v(vnw) = 4.014e-01
-    *+ v(vnw) = 6.573e-01    *38db
+    + v(vnw) = 6.573e-01    *38db
     *** ff
     *
     *+ v(vnw) =  5.429e-01 *10u 38db
@@ -171,7 +171,7 @@
     *+ v(vnw) = 5.550e-01    *36.7db
     *** sf
     *+ v(vnw) = 7.602e-01   *40db
-    + v(vnw) = 5.025e-01    *76db
+    *+ v(vnw) = 5.025e-01    *76db
 
 
     .meas ac ph_0db find vp(ti_out) when v(ti_out) = 1          * r = ph

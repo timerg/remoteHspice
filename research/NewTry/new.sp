@@ -188,7 +188,7 @@ r1 rx  vss rin
 XOPnw vdd vss mpy opb1 mpx Opb1 OPnw
 *XIb ibias
 
-.param pbI = 1u
+.param pbI = 10u
 Ip mpy vss dc = pbI
 Mpb mpy mpx vdd vdd pch w = 5u l = 1u
 Mp  out mpx vdd vdd pch w = 5u l = 1u
