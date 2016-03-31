@@ -4,7 +4,7 @@
     .op
     *vinp vinp gnd dc = 'comon-diff' *ac = 1
     vopb vinp opb1 dc = 0
-    vinn vinn gnd dc = 'comon+diff' ac = 1 *180
+    vinn vinn opb1 dc = 'diff' ac = 1 *180
     .dc diff -0.1 0.1 0.0001
     .ac dec 1000 0.1 100g
     *.tf v(voa) vinp
@@ -26,8 +26,8 @@
     .op
     *vinp vinp gnd dc = 'comon' *ac = 1
     vopb vinp opb1 dc = 0
-    vinn in gnd dc = 'comon+diff' ac = 1 180
-    Rin  in vinn 100K
+    vinn vinn opb1 dc = 'diff' ac = 1 180
+    *Rin  in vinn 100K
     RL   vop  gnd 100K
     .ac dec 1000 0.1 100g  *sweep diff 0 2 0.5
     .dc diff -0.1 0.1 0.0001
@@ -53,10 +53,12 @@
     RL   vop    vinn 100k
     .dc Iin dec 50 1n 200u
     *.dc Iin 100n 10u 10n
-    .probe i(ma1)
-    .ac dec 1000 0.1 100g *sweep wx 5u 17u 3u
+    .probe i(ma1) i(rl)
+    .ac dec 1000 0.1 100g *sweep wx 0.6u 3u 0.1u
     *.pz v(vop) Iin
     .meas ac gain_c max v(vop)
     .meas ac bw when v(vop) = 'gain_c/1.414'
     *.noise v(vop) Iin 100
+
+    *.dc wx 1u 2u 0.01u
 .endl

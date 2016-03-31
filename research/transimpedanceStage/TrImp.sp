@@ -7,16 +7,14 @@
 
 ***param***
 .param
-+comon		= 0.802
-+bias		= 2.4
-+bias2		= 2.4
+*+comon		= 0.7967
++diff = 0
 +supplyp	= 3.3
 +supplyn	= 0
-+diff			= 0
-+wx         = 10u
 ***netlist***
 ***1st stage***
-Mb	b	cz	 vdd vdd pch W = wx  L = 5u  m = 1
+*.param wx = 1.5u
+Mb	b	cz	 vdd vdd pch W = 1.5u  L = 1u  m = 2          * 2.211u
 M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
@@ -26,14 +24,13 @@ M4	2	1	 vss vss nch W = 3u   L = 1u    m = 1
 ***2nd stage***
 *ma1 vop cz vdd vdd pch W = 4u L = 1u m = 1
 *ma2 vop 2  vss vss nch W = 5.4u L = 1u m = 2   *use 21u when in new model
-
-ma1 vop cz vdd vdd pch   W = 4u L = 0.4u m = 2
+ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 24
 ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
 
 ***compensation***
-*C1  2 vop 20f   *~ 60db
-Cc 2 vop 100f   *100f=~60db for RL added; but should be 600f for iEn added to get a flat band
-*Rc 2  xx  50k
+*C1  vop gnd 1p   *~ 60db
+Cc xx vop 50f
+Rc 2  xx  20k
 ******
 
 ***current mirror***
@@ -55,26 +52,20 @@ Cc 2 vop 100f   *100f=~60db for RL added; but should be 600f for iEn added to ge
 *
 *Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
-.subckt CMB_beta4 vdd vss 1 4
-M1 1   1   vdd vdd pch w = 20u l = 5u m = 1
-M2 2   1   vdd vdd pch w = 20u l = 5u m = 1
-M3 3   3   1   1   pch w = 20u l = 1u m = 1
-M4 4   3   2   2   pch w = 20u l = 1u m = 1
-M5 3   4   rx  vss nch w = '3.5u * 4' l = 5u m = 1
-M6 4   4   vss vss nch w = '3.5u * 1' l = 5u m = 1
-Msus1a s0  s1  vdd vdd pch w = 1u l = 5u m = 1
-Msus1b s1  s1  s0  s0  pch w = 1u l = 5u m = 1
-Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
-Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
-r1 rx vss 25k
+.subckt CMB_bete5 vdd vss cp cn wp = 5u
+Iin cp  vss dc = 1u
+mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
+mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
+mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
-Xcmb vdd vss cz opb1 CMB_beta4
+Xcmb   vdd vss cz opb1 CMB_bete5
+*vb opb0 opb1 dc = 0
 
 ***source***
 vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
-vb 		b0		gnd dc bias
-vb1		b1		gnd dc bias2
+*vb 		b0		gnd dc bias
+*vb1		b1		gnd dc bias2
 
 
 

@@ -157,13 +157,13 @@ vs		vss 	gnd dc supplyn
 .del lib 'Test.l'  NoIb
 .lib 'Test.l' Closed
 *
+*.alter
+*.del lib 'Test.l' Closed
+*.lib 'Test.l' Loop
+*
 .alter
 .del lib 'Test.l' Closed
-.lib 'Test.l' Loop
-*
-*.alter
-*.del lib 'Test.l' Loop
-*.lib 'Test.l' IbOPtest
+.lib 'Test.l' IbOPtest
 
 .end
 
