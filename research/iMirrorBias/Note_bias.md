@@ -19,3 +19,15 @@
 
 * If Vdd change, M1 will help to hold Vsg of M3
 * One can cal dIO/dvdd by starting from Vdd = vsg3+vgs1
+
+### Miliier Compensation: Mos as resistance
+* MyStructure is slightly smaller tahn structure1, which is from textbook
+<img src="./pic/MosAsResistance_wiSimpleBias.png"></img>
+<img src="./pic/MosAsResistance_structure1.png"></img>
+<img src="./pic/MosAsResistance_structure1_sp.png"></img>
+<img src="./pic/MosAsResistance_MyStructure.png"></img>
+<img src="./pic/MosAsResistance_MyStructure_sp.png"></img>
+
+* **Problem encount**
+<img src="./pic/problem_closed_fs.png"></img>
+<img src="./pic/problem_loop_fs.png"></img>

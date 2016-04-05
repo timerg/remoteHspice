@@ -66,17 +66,21 @@ Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
 Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
 .ends
 
-.subckt CMB_bete5 vdd vss cp cn cp2 wp = 5u
+.subckt CMB_bete5 vdd vss cp cn wp = 5u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
 mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
 
 .subckt Ibias vdd vss opb1 mpx mpy rin = 10k
-mp mpy mpx vdd vdd pch w = 5u   l =  1u
+mp  mpy mpx vdd vdd pch w = 1u   l =  0.5u m = 5
+mpb io  mpx vdd vdd pch w = 1u   l =  0.5u m = 1
+*Eo  io  vss OPAMP opb1 io
+rio  io vio 1k
+vio vio opb1 dc = 0
 *(id, vgs, gm, rds): (10n, -0.5423, 2.363e-07, 574x); (10u, -0.9871,  7.141e-05, 1.67x)
-mn mpy opb1 rx vss nch w = 3.5u l =  1u m = 5
-r1 rx  vss rin
+mn  mpy opb1 rx vss nch w = 3.5u l =  1u m = 2
+r1  rx  vss rin
 .ends
 
 .subckt OPnw vdd vss vinp vinn vop cz
@@ -89,17 +93,53 @@ ma1 vop cz vdd vdd pch W =  2u L = 0.5u m = 1
 ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 .ends
 
-.subckt OPnw2 vdd vss vinp vinn 1 2 opb1
-M1	1	Vinp b	 vss nch W = 2u   L = 1u  m = 6
-M2	2	Vinn b	 vss nch W = 2u   L = 1u  m = 6
+.subckt OPnw2 vdd vss vinp vinn 2 opb1 cp
+******** bias from fd Op *******
+mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+mc2 cp2 opb1  cn2 cn2 nch w = 3.5u l = 1u   m = 3
+mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
+********
+M1	1	Vinp b	 vss nch W = 5u   L = 2u  m = 1
+M2	2	Vinn b	 vss nch W = 5u   L = 2u  m = 1
 M3	1	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
-Mbx	b	opb1 bx  vss nch W = 1u   L = 5u  m = 1
-Mby	bx	opb1 by  vss nch W = 1u   L = 5u  m = 1
-Mbz	by	opb1 vss vss nch W = 1u   L = 5u  m = 1
-C1  1 vss 500f
-C2  vinp   2   30f
+Mb  b   cn2  vss vss nch w = 5u   l = 1u m = 1
+C1   2   vinp 30f
+*C3   1   vinp 100f
+Mr1  xx  rb  1   1   pch w = 1u l = 5u m = 1
+Mcr1 cr1 1   vdd vdd pch W = 2u l = 1u m = 1
+Mcr2 cr1 cr1 vss vss nch w = 1u l = 0.5u m = 1
+Mcr3 rb  cr1 vss vss nch w = 1u l = 0.5u m = 1
+Mcr4 rb  rb  cr2 cr2 pch w = 1u l = 1u m = 2
+Mcr5 cr2 cr2 vdd vdd pch W = 2u l = 1u m = 1
+C2   2   xx  250f
+**C2  2  1  200f
+*C3   2  1 100f
+*R3  zz  1  10x
 .ends
+
+.subckt OP_fc vdd vss vinp vinn vop cn cp
+***input stage***
+Mn	1	Vinp b	 b	 nch W = 3u   L = 5u  m = 2
+Mp	2	Vinn b	 b	 nch W = 3u   L = 5u  m = 2
+Mb 	b	cn2	 vss  vss nch W = 5u   L = 1u  m = 4
+***output stage***
+m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+m2  2   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
+M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
+M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
+M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
+M7  5   von vss vss nch W = 3u   L = 5u  m = 1
+M8  6   von vss vss nch W = 3u   L = 5u  m = 1
+mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+mc2 cp2 cn  cn2 cn2 nch w = 3.5u l = 1u   m = 3
+mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
+*C1  vop vss 5p
+.ends
+
+
+
 
 * vgsi + vdsb = 0.8; 0.8 - vth < vdsb
 * => 0.8 - vth < 0.8 - vgsi -> vth > vgsi
@@ -109,7 +149,7 @@ C2  vinp   2   30f
 
 Iin cp  vss dc = 1u
 *Iin2 ix vss dc = 1u
-Xcmb   vdd vss cp cn cp2 CMB_bete5 wp = 5u
+Xcmb   vdd vss cp cn CMB_bete5 wp = 5u
 *Xcmb_b vdd vss 1 2 3 4 CMB_beta2 rr = 10k wx = 1u
 *Xcmb_c vdd vss ix 1 2 3 4 CMB_beta3 rr = 10k wx = 1u
 *Xcmb_d vdd vss cz 4 CMB_beta4 wp = 20u
@@ -149,22 +189,22 @@ vs		vss 	gnd dc supplyn
 *.ic v(1) = 3.3
 **.ic v(4) = 0
 
-.alter
-.lib 'Test.l'  NoIb
+*.alter
+*.lib 'Test.l'  NoIb
 
 
 .alter
 .del lib 'Test.l'  NoIb
 .lib 'Test.l' Closed
 *
-*.alter
-*.del lib 'Test.l' Closed
-*.lib 'Test.l' Loop
 *
 .alter
 .del lib 'Test.l' Closed
 .lib 'Test.l' IbOPtest
 
+.alter
+.del lib 'Test.l' IbOPtest
+.lib 'Test.l' Loop
 .end
 
 
