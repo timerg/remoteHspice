@@ -37,19 +37,19 @@
 ***input stage***
 Mn	1	Vinn b	 vss	 nch W = 3u   L = 1u  m = 2
 Mp	2	Vinp b	 vss	 nch W = 3u   L = 1u  m = 2
-Mb 	b	cn2	 vss  vss nch W = 5u   L = 0.5u  m = 4
+Mb 	b	cn2	 vss  vss nch W = 1u   L = 1u  m = 8
 ***output stage***
-m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 2
-m2  2   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+m1  1   cp2 vdd vdd pch w = 1u   l = 3u m = 4
+m2  2   cp2 vdd vdd pch w = 1u   l = 3u m = 4
 M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
 M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
 M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
 M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
-M7  5   von vss vss nch W = 3u   L = 1u  m = 1
-M8  6   von vss vss nch W = 3u   L = 1u  m = 1
-mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
-mc2 cp2 cn  cn2 vss nch w = 3.5u l = 0.5u   m = 5
-mc3 cn2 cn2 vss vss nch w = 5u   l = 0.5u m = 2
+M7  5   von vss vss nch W = 3u   L = 5u  m = 1
+M8  6   von vss vss nch W = 3u   L = 5u  m = 1
+mc1 cp2 cp2 vdd vdd pch w = 1u   l = 3u m = 1
+mc2 cp2 cn  cn2 vss nch w = 3.5u l = 0.5u   m = 7
+mc3 cn2 cn2 vss vss nch w = 1u   l = 1u m = 2
 .ends
 
 
@@ -110,7 +110,7 @@ vs		vss 	gnd dc supplyn
 *vb2		b2		gnd dc bias2
 
 ***input***
-vinp vinp vss dc = 0.7967 ac = 1
+vinp vinp vss dc = '0.7967+diff' ac = 1
 vinn vinn vss dc = 0.7967 *ac = 1 180
 
 ***test***
@@ -139,7 +139,7 @@ It vdd vdt dc = 200n
 .op
 
 ***sweep***
-.dc diff -0.1 0.1 0.00001
+.dc diff -0.01 0.01 0.00001
 
 ***probe&measuring***
 .ac dec 1000 0.1 1g

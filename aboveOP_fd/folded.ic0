@@ -1,0 +1,31 @@
+* "simulator" "HSPICE" 
+* "version" "B-2008.09 32-BIT"
+* "format" "HSP"
+* "rundate" "16:50:22 04/06/2016 "
+* "netlist" "c:\users\timer\documents\github\remotehspice\aboveop_fd\folded.sp "
+* "runtitle" "***myop_2stage_aboveth"
+* time =    0.            
+* temperature =   25.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ cn =   0.7967        
++ cp =   2.3955        
++ vdd =   3.3000        
++ vdt = 2.127e-04       
++ vgt =   1.7441        
++ vinn =   0.7967        
++ vinp =   0.7967        
++ vop =   0.4337        
++ vss =   0.            
++ vst =   0.            
++ xop.1 =   3.0196        
++ xop.2 =   3.0196        
++ xop.5 =   0.2900        
++ xop.6 =   0.2900        
++ xop.b =   0.3270        
++ xop.cn2 =   0.3864        
++ xop.cp2 =   2.5931        
++ xop.von =   0.4337        
+***   END: Saved Operating Point ***                     
