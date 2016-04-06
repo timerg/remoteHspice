@@ -26,7 +26,7 @@ R1  xx vss 10k
 .ends
 ****Tr******
 .subckt Tr vdd vss vinp vinn vop cz rld=50k
-Mb	b	cz	 vdd vdd pch W = 1.5  L = 1u  m = 2
+Mb	b	cz	 vdd vdd pch W = 1.5u  L = 1u  m = 2
 M1	1	Vinn b	 b	 pch W = 3u   L = 1u  m = 2
 M2	2	Vinp b	 b	 pch W = 3u   L = 1u  m = 2
 M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
@@ -77,8 +77,8 @@ M4	2	1	 vss vss nch W = 1u  L = 5u    m = 1
 
 .subckt OP_fc vdd vss vinp vinn vop cp cn
 ***input stage***
-Mn	1	Vinn b	 b	 nch W = 3u   L = 5u  m = 2
-Mp	2	Vinp b	 b	 nch W = 3u   L = 5u  m = 2
+Mn	1	Vinn b	 vss  nch W = 3u   L = 5u  m = 2
+Mp	2	Vinp b	 vss  nch W = 3u   L = 5u  m = 2
 Mb 	b	cn2	 vss  vss nch W = 5u   L = 1u  m = 4
 ***output stage***
 m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 2
