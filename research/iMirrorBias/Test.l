@@ -26,10 +26,10 @@
     .ac dec 1000 1 1000g sweep rr dec 1 1k 1x
     .dc rr dec 100 1k 10000k
     .probe dc i(xib.mp) i(xib.rio) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')  gainib=par('gmp*rdsp') par'1/lx8(xop1.mr1)'
-    + lx2(xop1.mr1)
-    .probe ac i(xib.rio) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')  gainib=par('gmp*rdsp')
+    + lx2(xop1.mr1) i(xib.eio)
+    .probe ac i(xib.rio) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')  gainib=par('gmp*rdsp')  i(xib.eio)
 
-    .noise i(xib.rio) vaci
+    .noise i(xib.eio) vaci
 
 .endl
 
@@ -51,11 +51,11 @@
     .ac dec 1000 1 10g
     Xib vdd vss  cn mpx mpy Ibias rin = 1x
     XOP1 vdd vss mpy cn vop cn cp OPnw2
-    Vopx mpx vss dc = 2.6516 ac = 1     *tt(rin, dc): (1k,  1.4490) (20k, 2.5065)(1x, 2.6516)
+    *Vopx mpx vss dc = 2.6516 ac = 1     *tt(rin, dc): (1k,  1.4490) (20k, 2.5065)(1x, 2.6516)
     *Vopx mpx vss dc =  2.7756 ac = 1     *ff(rin, dc): (1k,  1.6977) (1x, 2.7756)
     *Vopx mpx vss dc =  2.5305  ac = 1     *ss(rin, dc): (1k,  1.7878) (1x, 2.5305)
     *Vopx mpx vss dc = 2.5522  ac = 1     *fs(rin, dc): (1k,  1.8294) (1x, 2.5525)
-    *Vopx mpx vss dc = 2.7508  ac = 1     *sf(rin, dc): (1k,  2.0440) (1x, 2.7508)
+    Vopx mpx vss dc = 2.7508  ac = 1     *sf(rin, dc): (1k,  2.0440) (1x, 2.7508)
 
     .probe ac vp(vop) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')
     .pz v(vop) vopx

@@ -33,7 +33,7 @@ M3	1	1	 vss vss nch W = 3u   L = 1u  m = 1
 M4	2	1	 vss vss nch W = 3u L = 1u    m = 1
 ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 24
 ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
-Cc  xx  vop 50f
+Cc  xx  vop 150f
 Rc  2   xx  20k
 RL   vop    vinn rld
 .ends
@@ -160,7 +160,7 @@ XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=100k
 *Xgm  vdd vss gm_in gm_out gm_out  cx  gm
 *Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
 *XTro vdd vss to_in opb to_out  cz  Trx
-XTro vdd vss to_in opb1 to_out cz  Opb1 OP_fc
+XTro vdd vss opb1 to_in to_out cz  Opb1 OP_fc
 *XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
 *XTro vdd vss opb1 to_in to_out cz Trx2
 *Cg  gm_c gnd 10p
@@ -169,16 +169,25 @@ XTro vdd vss to_in opb1 to_out cz  Opb1 OP_fc
 *veb eb gnd dc = 2.4
 
 ***NW Input Stage***
-.subckt OPnw vdd vss vinp vinn 2 cz
-M1	1	Vinp b	 vss nch W = 2u   L = 1u  m = 6
-M2	2	Vinn b	 vss nch W = 2u   L = 1u  m = 6
+.subckt OPnw vdd vss 2 opb1 cp2 cn2 cn rin = 10k
+M1	1	Vinp b	 vss nch W = 5u   L = 2u  m = 1
+M2	2	cn   b	 vss nch W = 5u   L = 2u  m = 1
 M3	1	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
-Mbx	b	cz bx  vss nch W = 1u   L = 5u  m = 1
-Mby	bx	cz by  vss nch W = 1u   L = 5u  m = 1
-Mbz	by	cz vss vss nch W = 1u   L = 5u  m = 1
-C1  1 vss 500f
-C2  vinp   2   30f
+Mb  b   cn2  vss vss nch w = 2u   l = 1u m = 1
+C1   2  vinp 30f
+*C3   1   vinp 100f
+Mr1  xx  rb  1   1   pch w = 1u l = 5u m = 1
+Mcr1 cr1 1   vdd vdd pch W = 2u l = 1u m = 1
+Mcr2 cr1 cr1 vss vss nch w = 1u l = 0.5u m = 1
+Mcr3 rb  cr1 vss vss nch w = 1u l = 0.5u m = 1
+Mcr4 rb  rb  cr2 cr2 pch w = 1u l = 1u m = 2
+Mcr5 cr2 cr2 vdd vdd pch W = 2u l = 1u m = 1
+C2   2   xx  200f
+
+mp  vinp 2 vdd vdd pch w = 1u   l =  0.5u m = 5
+mn  vinp cn rx vss nch w = 3.5u l =  1u m = 2
+r1  rx  vss rin
 .ends
 .subckt Ibias vdd vss opb1 mpx mpy rin = 10k
 mp mpy mpx vdd vdd pch w = 5u   l =  1u

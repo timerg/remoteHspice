@@ -1,4 +1,4 @@
-***MyOp_2stage_aboveTH
+***Trimp
 .protect
 .lib 'mm0355v.l' tt
 .unprotect
@@ -30,7 +30,7 @@ ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
 ***compensation***
 *C1  vop gnd 1p   *~ 60db
 Cc xx vop 50f
-Rc 2  xx  20k
+Rc 2  xx  10k
 ******
 
 ***current mirror***
@@ -89,11 +89,11 @@ vts vst gnd dc = 3.3
 
 .alter *TrImp_Ol_wiload
 .del lib 'Test.l' OPwoload
-.lib 'Test.l' OPwiload
+*.lib 'Test.l' OPwiload
 
 ****cloase loop feedback test***
-.alter *TrImp_IdcRTest
-.del lib 'Test.l' OPwiload
+*.alter *TrImp_IdcRTest
+*.del lib 'Test.l' OPwiload
 .lib 'Test.l' Cloop
 
 ***probe&measuring***

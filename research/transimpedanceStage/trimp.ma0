@@ -1,0 +1,4 @@
+$DATA1 SOURCE='HSPICE' VERSION='B-2008.09 32-BIT'
+.TITLE ' *trimp_ol_wiload'
+ gain_c           bw               temper           alter#            
+  9.994e+04        6.974e+07         25.0000           3.0000         

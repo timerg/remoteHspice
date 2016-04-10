@@ -1,0 +1,37 @@
+pnlAddPane();
+nil
+1
+designOpen("c:\\users\\timer\\documents\\github\\remotehspice\\research\\transimpedancestage\\trimp.sp");
+"D0"
+t
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlAddCurve(1, node(D0,"A2","vm(vop)","S-1"), node(D0,"A2","HERTZ"));
+nil
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+updateAll();
+t
+pnlUnselectPane(1, 0);
+nil
+pnlSelectPane(1);
+nil
+pnlDeletePane(1, 1);
+nil
+nil

@@ -21,7 +21,7 @@
 * One can cal dIO/dvdd by starting from Vdd = vsg3+vgs1
 
 ### Miliier Compensation: Mos as resistance
-* MyStructure is slightly smaller tahn structure1, which is from textbook
+* MyStructure is slightly smaller than structure1, which is from textbook
 <img src="./pic/MosAsResistance_wiSimpleBias.png"></img>
 <img src="./pic/MosAsResistance_structure1.png"></img>
 <img src="./pic/MosAsResistance_structure1_sp.png"></img>
@@ -31,3 +31,6 @@
 * **Problem encount**
 <img src="./pic/problem_closed_fs.png"></img>
 <img src="./pic/problem_loop_fs.png"></img>
+
+### 4/10 Problem solve
+the zero that cause a shallow is on the vinp to vop. Since vinp can't append more cap (this will also pull 2nd pole left and conjugate with the 1st one), we just have to **lower the "gm" of OP**. This can be achieved by lower Mb current.
