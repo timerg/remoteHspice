@@ -39,8 +39,8 @@
 
  ***compensation***
  *c1  vop gnd 1p   *~ 60db
- cc xx vop 50f
- rc 2  xx  10k
+ cc xx vop 150f
+ rc 2  xx  20k
  ******
 
  ***current mirror***
@@ -154,17 +154,17 @@
 
   analysis           time    # points   tot. iter  conv.iter
   op point           0.00           1           0
-  readin             0.14
-  errchk             0.01
-  setup              0.02
+  readin             0.13
+  errchk             0.02
+  setup              0.01
   output             0.00
 
 
            total memory used          346  kbytes
-           total cpu time            0.19 seconds
+           total cpu time            0.17 seconds
            total elapsed time           1 seconds
-           job started at     20:19:14 04/08/2016
-           job ended   at     20:19:14 04/08/2016
+           job started at     17:11:36 04/11/2016
+           job ended   at     17:11:36 04/11/2016
 
 
 1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
@@ -175,24 +175,17 @@
  .lib 'test.l' opwoload
 
      .op
-
      *vinp vinp gnd dc = 'comon-diff' *ac = 1
      vopb vinp opb1 dc = 0
-
      vinn vinn opb1 dc = 'diff' ac = 1 *180
-
      .dc diff -0.1 0.1 0.0001
-
      .ac dec 1000 0.1 100g
-
      *.tf v(voa) vinp
      *.pz v(vop) vinn
      .probe dc i(m1) i(m2)	i(mt)
-
      .probe ac vp(vop)
      +gain1st=par('vdb(2)-vdb(vinp,vinn)')	par('i(m1)-i(m2)')	phase1st=par('vp(2)')
      +gainall=par('vdb(vop)-vdb(vinp,vinn)')		phaseall=par('vp(vop)')
-
      *.meas ac gain max par('vdb(vop)-vdb(vinp,vinn)')
      *.meas ac gain1st max par('vdb(2, 1)-vdb(vinp,vinn)')
      *.meas ac zerodb when par('vdb(vop)-vdb(vinp,vinn)') = 0
@@ -240,24 +233,24 @@
  ***** operating point status is all       simulation time is     0.     
     node    =voltage      node    =voltage      node    =voltage
 
- +0:1       =   0.5791  0:2       =   0.5791  0:b       =   1.5830 
- +0:cz      =   2.3955  0:opb1    =   0.7967  0:vdd     =   3.3000 
- +0:vdt     =   2.9000  0:vgt     =   0.6500  0:vinn    =   0.7967 
- +0:vinp    =   0.7967  0:vop     =   1.2665  0:vss     =   0.     
- +0:vst     =   3.3000  0:xx      =   0.5791 
+ +0:1       =   0.4784  0:2       =   0.4784  0:b       =   1.5809 
+ +0:cz      =   2.2940  0:opb1    =   0.6943  0:vdd     =   3.3000 
+ +0:vdt     =   2.9000  0:vgt     =   0.6500  0:vinn    =   0.6943 
+ +0:vinp    =   0.6943  0:vop     =   1.2460  0:vss     =   0.     
+ +0:vst     =   3.3000  0:xx      =   0.4784 
 
 
- maximum nodal capacitance=   4.502E-13         on node     0:vdd             
+ maximum nodal capacitance=   4.741E-13         on node     0:vdd             
 
     nodal  capacitance table 
 
     node    =    cap      node    =    cap      node    =    cap
 
- +0:1       = 2.584e-14 0:2       = 4.353e-14 0:b       = 8.662e-14
- +0:cz      = 1.659e-13 0:opb1    = 7.321e-14 0:vdd     = 4.502e-13
- +0:vdt     =   0.      0:vgt     = 5.362e-14 0:vinn    = 1.193e-14
- +0:vinp    = 1.193e-14 0:vop     = 1.391e-13 0:vss     = 3.763e-13
- +0:vst     =   0.      0:xx      = 5.000e-14
+ +0:1       = 2.595e-14 0:2       = 4.339e-14 0:b       = 9.234e-14
+ +0:cz      = 1.663e-13 0:opb1    = 7.339e-14 0:vdd     = 4.741e-13
+ +0:vdt     =   0.      0:vgt     = 5.629e-14 0:vinn    = 1.199e-14
+ +0:vinp    = 1.199e-14 0:vop     = 2.397e-13 0:vss     = 3.640e-13
+ +0:vst     =   0.      0:xx      = 1.500e-13
 
  
 
@@ -266,8 +259,8 @@
  subckt                                                                    
  element  0:vd       0:vs       0:vtd      0:vtg      0:vts      0:vopb    
   volts      3.3000     0.         2.9000     0.6500     3.3000     0.     
-  current -3.441e-05  3.544e-05 -2.900e-06 -1.031e-06 -3.300e-06    0.     
-  power    1.136e-04    0.       8.410e-06  6.699e-07  1.089e-05    0.     
+  current -3.413e-05  3.694e-05 -2.900e-06 -2.809e-06 -3.300e-06    0.     
+  power    1.126e-04    0.       8.410e-06  1.826e-06  1.089e-05    0.     
 
  subckt             
  element  0:vinn    
@@ -275,7 +268,7 @@
   current    0.     
   power      0.     
 
-     total voltage source power dissipation=  1.335e-04       watts
+     total voltage source power dissipation=  1.337e-04       watts
 
 
 
@@ -283,18 +276,18 @@
 
  subckt   xcmb      
  element  1:iin     
-  volts      2.3955 
+  volts      2.2940 
   current  1.000e-06
-  power   -2.396e-06
+  power   -2.294e-06
 
 
-     total current source power dissipation=-2.396e-06       watts
+     total current source power dissipation=-2.294e-06       watts
 
  **** resistors
 
  subckt             
  element  0:rc      
-  r value  1.000e+04
+  r value  2.000e+04
   v drop     0.     
   current    0.     
   power      0.     
@@ -308,25 +301,25 @@
  element  0:mb       0:m1       0:m2       0:m3       0:m4       0:ma1     
  model    0:pch.2    0:pch.2    0:pch.2    0:nch.2    0:nch.2    0:pch.2   
  region     Saturati   Saturati   Saturati   Saturati   Saturati   Saturati
-  id      -2.161e-06 -1.081e-06 -1.081e-06  1.081e-06  1.081e-06 -2.664e-05
-  ibs      4.578e-19  2.206e-19  2.206e-19 -1.860e-18 -1.860e-18  5.643e-18
-  ibd      2.295e-13  6.094e-16  6.094e-16 -4.644e-15 -4.644e-15  2.506e-11
-  vgs       -0.9045    -0.7863    -0.7863     0.5791     0.5791    -0.9045 
-  vds       -1.7170    -1.0039    -1.0039     0.5791     0.5791    -2.0335 
+  id      -2.138e-06 -1.069e-06 -1.069e-06  1.069e-06  1.069e-06 -2.639e-05
+  ibs      4.529e-19  2.182e-19  2.182e-19 -1.840e-18 -1.840e-18  5.591e-18
+  ibd      2.284e-13  7.287e-16  7.287e-16 -4.644e-15 -4.644e-15  2.770e-11
+  vgs       -1.0060    -0.8866    -0.8866     0.4784     0.4784    -1.0060 
+  vds       -1.7191    -1.1025    -1.1025     0.4784     0.4784    -2.0540 
   vbs        0.         0.         0.         0.         0.         0.     
-  vth       -0.7655    -0.7600    -0.7600     0.5584     0.5584    -0.7634 
-  vdsat     -0.1838    -0.1042    -0.1042   7.641e-02  7.641e-02   -0.1855 
-  vod       -0.1389  -2.626e-02 -2.626e-02  2.076e-02  2.076e-02   -0.1410 
-  beta     1.498e-04  3.300e-04  3.300e-04  6.260e-04  6.260e-04  1.798e-03
+  vth       -0.8655    -0.8593    -0.8593     0.4586     0.4586    -0.8633 
+  vdsat     -0.1852    -0.1048    -0.1048   7.596e-02  7.596e-02   -0.1870 
+  vod       -0.1405  -2.725e-02 -2.725e-02  1.983e-02  1.983e-02   -0.1428 
+  beta     1.458e-04  3.207e-04  3.207e-04  6.348e-04  6.348e-04  1.750e-03
   gam eff    0.3947     0.3950     0.3950     0.4656     0.4656     0.3947 
-  gm       2.238e-05  1.679e-05  1.679e-05  2.113e-05  2.113e-05  2.738e-04
-  gds      1.880e-07  1.468e-07  1.468e-07  1.114e-07  1.114e-07  2.214e-06
-  gmb      4.861e-06  3.732e-06  3.732e-06  6.144e-06  6.144e-06  5.944e-05
-  cdtot    4.172e-15  8.342e-15  8.342e-15  4.172e-15  4.172e-15  4.769e-14
-  cgtot    1.054e-14  1.193e-14  1.193e-14  6.665e-15  6.665e-15  1.265e-13
-  cstot    1.619e-14  1.809e-14  1.809e-14  8.396e-15  8.396e-15  1.943e-13
-  cbtot    1.304e-14  2.313e-14  2.313e-14  1.105e-14  1.105e-14  1.541e-13
-  cgs      8.219e-15  6.393e-15  6.393e-15  3.389e-15  3.389e-15  9.862e-14
+  gm       2.200e-05  1.656e-05  1.656e-05  2.100e-05  2.100e-05  2.694e-04
+  gds      1.854e-07  1.418e-07  1.418e-07  1.160e-07  1.160e-07  2.181e-06
+  gmb      4.783e-06  3.684e-06  3.684e-06  6.100e-06  6.100e-06  5.854e-05
+  cdtot    4.531e-15  8.870e-15  8.870e-15  3.879e-15  3.879e-15  5.162e-14
+  cgtot    1.056e-14  1.199e-14  1.199e-14  6.599e-15  6.599e-15  1.267e-13
+  cstot    1.682e-14  1.921e-14  1.921e-14  7.877e-15  7.877e-15  2.018e-13
+  cbtot    1.400e-14  2.469e-14  2.469e-14  1.035e-14  1.035e-14  1.652e-13
+  cgs      8.239e-15  6.466e-15  6.466e-15  3.305e-15  3.305e-15  9.887e-14
   cgd      5.673e-16  1.116e-15  1.116e-15  6.333e-16  6.333e-16  6.808e-15
 
 
@@ -335,25 +328,25 @@
  element  0:ma2      0:mt       1:mc0      1:mc1      1:mc2     
  model    0:nch.3    0:nch.1    0:pch.2    0:pch.2    0:nch.1   
  region     Saturati   Saturati   Saturati   Saturati   Saturati
-  id       2.664e-05  1.031e-06 -1.000e-06 -4.612e-06  4.612e-06
-  ibs     -3.965e-17 -1.774e-18  2.118e-19  9.769e-19 -7.736e-18
-  ibd     -7.412e-12 -4.644e-15  1.610e-16  3.871e-11 -5.247e-15
-  vgs        0.5791     0.6500    -0.9045    -0.9045     0.7967 
-  vds        1.2665     0.6500    -0.9045    -2.5033     0.7967 
+  id       2.639e-05  2.809e-06 -1.000e-06 -4.598e-06  4.598e-06
+  ibs     -3.929e-17 -4.834e-18  2.118e-19  9.738e-19 -7.712e-18
+  ibd     -5.387e-12 -4.644e-15  1.634e-16  5.561e-11 -5.247e-15
+  vgs        0.4784     0.6500    -1.0060    -1.0060     0.6943 
+  vds        1.2460     0.6500    -1.0060    -2.6057     0.6943 
   vbs        0.         0.         0.         0.         0.     
-  vth        0.5655     0.5345    -0.7709    -0.7603     0.5355 
-  vdsat    6.701e-02    0.1435    -0.1795    -0.1881     0.2588 
-  vod      1.364e-02    0.1155    -0.1336    -0.1441     0.2612 
-  beta     2.085e-02  1.168e-04  7.484e-05  2.998e-04  1.363e-04
+  vth        0.4656     0.4345    -0.8702    -0.8596     0.4356 
+  vdsat    6.664e-02    0.2207    -0.1814    -0.1900     0.2567 
+  vod      1.277e-02    0.2155    -0.1358    -0.1464     0.2587 
+  beta     2.111e-02  1.176e-04  7.284e-05  2.918e-04  1.383e-04
   gam eff    0.5662     0.4547     0.3947     0.3947     0.4573 
-  gm       5.678e-04  1.246e-05  1.056e-05  4.685e-05  3.155e-05
-  gds      7.974e-06  1.745e-08  1.076e-07  3.645e-07  4.928e-08
-  gmb      1.545e-04  3.683e-06  2.295e-06  1.016e-05  9.246e-06
-  cdtot    4.139e-14  4.128e-15  2.444e-15  7.463e-15  4.630e-15
-  cgtot    3.101e-14  4.949e-14  5.271e-15  2.109e-14  6.111e-14
-  cstot    5.526e-14  5.813e-14  8.097e-15  3.239e-14  7.412e-14
-  cbtot    9.143e-14  2.717e-14  6.878e-15  2.520e-14  3.130e-14
-  cgs      1.056e-14  4.070e-14  4.109e-15  1.644e-14  5.240e-14
+  gm       5.641e-04  2.267e-05  1.047e-05  4.628e-05  3.177e-05
+  gds      7.940e-06  3.735e-08  1.030e-07  3.588e-07  5.536e-08
+  gmb      1.535e-04  6.619e-06  2.277e-06  1.005e-05  9.283e-06
+  cdtot    3.807e-14  3.778e-15  2.598e-15  7.994e-15  4.298e-15
+  cgtot    3.064e-14  5.251e-14  5.280e-15  2.112e-14  6.110e-14
+  cstot    5.023e-14  6.287e-14  8.408e-15  3.363e-14  7.363e-14
+  cbtot    8.371e-14  2.659e-14  7.331e-15  2.692e-14  3.051e-14
+  cgs      1.008e-14  4.466e-14  4.120e-15  1.648e-14  5.238e-14
   cgd      7.470e-15  6.333e-16  2.837e-16  1.135e-15  7.365e-16
 
 
@@ -387,20 +380,20 @@
   ******  Runtime Statistics (seconds)  ******
 
   analysis           time    # points   tot. iter  conv.iter
-  op point           0.02           1         106
-  dc sweep           0.49        2001        4151
-  ac analysis        0.39       12001       12001
+  op point           0.02           1         105
+  dc sweep           0.49        2001        4153
+  ac analysis        0.36       12001       12001
   readin             0.10
   errchk             0.01
-  setup              0.02
+  setup              0.01
   output             0.00
 
 
            total memory used          577  kbytes
-           total cpu time            1.06 seconds
+           total cpu time            1.02 seconds
            total elapsed time           1 seconds
-           job started at     20:19:14 04/08/2016
-           job ended   at     20:19:15 04/08/2016
+           job started at     17:11:36 04/11/2016
+           job ended   at     17:11:37 04/11/2016
 
 
 1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
@@ -409,52 +402,32 @@
 
   ******    alter processing listing tnom=  25.000 temp=  25.000 *****
  .del lib 'test.l' opwoload
- *.lib 'test.l' opwiload
-
- ****cloase loop feedback test***
- *.alter *trimp_idcrtest
- *.del lib 'test.l' opwiload
- .lib 'test.l' cloop
+ .lib 'test.l' opwiload
 
      .op
-
-     *vinp vinp gnd  dc = 'comon' *ac = 1
+     *vinp vinp gnd dc = 'comon' *ac = 1
      vopb vinp opb1 dc = 0
+     vinn vinn opb1 dc = 'diff' ac = 1 180
+     *rin  in vinn 100k
+     rl   vop  gnd 100k
+     .ac dec 1000 0.1 100g  *sweep diff 0 2 0.5
+     .dc diff -0.1 0.1 0.0001
+     *.tf v(voa) vinp
+     .pz v(vop) vinn
+     .probe dc i(m1) i(m2)	i(mt)
+     .probe ac vp(vop)
+     +gain1st=par('vdb(2)-vdb(vinp,vinn)')	par('i(m1)-i(m2)')	phase1st=par('vp(2)')
+     +gainall=par('vdb(vop)-vdb(vinp,vinn)')		phaseall=par('vp(vop)')
 
-     iin  vdd vinn dc = 0 ac = 1
+     .meas ac ph_0db find vp(vop) when v(vop) = 1          * r = ph
+     .meas ac ph_start find vp(vop) at = 1    * r = 180 || 0
+     .meas ac pm param = 'ph_0db - (ph_start - 180)'      *r = f
+     *.noise v(vop) vinn 100
+ .endl
 
-     *rin  vinp vss 100g
-     rl   vop    vinn 100k
-
-     .dc iin dec 50 1n 200u
-
-     *.dc iin 100n 10u 10n
-     .probe i(ma1) i(rl)
-
-     .ac dec 1000 0.1 100g *sweep wx 0.6u 3u 0.1u
-
-     *.pz v(vop) iin
-     .meas ac gain_c max v(vop)
-
-     .meas ac bw when v(vop) = 'gain_c/1.414'
-
-     *.noise v(vop) iin 100
-
-     *.dc wx 1u 2u 0.01u
-
- ***probe&measuring***
-
- *.alter
- *.protect
- *.lib 'mm0355v.l' ff
- *.unprotect
- *.alter
- *.protect
- *.lib 'mm0355v.l' ss
- *.unprotect
-
- .end
- $ end of alter processing $
+ ****cloase loop feedback test***
+ .alter *trimp_idcrtest
+ $ alter processing continues $
 
 
  **warning**  the accurate option increases  the cpu time but the results
@@ -492,24 +465,24 @@
  ***** operating point status is all       simulation time is     0.     
     node    =voltage      node    =voltage      node    =voltage
 
- +0:1       =   0.5791  0:2       =   0.5876  0:b       =   1.5831 
- +0:cz      =   2.3955  0:opb1    =   0.7967  0:vdd     =   3.3000 
- +0:vdt     =   2.9000  0:vgt     =   0.6500  0:vinn    =   0.7968 
- +0:vinp    =   0.7967  0:vop     =   0.7968  0:vss     =   0.     
- +0:vst     =   3.3000  0:xx      =   0.5876 
+ +0:1       =   0.4784  0:2       =   0.4784  0:b       =   1.5809 
+ +0:cz      =   2.2940  0:opb1    =   0.6943  0:vdd     =   3.3000 
+ +0:vdt     =   2.9000  0:vgt     =   0.6500  0:vinn    =   0.6943 
+ +0:vinp    =   0.6943  0:vop     =   0.6139  0:vss     =   0.     
+ +0:vst     =   3.3000  0:xx      =   0.4784 
 
 
- maximum nodal capacitance=   4.473E-13         on node     0:vdd             
+ maximum nodal capacitance=   4.700E-13         on node     0:vdd             
 
     nodal  capacitance table 
 
     node    =    cap      node    =    cap      node    =    cap
 
- +0:1       = 2.584e-14 0:2       = 4.762e-14 0:b       = 8.666e-14
- +0:cz      = 1.659e-13 0:opb1    = 7.321e-14 0:vdd     = 4.473e-13
- +0:vdt     =   0.      0:vgt     = 5.362e-14 0:vinn    = 1.193e-14
- +0:vinp    = 1.195e-14 0:vop     = 1.384e-13 0:vss     = 3.862e-13
- +0:vst     =   0.      0:xx      = 5.000e-14
+ +0:1       = 2.595e-14 0:2       = 4.339e-14 0:b       = 9.234e-14
+ +0:cz      = 1.663e-13 0:opb1    = 7.339e-14 0:vdd     = 4.700e-13
+ +0:vdt     =   0.      0:vgt     = 5.629e-14 0:vinn    = 1.199e-14
+ +0:vinp    = 1.199e-14 0:vop     = 2.386e-13 0:vss     = 3.670e-13
+ +0:vst     =   0.      0:xx      = 1.500e-13
 
  
 
@@ -518,32 +491,38 @@
  subckt                                                                    
  element  0:vd       0:vs       0:vtd      0:vtg      0:vts      0:vopb    
   volts      3.3000     0.         2.9000     0.6500     3.3000     0.     
-  current -3.544e-05  3.648e-05 -2.900e-06 -1.031e-06 -3.300e-06    0.     
-  power    1.170e-04    0.       8.410e-06  6.699e-07  1.089e-05    0.     
+  current -3.549e-05  3.216e-05 -2.900e-06 -2.809e-06 -3.300e-06    0.     
+  power    1.171e-04    0.       8.410e-06  1.826e-06  1.089e-05    0.     
 
-     total voltage source power dissipation=  1.369e-04       watts
+ subckt             
+ element  0:vinn    
+  volts      0.     
+  current    0.     
+  power      0.     
+
+     total voltage source power dissipation=  1.383e-04       watts
 
 
 
  ***** current sources
 
- subckt              xcmb      
- element  0:iin      1:iin     
-  volts      2.5032     2.3955 
-  current    0.       1.000e-06
-  power      0.      -2.396e-06
+ subckt   xcmb      
+ element  1:iin     
+  volts      2.2940 
+  current  1.000e-06
+  power   -2.294e-06
 
 
-     total current source power dissipation=-2.396e-06       watts
+     total current source power dissipation=-2.294e-06       watts
 
  **** resistors
 
  subckt                        
  element  0:rc       0:rl      
-  r value  1.000e+04  1.000e+05
-  v drop     0.       1.676e-14
-  current    0.       1.676e-19
-  power      0.         0.     
+  r value  2.000e+04  1.000e+05
+  v drop     0.         0.6139 
+  current    0.       6.139e-06
+  power      0.       3.769e-06
 
 
 
@@ -554,25 +533,25 @@
  element  0:mb       0:m1       0:m2       0:m3       0:m4       0:ma1     
  model    0:pch.2    0:pch.2    0:pch.2    0:nch.2    0:nch.2    0:pch.2   
  region     Saturati   Saturati   Saturati   Saturati   Saturati   Saturati
-  id      -2.161e-06 -1.080e-06 -1.081e-06  1.080e-06  1.081e-06 -2.767e-05
-  ibs      4.578e-19  2.205e-19  2.207e-19 -1.859e-18 -1.861e-18  5.861e-18
-  ibd      2.293e-13  6.094e-16  6.062e-16 -4.644e-15 -4.644e-15  2.321e-10
-  vgs       -0.9045    -0.7862    -0.7864     0.5791     0.5791    -0.9045 
-  vds       -1.7169    -1.0040    -0.9954     0.5791     0.5876    -2.5032 
+  id      -2.138e-06 -1.069e-06 -1.069e-06  1.069e-06  1.069e-06 -2.776e-05
+  ibs      4.529e-19  2.182e-19  2.182e-19 -1.840e-18 -1.840e-18  5.880e-18
+  ibd      2.284e-13  7.287e-16  7.287e-16 -4.644e-15 -4.644e-15  4.403e-10
+  vgs       -1.0060    -0.8866    -0.8866     0.4784     0.4784    -1.0060 
+  vds       -1.7191    -1.1025    -1.1025     0.4784     0.4784    -2.6861 
   vbs        0.         0.         0.         0.         0.         0.     
-  vth       -0.7655    -0.7600    -0.7601     0.5584     0.5583    -0.7603 
-  vdsat     -0.1838    -0.1042    -0.1042   7.640e-02  7.641e-02   -0.1881 
-  vod       -0.1389  -2.623e-02 -2.631e-02  2.073e-02  2.075e-02   -0.1441 
-  beta     1.498e-04  3.300e-04  3.300e-04  6.260e-04  6.260e-04  1.799e-03
+  vth       -0.8655    -0.8593    -0.8593     0.4586     0.4586    -0.8591 
+  vdsat     -0.1852    -0.1048    -0.1048   7.596e-02  7.596e-02   -0.1904 
+  vod       -0.1405  -2.725e-02 -2.725e-02  1.983e-02  1.983e-02   -0.1469 
+  beta     1.458e-04  3.207e-04  3.207e-04  6.348e-04  6.348e-04  1.751e-03
   gam eff    0.3947     0.3950     0.3950     0.4656     0.4656     0.3947 
-  gm       2.238e-05  1.679e-05  1.680e-05  2.112e-05  2.114e-05  2.811e-04
-  gds      1.880e-07  1.467e-07  1.471e-07  1.114e-07  1.111e-07  2.187e-06
-  gmb      4.861e-06  3.730e-06  3.733e-06  6.142e-06  6.146e-06  6.099e-05
-  cdtot    4.172e-15  8.342e-15  8.358e-15  4.172e-15  4.166e-15  4.478e-14
-  cgtot    1.054e-14  1.193e-14  1.195e-14  6.663e-15  6.663e-15  1.265e-13
-  cstot    1.619e-14  1.808e-14  1.812e-14  8.393e-15  8.393e-15  1.943e-13
-  cbtot    1.304e-14  2.313e-14  2.315e-14  1.105e-14  1.105e-14  1.512e-13
-  cgs      8.219e-15  6.386e-15  6.415e-15  3.386e-15  3.386e-15  9.862e-14
+  gm       2.200e-05  1.656e-05  1.656e-05  2.100e-05  2.100e-05  2.789e-04
+  gds      1.854e-07  1.418e-07  1.418e-07  1.160e-07  1.160e-07  2.152e-06
+  gmb      4.783e-06  3.684e-06  3.684e-06  6.100e-06  6.100e-06  6.056e-05
+  cdtot    4.531e-15  8.870e-15  8.870e-15  3.879e-15  3.879e-15  4.750e-14
+  cgtot    1.056e-14  1.199e-14  1.199e-14  6.599e-15  6.599e-15  1.267e-13
+  cstot    1.682e-14  1.921e-14  1.921e-14  7.877e-15  7.877e-15  2.018e-13
+  cbtot    1.400e-14  2.469e-14  2.469e-14  1.035e-14  1.035e-14  1.611e-13
+  cgs      8.239e-15  6.466e-15  6.466e-15  3.305e-15  3.305e-15  9.887e-14
   cgd      5.673e-16  1.116e-15  1.116e-15  6.333e-16  6.333e-16  6.808e-15
 
 
@@ -581,36 +560,63 @@
  element  0:ma2      0:mt       1:mc0      1:mc1      1:mc2     
  model    0:nch.3    0:nch.1    0:pch.2    0:pch.2    0:nch.1   
  region     Saturati   Saturati   Saturati   Saturati   Saturati
-  id       2.767e-05  1.031e-06 -1.000e-06 -4.612e-06  4.612e-06
-  ibs     -4.119e-17 -1.774e-18  2.118e-19  9.769e-19 -7.736e-18
-  ibd     -4.655e-14 -4.644e-15  1.610e-16  3.871e-11 -5.247e-15
-  vgs        0.5876     0.6500    -0.9045    -0.9045     0.7967 
-  vds        0.7968     0.6500    -0.9045    -2.5033     0.7967 
+  id       2.162e-05  2.809e-06 -1.000e-06 -4.598e-06  4.598e-06
+  ibs     -3.218e-17 -4.834e-18  2.118e-19  9.738e-19 -7.712e-18
+  ibd     -4.648e-14 -4.644e-15  1.634e-16  5.561e-11 -5.247e-15
+  vgs        0.4784     0.6500    -1.0060    -1.0060     0.6943 
+  vds        0.6139     0.6500    -1.0060    -2.6057     0.6943 
   vbs        0.         0.         0.         0.         0.     
-  vth        0.5689     0.5345    -0.7709    -0.7603     0.5355 
-  vdsat    6.904e-02    0.1435    -0.1795    -0.1881     0.2588 
-  vod      1.872e-02    0.1155    -0.1336    -0.1441     0.2612 
-  beta     2.084e-02  1.168e-04  7.484e-05  2.998e-04  1.363e-04
+  vth        0.4702     0.4345    -0.8702    -0.8596     0.4356 
+  vdsat    6.491e-02    0.2207    -0.1814    -0.1900     0.2567 
+  vod      8.161e-03    0.2155    -0.1358    -0.1464     0.2587 
+  beta     2.110e-02  1.176e-04  7.284e-05  2.918e-04  1.383e-04
   gam eff    0.5662     0.4547     0.3947     0.3947     0.4573 
-  gm       5.892e-04  1.246e-05  1.056e-05  4.685e-05  3.155e-05
-  gds      8.641e-06  1.745e-08  1.076e-07  3.645e-07  4.928e-08
-  gmb      1.612e-04  3.683e-06  2.295e-06  1.016e-05  9.246e-06
-  cdtot    4.367e-14  4.128e-15  2.444e-15  7.463e-15  4.630e-15
-  cgtot    3.510e-14  4.949e-14  5.271e-15  2.109e-14  6.111e-14
-  cstot    6.248e-14  5.813e-14  8.097e-15  3.239e-14  7.412e-14
-  cbtot    9.414e-14  2.717e-14  6.878e-15  2.520e-14  3.130e-14
-  cgs      1.586e-14  4.070e-14  4.109e-15  1.644e-14  5.240e-14
+  gm       4.760e-04  2.267e-05  1.047e-05  4.628e-05  3.177e-05
+  gds      7.263e-06  3.735e-08  1.030e-07  3.588e-07  5.536e-08
+  gmb      1.308e-04  6.619e-06  2.277e-06  1.005e-05  9.283e-06
+  cdtot    4.108e-14  3.778e-15  2.598e-15  7.994e-15  4.298e-15
+  cgtot    3.064e-14  5.251e-14  5.280e-15  2.112e-14  6.110e-14
+  cstot    5.024e-14  6.287e-14  8.408e-15  3.363e-14  7.363e-14
+  cbtot    8.672e-14  2.659e-14  7.331e-15  2.692e-14  3.051e-14
+  cgs      1.008e-14  4.466e-14  4.120e-15  1.648e-14  5.238e-14
   cgd      7.470e-15  6.333e-16  2.837e-16  1.135e-15  7.365e-16
 
 
 
+ ***************************************************
+   ******   pole/zero analysis  
+ 
+ 
+    input =  0:vinn          output = v(vop)
+ 
+       poles (rad/sec)                 poles ( hertz)
+ real            imag            real            imag            
+ -63.3165k       0.              -10.0771k       0.              
+ -61.0876x       0.              -9.72239x       0.              
+ -651.082x       99.3299x        -103.623x       15.8088x        
+ -651.082x       -99.3299x       -103.623x       -15.8088x       
+ -663.344x       0.              -105.575x       0.              
+ -1.64872g       -2.18253g       -262.402x       -347.360x       
+ -1.64872g       2.18253g        -262.402x       347.360x        
+ 
+       zeros (rad/sec)                 zeros ( hertz)
+ real            imag            real            imag            
+ -62.6141x       0.              -9.96535x       0.              
+ -372.052x       0.              -59.2140x       0.              
+ -545.864x       96.8485x        -86.8770x       15.4139x        
+ -545.864x       -96.8485x       -86.8770x       -15.4139x       
+ -1.18857g       -2.56509g       -189.167x       -408.247x       
+ -1.18857g       2.56509g        -189.167x       408.247x        
+ 56.8421g        0.              9.04670g        0.              
+ 
+  ***** constant factor = 5.64091m
  ******  
   *trimp_ol_wiload
 
   ******  ac analysis tnom=  25.000 temp=  25.000 *****
-   gain_c=  9.9946E+04    at=  7.0795E+03
-               from=  1.0000E-01    to=  1.0000E+11
-   bw=  6.9743E+07
+   ph_0db= -8.1898E+01
+   ph_start= -5.6853E-03
+   pm=  9.8108E+01
 
           ***** job concluded
 1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
@@ -627,11 +633,11 @@
 
 
   ******  Circuit Statistics  ******
-  # nodes       =      38  # elements   =      25
+  # nodes       =      40  # elements   =      27
   # resistors   =       4  # capacitors =       1  # inductors   =       0
   # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
-  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       7
-  # curr_srcs   =       2  # diodes     =       0  # bjts        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =      10
+  # curr_srcs   =       1  # diodes     =       0  # bjts        =       0
   # jfets       =       0  # mosfets    =      11  # U elements  =       0
   # T elements  =       0  # W elements =       0  # B elements  =       0
   # S elements  =       0  # P elements =       0  # va device   =       0
@@ -640,20 +646,19 @@
   ******  Runtime Statistics (seconds)  ******
 
   analysis           time    # points   tot. iter  conv.iter
-  op point           0.02           1         129
-  dc sweep           0.04         267         639
-  ac analysis        0.30       12001       12001
-  readin             0.10
-  errchk             0.02
-  setup              0.01
+  op point           0.07           1         104
+  dc sweep           0.54        2001        4138
+  ac analysis        0.42       12001       12001
+  readin             0.09
+  errchk             0.01
+  setup              0.02
   output             0.00
 
 
            total memory used          544  kbytes
-           total cpu time            0.53 seconds
+           total cpu time            1.19 seconds
            total elapsed time           2 seconds
-           job started at     20:19:14 04/08/2016
-           job ended   at     20:19:16 04/08/2016
+           job started at     17:11:36 04/11/2016
+           job ended   at     17:11:38 04/11/2016
 
 
- Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini

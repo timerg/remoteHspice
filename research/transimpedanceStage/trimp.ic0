@@ -1,7 +1,7 @@
 * "simulator" "HSPICE" 
 * "version" "B-2008.09 32-BIT"
 * "format" "HSP"
-* "rundate" "20:19:14 04/08/2016 "
+* "rundate" "17:11:36 04/11/2016 "
 * "netlist" "c:\users\timer\documents\github\remotehspice\research\transimpedancestage\trimp.sp "
 * "runtitle" " *trimp_ol_woload"
 * time =    0.            
@@ -10,18 +10,18 @@
 .option 
 + gmindc= 1.000e-12       
 .nodeset
-+ 1 =   0.5791        
-+ 2 =   0.5791        
-+ b =   1.5830        
-+ cz =   2.3955        
-+ opb1 =   0.7967        
++ 1 =   0.4784        
++ 2 =   0.4784        
++ b =   1.5809        
++ cz =   2.2940        
++ opb1 =   0.6943        
 + vdd =   3.3000        
 + vdt =   2.9000        
 + vgt =   0.6500        
-+ vinn =   0.7967        
-+ vinp =   0.7967        
-+ vop =   1.2665        
++ vinn =   0.6943        
++ vinp =   0.6943        
++ vop =   1.2460        
 + vss =   0.            
 + vst =   3.3000        
-+ xx =   0.5791        
++ xx =   0.4784        
 ***   END: Saved Operating Point ***                     

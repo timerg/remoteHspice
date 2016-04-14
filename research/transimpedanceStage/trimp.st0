@@ -3,7 +3,7 @@
  lic:
  lic: FLEXlm: v8.5b
  lic: USER:   timer                HOSTNAME: timer-PC
- lic: HOSTID: "00ff1008d908 902b349f3511" PID:      1244
+ lic: HOSTID: "00ff1008d908 902b349f3511" PID:      26804
  lic: Using FLEXlm license file:
  lic: C:\synopsys\Hspice_A-2008.03\Hspice_2007-09.lic
  lic: Checkout 1 hspice
@@ -11,7 +11,7 @@
  lic: NODE LOCKED license on hostid "00ff1008d908 902b349f3511"
  lic:
  Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
- init: begin read circuit files,  cpu clock=  9.00E-02
+ init: begin read circuit files,  cpu clock=  8.80E-02
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\XILINX\
@@ -39,16 +39,16 @@
        option unwrap   =     1.00
        option ingold   =     1.00
        option reltol   =    1.000E-05
- init: end read circuit files,  cpu clock=  1.74E-01 memory=    145 kb
- init: begin check errors,  cpu clock=  1.74E-01
+ init: end read circuit files,  cpu clock=  1.73E-01 memory=    145 kb
+ init: begin check errors,  cpu clock=  1.73E-01
  init: end check errors,  cpu clock=  1.88E-01 memory=    310 kb
  init: begin setup matrix, pivot=    10 cpu clock=  1.88E-01
-       establish matrix -- done,  cpu clock=  1.96E-01 memory=    321 kb
-       re-order matrix -- done,  cpu clock=  2.04E-01 memory=    324 kb
- init: end setup matrix,  cpu clock=  2.09E-01 memory=    346 kb
+       establish matrix -- done,  cpu clock=  1.94E-01 memory=    321 kb
+       re-order matrix -- done,  cpu clock=  1.97E-01 memory=    324 kb
+ init: end setup matrix,  cpu clock=  2.01E-01 memory=    346 kb
 >info:         ***** hspice job concluded
 >alter:
- init: begin read circuit files,  cpu clock=  2.45E-01
+ init: begin read circuit files,  cpu clock=  2.29E-01
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\XILINX\
@@ -76,23 +76,23 @@
        option unwrap   =     1.00
        option ingold   =     1.00
        option reltol   =    1.000E-05
- init: end read circuit files,  cpu clock=  3.36E-01 memory=    145 kb
- init: begin check errors,  cpu clock=  3.36E-01
- init: end check errors,  cpu clock=  3.50E-01 memory=    537 kb
- init: begin setup matrix, pivot=    10 cpu clock=  3.50E-01
-       establish matrix -- done,  cpu clock=  3.61E-01 memory=    550 kb
-       re-order matrix -- done,  cpu clock=  3.64E-01 memory=    554 kb
- init: end setup matrix,  cpu clock=  3.69E-01 memory=    576 kb
+ init: end read circuit files,  cpu clock=  3.23E-01 memory=    145 kb
+ init: begin check errors,  cpu clock=  3.23E-01
+ init: end check errors,  cpu clock=  3.36E-01 memory=    537 kb
+ init: begin setup matrix, pivot=    10 cpu clock=  3.36E-01
+       establish matrix -- done,  cpu clock=  3.43E-01 memory=    550 kb
+       re-order matrix -- done,  cpu clock=  3.46E-01 memory=    554 kb
+ init: end setup matrix,  cpu clock=  3.50E-01 memory=    576 kb
  output: c:\users\timer\documents\github\remotehspice\research\transimpedancesta
- sweep: dc dc0    begin, #sweeps=2001 cpu clock=  3.77E-01
- sweep: dc dc0    end,  cpu clock=  8.72E-01 memory=    576 kb
- dcop: begin dcop,  cpu clock=  8.77E-01
+ sweep: dc dc0    begin, #sweeps=2001 cpu clock=  3.61E-01
+ sweep: dc dc0    end,  cpu clock=  8.50E-01 memory=    576 kb
+ dcop: begin dcop,  cpu clock=  8.54E-01
  dcop: begin pseudo transient
  dcop: ...succeeded
  dcop: end pseudo transient
- dcop: end dcop,  cpu clock=  8.97E-01 memory=    577 kb  tot_iter=     106
+ dcop: end dcop,  cpu clock=  8.73E-01 memory=    577 kb  tot_iter=     105
  output: c:\users\timer\documents\github\remotehspice\research\transimpedancesta
- sweep: ac ac0    begin, #sweeps=**** cpu clock=  9.05E-01
+ sweep: ac ac0    begin, #sweeps=**** cpu clock=  8.81E-01
  ac: frequency=    1.00E-01
  ac: frequency=    1.58E+00
  ac: frequency=    2.51E+01
@@ -104,10 +104,10 @@
  ac: frequency=    3.98E+08
  ac: frequency=    6.31E+09
  ac: frequency=    1.00E+11
- sweep: ac ac0    end,  cpu clock=  1.29E+00 memory=   2280 kb
+ sweep: ac ac0    end,  cpu clock=  1.24E+00 memory=   2280 kb
 >info:         ***** hspice job concluded
 >alter:
- init: begin read circuit files,  cpu clock=  1.32E+00
+ init: begin read circuit files,  cpu clock=  1.26E+00
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
        option search   = C:\synopsys\Hspice_B-2008.09\PARTS\XILINX\
@@ -135,23 +135,23 @@
        option unwrap   =     1.00
        option ingold   =     1.00
        option reltol   =    1.000E-05
- init: end read circuit files,  cpu clock=  1.42E+00 memory=    145 kb
- init: begin check errors,  cpu clock=  1.42E+00
- init: end check errors,  cpu clock=  1.43E+00 memory=    506 kb
- init: begin setup matrix, pivot=    10 cpu clock=  1.43E+00
-       establish matrix -- done,  cpu clock=  1.44E+00 memory=    519 kb
-       re-order matrix -- done,  cpu clock=  1.44E+00 memory=    522 kb
- init: end setup matrix,  cpu clock=  1.45E+00 memory=    543 kb
+ init: end read circuit files,  cpu clock=  1.35E+00 memory=    145 kb
+ init: begin check errors,  cpu clock=  1.35E+00
+ init: end check errors,  cpu clock=  1.36E+00 memory=    505 kb
+ init: begin setup matrix, pivot=    10 cpu clock=  1.36E+00
+       establish matrix -- done,  cpu clock=  1.37E+00 memory=    518 kb
+       re-order matrix -- done,  cpu clock=  1.38E+00 memory=    522 kb
+ init: end setup matrix,  cpu clock=  1.38E+00 memory=    544 kb
  output: c:\users\timer\documents\github\remotehspice\research\transimpedancesta
- sweep: dc dc0    begin, #sweeps= 267 cpu clock=  1.45E+00
- sweep: dc dc0    end,  cpu clock=  1.49E+00 memory=    543 kb
- dcop: begin dcop,  cpu clock=  1.49E+00
+ sweep: dc dc0    begin, #sweeps=2001 cpu clock=  1.39E+00
+ sweep: dc dc0    end,  cpu clock=  1.93E+00 memory=    544 kb
+ dcop: begin dcop,  cpu clock=  1.94E+00
  dcop: begin pseudo transient
  dcop: ...succeeded
  dcop: end pseudo transient
- dcop: end dcop,  cpu clock=  1.51E+00 memory=    544 kb  tot_iter=     129
+ dcop: end dcop,  cpu clock=  2.01E+00 memory=    544 kb  tot_iter=     104
  output: c:\users\timer\documents\github\remotehspice\research\transimpedancesta
- sweep: ac ac0    begin, #sweeps=**** cpu clock=  1.54E+00
+ sweep: ac ac0    begin, #sweeps=**** cpu clock=  2.01E+00
  ac: frequency=    1.00E-01
  ac: frequency=    1.58E+00
  ac: frequency=    2.51E+01
@@ -163,7 +163,36 @@
  ac: frequency=    3.98E+08
  ac: frequency=    6.31E+09
  ac: frequency=    1.00E+11
- sweep: ac ac0    end,  cpu clock=  1.84E+00 memory=    806 kb
+ sweep: ac ac0    end,  cpu clock=  2.44E+00 memory=   2379 kb
 >info:         ***** hspice job concluded
- Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
- lic: Release hspice token(s)
+>alter:
+ init: begin read circuit files,  cpu clock=  2.47E+00
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\XILINX\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\TLINE\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\TI\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\SIGNET\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\PCI\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\LIN_TECH\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\FET\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\DIO\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\COMLINE\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\BURR_BRN\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\BJT\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\behave\
+       option search   = C:\synopsys\Hspice_B-2008.09\PARTS\AD\
+       option post     =     2.00
+       option runlvl
+       option post
+       option acout    =     0.00
+       option accura   =     1.00
+       option dcon     =     1.00
+       option conver   =     1.00
+       option gmindc   =    1.000E-12
+       option captab   =     1.00
+       option unwrap   =     1.00
+       option ingold   =     1.00
+       option reltol   =    1.000E-05
+ init: end read circuit files,  cpu clock=  2.56E+00 memory=    145 kb
+ init: begin check errors,  cpu clock=  2.56E+00

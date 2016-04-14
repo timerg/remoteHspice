@@ -33,7 +33,7 @@
 *M7  5   von vss vss nch W = 3u   L = 5u  m = 1
 *M8  6   von vss vss nch W = 3u   L = 5u  m = 1
 *.ends
-.subckt OP_fc vdd vss vinp vinn vop cp cn
+.subckt OP_fc vdd vss vinp vinn vop cp cn cn2
 ***input stage***
 Mn	1	Vinp b	 vss	 nch W = 3u   L = 5u  m = 2
 Mp	2	Vinn b	 vss	 nch W = 3u   L = 5u  m = 2
@@ -50,6 +50,7 @@ M8  6   von vss vss nch W = 3u   L = 5u  m = 1
 mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
 mc2 cp2 cn  cn2 vss nch w = 3.5u l = 0.5u   m = 7
 mc3 cn2 cn2 vss vss nch w = 2u   l = 1u m = 1
+Cp vop vss 2p
 .ends
 
 
@@ -87,20 +88,42 @@ Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
 mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
-
 .ends
 
-*vcp2 cp2 gnd dc = 2.5454
+**************** for buffer
+.subckt Tr vdd vss vinp vinn vop cz
+Mb	b	cz	 vdd vdd pch W = 1u  L = 0.5u  m = 1
+M1	1	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
+M2	2	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
+M3	1	1	 vss vss nch W = 2u   L = 0.5u  m = 1
+M4	2	1	 vss vss nch W = 2u   L = 0.5u  m = 1
+ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 2
+ma2 vop 2  vss vss nch   W = 3u L = 0.4u m = 1
+Cc  vop 2 50f
+*Rc vop   xx  100k
+*C1 1 vop 50f
+*C2  2 vss 1p
+
+*Rc vop xx 70k
+.ends
+**************
+
+
 
 
 
 Xcmb   vdd vss cp cn CMB_bete5
 
 
-XOP    vdd vss vinp vinn vop cp cn  OP_fc
-
-
-
+XOP    vdd vss vinp vinn vop  cp cn cn2 OP_fc
+XOP_b  vdd vss vop vop2 vop2 cp Tr
+*Mout   rox vop vss vss nch w = 1u l = 1u
+*Mout   vss vop rox rox pch w = 1u l = 1u
+*Mout   vdd vop rox vss nch w = 5u l = 0.5u m = 3
+**Rox    rox vss  10k
+*Mox    rox  cn2 rox2 vss nch w = 1u l = 5u m = 1
+*Mox2   rox2 cn2 vss  vss nch w = 1u l = 5u m = 1
+*.probe dc i(mout)
 
 ***source***
 vd		vdd 	gnd dc supplyp
@@ -144,7 +167,7 @@ It vdd vdt dc = 200n
 ***probe&measuring***
 .ac dec 1000 0.1 1g
 *.tf v(voa) vinp
-*.pz v(2) vinp
+.pz v(vop2) vinp
 .probe dc I(m1) I(m2)	I(mt)
 .probe ac cap(von)
 +gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')

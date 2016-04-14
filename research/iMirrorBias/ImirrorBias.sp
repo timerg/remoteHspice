@@ -1,6 +1,6 @@
 ***Current Mirror
 .protect
-.lib 'mm0355v.l' sf
+.lib 'mm0355v.l' fs
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=1
@@ -73,14 +73,14 @@ mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
 
 .subckt Ibias vdd vss cn mpx mpy rin = 10k
-mp  mpy mpx vdd vdd pch w = 1u   l =  0.5u m = 5
+mp  mpy mpx vdd vdd pch w = 1u   l =  0.5u m = 4
 mpb io  mpx vdd vdd pch w = 1u   l =  0.5u m = 1
 *Eo  io  vss OPAMP opb1 io
 
 *vio vio vss dc = 0.8
 Eio io gnd OPAMP io cn
 *(id, vgs, gm, rds): (10n, -0.5423, 2.363e-07, 574x); (10u, -0.9871,  7.141e-05, 1.67x)
-mn  mpy cn rx vss nch w = 3.5u l =  1u m = 2
+mn  mpy cn rx vss nch w = 5u l =  0.5u m = 3
 r1  rx  vss rin
 .ends
 
@@ -96,23 +96,27 @@ ma2 vop 2  vss vss nch W =  4u L = 1u m = 2
 
 .subckt OPnw2 vdd vss vinp vinn 2 opb1 cp
 ******** bias from fd Op *******
+*mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+*mc2 cp2 opb1  cn2 cn2 nch w = 3.5u l = 1u   m = 3
+*mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
+
 mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
-mc2 cp2 opb1  cn2 cn2 nch w = 3.5u l = 1u   m = 3
-mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
+mc2 cp2 opb1  cn2 vss nch w = 3.5u l = 0.5u   m = 7
+mc3 cn2 cn2 vss vss nch w = 2u   l = 1u m = 1
 ********
-M1	1	Vinp b	 vss nch W = 5u   L = 2u  m = 1
-M2	2	Vinn b	 vss nch W = 5u   L = 2u  m = 1
+M1	1	Vinp b	 vss nch W = 2u   L = 2u  m = 1
+M2	2	Vinn b	 vss nch W = 2u   L = 2u  m = 1
 M3	1	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 Mb  b   cn2  vss vss nch w = 2u   l = 1u m = 1
 C1   2   vinp 30f
 *C3   1   vinp 100f
-Mr1  xx  rb  1   1   pch w = 1u l = 5u m = 1
+Mr1  xx  rb  1   1   pch w = 1u l = 4u m = 1
 Mcr1 cr1 1   vdd vdd pch W = 2u l = 1u m = 1
-Mcr2 cr1 cr1 vss vss nch w = 1u l = 0.5u m = 1
-Mcr3 rb  cr1 vss vss nch w = 1u l = 0.5u m = 1
 Mcr4 rb  rb  cr2 cr2 pch w = 1u l = 1u m = 2
 Mcr5 cr2 cr2 vdd vdd pch W = 2u l = 1u m = 1
+Mcr2 cr1 cr1 vss vss nch w = 1u l = 0.5u m = 1
+Mcr3 rb  cr1 vss vss nch w = 1u l = 0.5u m = 1
 C2   2   xx  200f
 *C5  vinp vss  100f
 *C3   2  1 100f

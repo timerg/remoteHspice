@@ -1,6 +1,6 @@
 ***Trimp
 .protect
-.lib 'mm0355v.l' tt
+.lib 'mm0355v.l' fs
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=1 reltol=1e-5
@@ -29,8 +29,8 @@ ma2 vop 2  vss vss nch   W = 12u L = 0.4u m = 3
 
 ***compensation***
 *C1  vop gnd 1p   *~ 60db
-Cc xx vop 50f
-Rc 2  xx  10k
+Cc xx vop 150f
+Rc 2  xx  20k
 ******
 
 ***current mirror***
@@ -89,11 +89,11 @@ vts vst gnd dc = 3.3
 
 .alter *TrImp_Ol_wiload
 .del lib 'Test.l' OPwoload
-*.lib 'Test.l' OPwiload
+.lib 'Test.l' OPwiload
 
 ****cloase loop feedback test***
-*.alter *TrImp_IdcRTest
-*.del lib 'Test.l' OPwiload
+.alter *TrImp_IdcRTest
+.del lib 'Test.l' OPwiload
 .lib 'Test.l' Cloop
 
 ***probe&measuring***
