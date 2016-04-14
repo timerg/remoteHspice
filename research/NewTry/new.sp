@@ -64,143 +64,99 @@ V0  idp ggp dc = 0
 V1  idn ggn dc = 0
 *Cc   io1 ggn  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
 .ends
-******OP: single stage******
-.subckt Trx vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = 1u  L = 5u  m = 1
-M1	1	Vinn b	 b	 pch W = 1u  L = 5u  m = 1
-M2	2	Vinp b	 b	 pch W = 1u  L = 5u  m = 1
-M3	1	1	 vss vss nch W = 1u  L = 5u  m = 1
-M4	2	1	 vss vss nch W = 1u  L = 5u    m = 1
-*Ro  2  vss 1000k
+******OP: Buffer******
+.subckt TrB vdd vss vinn vinp 2 cz
+Mb	b	cz	 vdd vdd pch W = 2u  L = 0.5u  m = 1
+M1	1	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
+M2	2	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
+M3	1	1	 vss vss nch W = 2u   L = 0.5u  m = 1
+M4	2	1	 vss vss nch W = 2u   L = 0.5u  m = 1
+*ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 2
+*ma2 vop 2  vss vss nch   W = 3u L = 0.4u m = 1
+*Cc  vop 2 200f
+*Rc vop   xx  100k
+*C1 1 vop 50f
+
+*Rc vop xx 70k
 .ends
 ******OP: folded cascode*******
 
-.subckt OP_fc vdd vss vinp vinn vop cp cn
+.subckt OP_fc vdd vss vinp vinn vop cp cn cn2
 ***input stage***
-Mn	1	Vinn b	 vss  nch W = 3u   L = 5u  m = 2
-Mp	2	Vinp b	 vss  nch W = 3u   L = 5u  m = 2
-Mb 	b	cn2	 vss  vss nch W = 5u   L = 1u  m = 4
+Mn	1	Vinp b	 vss	 nch W = 3u   L = 5u  m = 2
+Mp	2	Vinn b	 vss	 nch W = 3u   L = 5u  m = 2
+Mb 	b	cn2	 vss  vss nch W = 2u   L = 1u  m = 4
 ***output stage***
-m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 2
-m2  2   cp2 vdd vdd pch w = 1u   l = 5u m = 2
+m1  1   cp2 vdd vdd pch w = 1u   l = 5u m = 4
+m2  2   cp2 vdd vdd pch w = 1u   l = 5u m = 4
 M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
 M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
 M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
-M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
+M6  vop	cn  6   vss nch W = 1u   L = 1u  m = 1
 M7  5   von vss vss nch W = 3u   L = 5u  m = 1
 M8  6   von vss vss nch W = 3u   L = 5u  m = 1
 mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
-mc2 cp2 cn  cn2 cn2 nch w = 3.5u l = 1u   m = 3
-mc3 cn2 cn2 vss vss nch w = 5u   l = 1u m = 2
-C1  vop vss 5p
-.ends
-******OP: Two stage******
-.subckt Trx2 vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 10u  L = 5u   m = 1
-M1	1	Vinn b	 b	 pch W = 5u   L = 2u   m = 1
-M2	2	Vinp b	 b	 pch W = 5u   L = 2u   m = 1
-M3	1	1	 vss vss nch W = 2u   L = 2u   m = 1
-M4	2	1	 vss vss nch W = 2u   L = 2u   m = 1
-ma1 vop cz vdd vdd pch W = 4u L = 1u m = 1
-ma2 vop 2  vss vss nch W = 4u L = 1u m = 2
-*ma1 vop cz vdd vdd pch W = 4u L = 2u m = 4
-*ma2 vop 2  vss vss nch W = 4u L = 2u m = 2
-Cc xx vop 30p
-Rc 2  xx  10k
+mc2 cp2 cn  cn2 vss nch w = 3.5u l = 0.5u   m = 7
+mc3 cn2 cn2 vss vss nch w = 2u   l = 1u m = 1
+Cp vop vss 2p
 .ends
 
-******current mirror******
-*.subckt CMB vdd vss cp cp2 cp3 cp4 cn     *cp = 2.4; cp2 = 1.25; cp3 = cn =  0.6; cp4 = 2.7
-*Iin cp  vss dc = 1u
-*mc0 cp  cp  vdd vdd pch w = 5.1u l = 5u     m = 1
-*mc1 c0  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-*mc5 c2  cp  vdd vdd pch w = 2u   l = 5u     m = 1
-*mc2 cp2 cp2 c0  c0  pch w = 1u   l = 5u     m = 1
-*mc6 c3  cp2 c2  c2  pch w = 1u   l = 5u     m = 1
-*mc3 cn  cp3 cp2 cp2 pch w = 5u   l = 0.5u   m = 2
-*mc7 cp3 cp3 c3  c3  pch w = 5u   l = 0.5u   m = 2
-*mc4 cn  cn  vss vss nch w = 1u   l = 3u     m = 1
-*mc8 cp3 cn  vss vss nch w = 1u   l = 3u     m = 1
-*
-*mca cp4 cp4 vdd vdd pch w = 5u   l = 0.5u   m = 6
-*mcb cp4 cn  vss vss nch w = 1u   l = 3u     m = 1
-*.ends
-*Xcmb vdd vss cz cp2 cp3 cx cn CMB
 
-*.subckt CMB_beta4 vdd vss 1 4
-*M1 1   1   vdd vdd pch w = 20u l = 5u m = 1
-*M2 2   1   vdd vdd pch w = 20u l = 5u m = 1
-*M3 3   3   1   1   pch w = 20u l = 1u m = 1
-*M4 4   3   2   2   pch w = 20u l = 1u m = 1
-*M5 3   4   rx  vss nch w = '3.5u * 4' l = 5u m = 1
-*M6 4   4   vss vss nch w = '3.5u * 1' l = 5u m = 1
-*Msus1a s0  s1  vdd vdd pch w = 1u l = 5u m = 1
-*Msus1b s1  s1  s0  s0  pch w = 1u l = 5u m = 1
-*Msus2  s1  4   vss vss nch w = 3.5u l = 5u m = 1
-*Msus3  1   s1  4   vss nch w = 1u   l = 1u m = 1
-*r1 rx vss 25k
-*.ends
-*Xcmb vdd vss cz opb0 CMB_beta4
 .subckt CMB_bete5 vdd vss cp cn wp = 5u
 Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
 mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
-Xcmb   vdd vss cz opb0 CMB_bete5
-vb opb0 opb1 dc = 0
+Xcmb   vdd vss cp opb0 CMB_bete5
+vb opb0 cn dc = 0
 ******HP*******
 *.subckt HP vdd vss in out
 *R1 in out 100k
 *L1 out vss 1m
 *.ends
 
-***netlist***
-XTri vdd vss opb1 ti_in ti_out  cz  Tr rld=100k
-*Xgm  vdd vss gm_in gm_out gm_out  cx  gm
-*Xgm2  vdd vss gm_c gm_out gm_out  cx  gm
-*XTro vdd vss to_in opb to_out  cz  Trx
-XTro vdd vss opb1 to_in to_out cz  Opb1 OP_fc
-*XTro vdd vss to_in opb to_out  cz  gm       *use gm as op
-*XTro vdd vss opb1 to_in to_out cz Trx2
-*Cg  gm_c gnd 10p
-*Cg2  gm_out gnd 10p
-*XiEn vdd vss opb1 iEn_in iEn_out cz  mpx iEn
-*veb eb gnd dc = 2.4
 
 ***NW Input Stage***
-.subckt OPnw vdd vss 2 opb1 cp2 cn2 cn rin = 10k
-M1	1	Vinp b	 vss nch W = 5u   L = 2u  m = 1
-M2	2	cn   b	 vss nch W = 5u   L = 2u  m = 1
+.subckt OPnw2 vdd vss vinp vinn 2 cn2
+******** bias from fd Op *******
+********
+M1	1	Vinp b	 vss nch W = 2u   L = 2u  m = 1
+M2	2	Vinn b	 vss nch W = 2u   L = 2u  m = 1
 M3	1	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 M4	2	1	 vdd vdd pch W = 2u   L = 1u  m = 1
 Mb  b   cn2  vss vss nch w = 2u   l = 1u m = 1
-C1   2  vinp 30f
-*C3   1   vinp 100f
-Mr1  xx  rb  1   1   pch w = 1u l = 5u m = 1
+C1   2   vinp 30f
+Mr1  xx  rb  1   1   pch w = 1u l = 4u m = 1
 Mcr1 cr1 1   vdd vdd pch W = 2u l = 1u m = 1
-Mcr2 cr1 cr1 vss vss nch w = 1u l = 0.5u m = 1
-Mcr3 rb  cr1 vss vss nch w = 1u l = 0.5u m = 1
 Mcr4 rb  rb  cr2 cr2 pch w = 1u l = 1u m = 2
 Mcr5 cr2 cr2 vdd vdd pch W = 2u l = 1u m = 1
+Mcr2 cr1 cr1 vss vss nch w = 1u l = 0.5u m = 1
+Mcr3 rb  cr1 vss vss nch w = 1u l = 0.5u m = 1
 C2   2   xx  200f
-
-mp  vinp 2 vdd vdd pch w = 1u   l =  0.5u m = 5
-mn  vinp cn rx vss nch w = 3.5u l =  1u m = 2
-r1  rx  vss rin
 .ends
-.subckt Ibias vdd vss opb1 mpx mpy rin = 10k
+.subckt Ibias vdd vss cn mpx mpy rin = 1k
 mp mpy mpx vdd vdd pch w = 5u   l =  1u
 *(id, vgs, gm, rds): (10n, -0.5423, 2.363e-07, 574x); (10u, -0.9871,  7.141e-05, 1.67x)
-mn mpy opb1 rx vss nch w = 3.5u l =  1u m = 5
+mn mpy cn rx vss nch w = 3.5u l =  1u m = 5
 r1 rx  vss rin
 .ends
-XOPnw vdd vss mpy opb1 mpx Opb1 OPnw
-*XIb ibias
 
-.param pbI = 10u
-Ip mpy vss dc = pbI
-Mpb mpy mpx vdd vdd pch w = 5u l = 1u
+
+XTri vdd vss cn ti_in ti_out  cp  Tr rld=100k
+XTro vdd vss cn to_in to_out0 cp  cn cn2 OP_fc
+XTrB  vdd vss to_out0 to_out to_out cp TrB
+
+
+*XOPnw2 vdd vss mpy cn mpx cn2 OPnw2
+*XIb vdd vss cn mpx mpy Ibias rin = 1k
+
+
+
+
+.param pbI = 10n
+Ip mpx vss dc = pbI
+Mpb mpx mpx vdd vdd pch w = 5u l = 1u
 Mp  out mpx vdd vdd pch w = 5u l = 1u
 *vpx px gnd dc = 2.735
 
@@ -218,14 +174,11 @@ vsn vsn vss dc = 1
 
 
 vc1 out     ti_in  dc = 0
-*vc2 iEn_out ti_in   dc = 0
 *vc3 ti_out  gm_in   dc = 0
 vc4 ti_out  to_in   dc = 0
 vfc to_out vnw dc = vdif
 
 
-
-*vopbias1 opb1 gnd dc = 0.8 *ac = 1 *180
 .param
 +comon		= 0.8
 +diff		= 0
@@ -236,8 +189,7 @@ Vs vss gnd dc = 0
 
 
 
-.probe dc I(mp) I(mnw) I(ip) I(mc) I(XTri.rl) lx3(mc) lv9(mc) lv9(mnw)
-+ par'lx7(mc)/lx8(mc)/lx8(mnw)'
+.probe dc I(mp) I(mnw) I(ip) I(XTri.rl)  lv9(mnw)
 
 ***IC***        *this help converge
 *.ic i(mnw)=PbI *v(opb1) = 0.802
@@ -256,14 +208,14 @@ Vs vss gnd dc = 0
 .alter  *wx     #1
 .del lib 'Test.l' Inw_ac
 .lib 'Test.l' wx
-*
+**
 .alter
 .del lib 'Test.l' wx
 .lib 'Test.l' Loop
-
-.alter
-.del lib 'Test.l' Loop
-.lib 'Test.l' openMode
+*
+*.alter
+*.del lib 'Test.l' Loop
+*.lib 'Test.l' openMode
 ***
 *.alter  *vsn(sweep v on bulk)       #2
 *.del lib 'Test.l' wx

@@ -91,15 +91,16 @@ mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
 
 **************** for buffer
-.subckt Tr vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 1u  L = 0.5u  m = 1
+.subckt Tr vdd vss vinn vinp 2 cz
+Mb	b	cz	 vdd vdd pch W = 2u  L = 0.5u  m = 1
 M1	1	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
 M2	2	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
 M3	1	1	 vss vss nch W = 2u   L = 0.5u  m = 1
 M4	2	1	 vss vss nch W = 2u   L = 0.5u  m = 1
-ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 2
-ma2 vop 2  vss vss nch   W = 3u L = 0.4u m = 1
-Cc  vop 2 50f
+*ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 2
+*ma2 vop 2  vss vss nch   W = 3u L = 0.4u m = 1
+*Cc  vinn 1 1p
+*Cc2 2 vss 500f
 *Rc vop   xx  100k
 *C1 1 vop 50f
 *C2  2 vss 1p
@@ -167,11 +168,10 @@ It vdd vdt dc = 200n
 ***probe&measuring***
 .ac dec 1000 0.1 1g
 *.tf v(voa) vinp
+.pz v(vop) vinp
 .pz v(vop2) vinp
 .probe dc I(m1) I(m2)	I(mt)
-.probe ac cap(von)
-+gain1st=par('Vdb(2)-Vdb(vinp,vinn)')	par('I(m1)-I(m2)')	phase1st=par('vp(2)')
-+nf(xop.mn) nf(xop.m1) nf(xop.m3) nf(xop.m5) nf(xop.m7)
+.probe ac vp(vop) vp(vop2)
 *+gainall=par('Vdb(vop)-Vdb(vinp,vinn)')		phaseall=par('vp(vop)')
 *.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
 .meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
@@ -179,6 +179,8 @@ It vdd vdt dc = 200n
 *.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
 
 *.noise v(vop) vinp 100
+*.alter
+*XOP_b  vdd vss vinp vop2 vop2 cp Tr
 
 *.alter
 *.protect

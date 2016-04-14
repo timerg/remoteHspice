@@ -10,7 +10,7 @@
     It vst vss dc = 'pbI+ins_'
     vtg vgt gnd dc = 1
     vtd vdt gnd dc = 1.5
-    .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt) lx7(mnw)
+    .probe dc lx2(mt) i(mt) lx7(mnw)
     .ic v(vnw) = 0.6
     *.options  gmindc=   1.000E-09
 
@@ -35,7 +35,7 @@
     It vst vss dc = 'pbI'
     vtg vgt gnd dc = 1
     vtd vdt gnd dc = 1
-    .probe dc lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)' i(mt) lx7(mnw) lx9(mnw) par'-i(mp)' lx5(mnw) lx6(mnw)
+    .probe dc lx2(mt)  i(mt) lx7(mnw) lx9(mnw) par'-i(mp)' lx5(mnw) lx6(mnw)
     .probe ac out=par('v(ti_out)') lx7(mnw)
     *.ic v(gm_in) = 2 v(gm_out) = 2 v(out) = 2
     .option dcon = 1
@@ -55,7 +55,7 @@
     vtg vgt gnd dc = 1
     vtd vdt gnd dc = 1.5
     vsnt vsnt vst dc = vsn_
-    .probe  lx2(mt) par'lx7(mc)/lx8(mc)/lx8(mnw)'
+    .probe  lx2(mt)
     .ic v(vnw) = 0.6
 .endl
 
@@ -151,17 +151,16 @@
 .lib Loop
     .op
     .ac  dec 1000 1 100g *sweep pbI dec 1 100n 10u
-    .param pbI = 1u
-    vc4  to_in  opb1 dc = 0 ac = 1
+    *vc4  to_in  opb1 dc = 0 ac = 1
     *vb  cz vss dc = 2.3552 *ac = 1
-    .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(gm_out) vp(to_out) i(mnw)
-
-    *.pz v(ti_out) vc3
-    .ic I(mnw) = pbI
+    .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(to_out) i(mnw)
+    vfc vnw vss dc = 1.794e-01 ac = 1       * (10u, 1u, 100n, 10n) = (6.756e-01, 4.166e-01, 2.800e-01, 1.794e-01)
+    .pz v(to_out) vfc
+    *.ic I(mnw) = pbI
     *+ v(vnw) = 1.682e-01
     *+ v(vnw) = 2.331e-01
     *+v(vnw) = 4.014e-01
-    + v(vnw) = 6.573e-01    *38db
+    *+ v(vnw) = 6.573e-01    *38db
     *** ff
     *
     *+ v(vnw) =  5.429e-01 *10u 38db
