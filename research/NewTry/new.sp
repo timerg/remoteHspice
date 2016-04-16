@@ -65,10 +65,10 @@ V1  idn ggn dc = 0
 *Cc   io1 ggn  500f        *the small fallen peak btw 10k, 100k can be slightly reduced by this
 .ends
 ******OP: Buffer******
-.subckt TrB vdd vss vinn vinp 2 cz
-Mb	b	cz	 vdd vdd pch W = 2u  L = 0.5u  m = 1
-M1	1	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
-M2	2	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
+.subckt TrB vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 2u  L = 0.5u  m = 2
+M1	1	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
+M2	2	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
 M3	1	1	 vss vss nch W = 2u   L = 0.5u  m = 1
 M4	2	1	 vss vss nch W = 2u   L = 0.5u  m = 1
 *ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 2
