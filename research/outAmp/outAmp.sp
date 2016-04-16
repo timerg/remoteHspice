@@ -7,10 +7,10 @@
 
 ***param***
 .param
-+comon		= 0.797
++comon		= 0.7963
 +bias       = 2.4
 +bias1		= 1.3
-+bias2		= 0.6
++bias2		= 0.2
 +supplyp	= 3.3
 +supplyn	= 0
 +diff			= 0
@@ -47,14 +47,14 @@ mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
 .ends
 
 
-.subckt Tr vdd vss vinp vinn 2 cz
-Mb	b	cz	 vdd vdd pch W = 1u  L = 0.5u  m = 1
+.subckt Tr vdd vss vinp vinn vop cz
+Mb	b	cz	 vdd vdd pch W = 2u  L = 0.5u  m = 1
 M1	1	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
 M2	2	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
 M3	1	1	 vss vss nch W = 2u   L = 0.5u  m = 1
 M4	2	1	 vss vss nch W = 2u   L = 0.5u  m = 1
-*ma1 vop cz vdd vdd pch   W = 1.5u L = 1u m = 2
-*ma2 vop 2  vss vss nch   W = 3u L = 0.4u m = 1
+ma1 vop cz vdd vdd pch   W = 2u L = 0.5u m = 2
+ma2 vop 2  vss vss nch   W = 2u L = 0.5u m = 1
 *Cc  vop 2 150f
 .ends
 **************
@@ -67,7 +67,7 @@ Xcmb   vdd vss cp cn CMB_bete5
 
 
 
-XOP_b  vdd vss cn vinp vop cp Tr
+XOP_b  vdd vss vinp cn vop cp Tr
 
 
 
@@ -76,7 +76,7 @@ vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
 
 ***input***
-vin vi gnd dc = '0.797 + diff' ac = 1
+vin vi vss dc = 'comon + diff' ac = 1  pulse('comon + 1' '0.3' 1ns 1ns 1ns 48ns 100ns)
 
 ***test***
 Mt vdt vgt vst vst nch w = 5u l = 1u m = 1
@@ -97,18 +97,24 @@ It vdd vdt dc = 200n
 .ac dec 1000 0.1 1g
 .pz v(vop) vin
 .probe dc I(mr2) I(mr1)
-
+.tran 1ns 200ns
 .op
 ***sweep***
 .alter
-*Mr1    vinp  cn  vi vi pch w = 1u l = 0.4u m = 1
+*vb bb vss bias2
+*Mr1    vi vi vinp vinp pch w = 1u l = 0.4u m = 10
 *Mr2    vop vop vinp vinp pch w = 1u l = 0.4u m = 1
-*R1     vi vinp 1000
-*R2     vop vinp 10k
-C1      vi vinp  200f
-Ra      vop vinp 100k
-C2      vop vinp 10f
+R1     vi vinp 1000k
+R2     vop vinp 10000k
+*C1      vi vinp  100f
+*Ma      vop cn vinp vinp pch w = 1u l = 1u
+*C2      vop vinp 10f
+.probe dc I(r1) I(r2) I(XOP_b.ma1) I(XOP_b.ma2)
 .alter
+R2     vop o 1k
+*Mr2    vop vss o o pch w = 1u l = 0.4u m = 1
+Eo     o   gnd OPAMP cn o
+.probe dc I(r2) I(XOP_b.ma1) I(XOP_b.ma2)
 Mr1     vss vss  vss vss pch w = 1u l = 0.4u
 Mr2     vss vss vss vss pch w = 1u l = 0.4u m = 10
 C1      vss vss  200f
