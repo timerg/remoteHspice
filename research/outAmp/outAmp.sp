@@ -39,23 +39,37 @@ mc3 cn2 cn2 vss vss nch w = 2u   l = 1u m = 1
 
 
 
-.subckt CMB_bete5 vdd vss cp cn wp = 5u
+.subckt CMB_bete5 vdd vss cp cn cn2
 Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
 mc2 cn  cn  vss vss nch w = 3.5u  l = 5u m = 1
+
+mc4 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+mc5 cp2 cn  cn2 vss nch w = 3.5u l = 0.5u   m = 7
+mc6 cn2 cn2 vss vss nch w = 2u   l = 1u m = 1
 .ends
 
 
-.subckt Tr vdd vss vinp vinn vop cz
-Mb	b	cz	 vdd vdd pch W = 2u  L = 0.5u  m = 1
-M1	1	Vinn b	 b	 pch W = 2u   L = 0.5u  m = 2
-M2	2	Vinp b	 b	 pch W = 2u   L = 0.5u  m = 2
-M3	1	1	 vss vss nch W = 2u   L = 0.5u  m = 1
-M4	2	1	 vss vss nch W = 2u   L = 0.5u  m = 1
-ma1 vop cz vdd vdd pch   W = 2u L = 0.5u m = 2
-ma2 vop 2  vss vss nch   W = 2u L = 0.5u m = 1
+.subckt Tr vdd vss vinp vinn 2 cz
+Mb	b	cz	 vdd vdd pch W = 1u   L = 0.5u  m = 2
+M1	1	Vinp b	 b	 pch W = 1u   L = 0.5u  m = 1
+M2	2	Vinn b	 b	 pch W = 1u   L = 0.5u  m = 1
+M3	1	1	 vss vss nch W = 1u   L = 0.5u  m = 1
+M4	2	1	 vss vss nch W = 1u   L = 0.5u  m = 1
+*ma1 vop cz vdd vdd pch   W = 2u L = 1u m = 2
+*ma2 vop 2  vss vss nch   W = 2u L = 1u m = 1
 *Cc  vop 2 150f
+.ends
+
+.subckt TrA vdd vss vinp vinn vop cn cn2
+M1	1	Vinn b	 vss nch W = 2u   L = 0.5u  m = 1
+M2	2	Vinp b	 vss nch W = 2u   L = 0.5u  m = 1
+M3	1	1	 vdd vdd pch W = 2u   L = 0.5u  m = 2
+M4	2	1	 vdd vdd pch W = 2u   L = 0.5u  m = 2
+Mb  b   cn2  vss vss nch w = 2u   L = 0.5u  m = 2
+Map	vop	2    vdd vdd pch W = 2u   L = 0.5u  m = 5
+Man	vop	cn2	 vss vss nch W = 2u   L = 2u  m = 1
 .ends
 **************
 
@@ -63,11 +77,12 @@ ma2 vop 2  vss vss nch   W = 2u L = 0.5u m = 1
 
 
 
-Xcmb   vdd vss cp cn CMB_bete5
+Xcmb   vdd vss cp cn cn2 CMB_bete5
 
 
 
-XOP_b  vdd vss vinp cn vop cp Tr
+*XOP_b  vdd vss cn vinn vop cp Tr
+XOP_b  vdd vss cn vinn vop cn cn2 TrA
 
 
 
@@ -76,72 +91,40 @@ vd		vdd 	gnd dc supplyp
 vs		vss 	gnd dc supplyn
 
 ***input***
-vin vi vss dc = 'comon + diff' ac = 1  pulse('comon + 1' '0.3' 1ns 1ns 1ns 48ns 100ns)
-
-***test***
-Mt vdt vgt vst vst nch w = 5u l = 1u m = 1
-*vtd vdt gnd dc =
-vtg vgt vst  dc = 1.7441
-vts vst gnd dc = 0
-*vtb vbt gnd
-It vdd vdt dc = 200n
-*Im3,4 : 2.352e-07
-
-*.dc It 0n 300n 1n
+vin vi vss dc = 'comon + diff' ac = 1  pulse('comon' 'comon + 0.01' 1ns 1us 1us 48us 100us)
 
 
 
-
-
-.dc diff -0.4 0.4 0.001
+.dc diff -1 1 0.001
 .ac dec 1000 0.1 1g
 .pz v(vop) vin
 .probe dc I(mr2) I(mr1)
-.tran 1ns 200ns
+.tran 1us 200us
 .op
 ***sweep***
 .alter
 *vb bb vss bias2
 *Mr1    vi vi vinp vinp pch w = 1u l = 0.4u m = 10
 *Mr2    vop vop vinp vinp pch w = 1u l = 0.4u m = 1
-R1     vi vinp 1000k
-R2     vop vinp 10000k
-*C1      vi vinp  100f
-*Ma      vop cn vinp vinp pch w = 1u l = 1u
-*C2      vop vinp 10f
+*R1     vi vinn 1k
+*R2     vop vinn 10k
+C1      vi vinn  200f
+Ma      vop cn vinn vinn pch w = 1u l = 1u
+C2      vop vinn 20f
 .probe dc I(r1) I(r2) I(XOP_b.ma1) I(XOP_b.ma2)
-.alter
-R2     vop o 1k
-*Mr2    vop vss o o pch w = 1u l = 0.4u m = 1
-Eo     o   gnd OPAMP cn o
-.probe dc I(r2) I(XOP_b.ma1) I(XOP_b.ma2)
-Mr1     vss vss  vss vss pch w = 1u l = 0.4u
-Mr2     vss vss vss vss pch w = 1u l = 0.4u m = 10
-C1      vss vss  200f
-Ra      vss vss 100k
-C2      vss vss 10f
-vinp    vi vinp dc = 0
-
-*.meas ac gain MAX par('Vdb(vop)-Vdb(vinp,vinn)')
-*.meas ac gain1st MAX par('Vdb(2, 1)-Vdb(vinp,vinn)')
-*.meas ac zerodb WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-*.meas ac phaseATdb	FIND par('vp(vop)') WHEN par('Vdb(vop)-Vdb(vinp,vinn)') = 0
-
-*.noise v(vop) vin 100
-
-
-
 *.alter
-*.protect
-*.lib 'mm0355v.l' ff
-*.unprotect
-*.alter
-*.protect
-*.lib 'mm0355v.l' ss
-*.unprotect
-
-*XOP vdd vss vinp vinn vop cp cp2 cn OP_fc
-*.alter
-*XOP vdd vss vinp vinn vop cn OP
-
+*R1     vss vss 1k
+**R2     vss vss 10k
+*R2     vop vss 10k
+**Mr2    vop vss o o pch w = 1u l = 0.4u m = 1
+*Eo     o   gnd OPAMP cn o
+*.probe dc I(r2) I(XOP_b.ma1) I(XOP_b.ma2)
+*Mr1     vss vss  vss vss pch w = 1u l = 0.4u
+*Mr2     vss vss vss vss pch w = 1u l = 0.4u m = 10
+*C1      vss vss  200f
+*Ra      vss vss 100k
+*C2      vss vss 10f
+*vinp    vi vinn dc = 0
+*
+*
 .end
