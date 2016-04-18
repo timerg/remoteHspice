@@ -1,6 +1,6 @@
 ***outputAmplifier
 .protect
-.lib 'mm0355v.l' ff
+.lib 'mm0355v.l' sf
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=1
@@ -21,21 +21,21 @@
 ***input stage***
 Mn	1	Vinp b	 vss	 nch W = 3u   L = 5u  m = 2
 Mp	2	Vinn b	 vss	 nch W = 3u   L = 5u  m = 2
-Mb 	b	cn2	 vss  vss nch W = 10u   L = 0.5u  m = 6
+Mb 	b	cn2	 vss  vss nch W = 20u   L = 0.5u  m = 6
 ***output stage***
 m1  1   cp2 vdd vdd pch w = 3u   l = 5u m = 4
 m2  2   cp2 vdd vdd pch w = 3u   l = 5u m = 4
 M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
 M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
 M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
-M6  vop	cn  6   vss nch W = 1u   L = 1u  m = 1
+M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
 M7  5   von vss vss nch W = 3u   L = 5u  m = 1
 M8  6   von vss vss nch W = 3u   L = 5u  m = 1
 mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
-mc2 cp2 cn  cn2 vss nch w = 3.5u l = 1u   m = 3
-mc3 cn2 cn2 vss vss nch w = 10u   l = 0.5u m = 1
-cc vop vss 10f
-CC2 1 vss 300f
+mc2 cp2 cn  cn2 vss nch w = 10u l = 0.4u   m = 3
+mc3 cn2 cn2 vss vss nch w = 20u   l = 0.5u m = 1
+*cc vop vss 10f
+CC2 1 vss 100f
 *Cc3 von vss 200f
 *Cc3 2 vss
 .ends
@@ -122,10 +122,10 @@ vin vi cn dc = 'diff' ac = 1  pulse(0.3 0.31 1ns 1us 1us 48us 100us)
 *Mr2    vop vop vinn vinn pch w = 1u l = 0.4u m = 1
 *R1     vi vinn 1k
 *R2     vop vinn 100k
-C1      vi vinn  100f
+C1      vi vinn  10p
 *C1      vi vinn   500f
 Ma      vop cp vinn vinn pch w = 1u l = 1u
-C2      vop vinn 7f    *10f
+C2      vop vinn 90f    *10f
 .probe dc I(r1) I(r2) I(XOP_b.ma1) I(XOP_b.ma2)
 .alter
 *R1     vss vss 1k
@@ -139,7 +139,7 @@ C2      vop vinn 7f    *10f
 v1      vi  vinn dc = 0
 C1      vss vss  200f
 Ma      vss vss vss vss pch w = 1u l = 1u
-C2      vop vss 7f
+C2      vop vss 100f
 .probe ac vp(vop)
 *
 *
