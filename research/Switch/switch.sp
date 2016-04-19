@@ -9,8 +9,8 @@
 .subckt switch vdd vss en in out
 Mip eo  en  vdd vdd pch w = 2.3u l = 0.35u
 Min eo  en  vss vss nch w = 1u l = 0.35u
-Msp in  en  out vdd pch w = 2.3u l = 0.35u m = 2
-Msn in  eo  out vss nch w = 1u l = 0.35u m = 2
+Msp in  eo  out vdd pch w = 2.3u l = 0.35u m = 2
+Msn in  en  out vss nch w = 1u l = 0.35u m = 2
 .ends
 
 XS1 vdd vss en in out switch

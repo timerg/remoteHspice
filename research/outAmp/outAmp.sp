@@ -87,8 +87,8 @@ Mb  b   cn2  vss vss nch w = 4u   L = 2u  m = 7
 .subckt switch vdd vss en in out       *source at in
 Mip eo  en  vdd vdd pch w = 2.3u l = 0.35u
 Min eo  en  vss vss nch w = 1u l = 0.35u
-Msp out en  in  in  pch w = 2u l = 1u
-Msn out eo  in  in  nch w = 1u l = 1u
+Msp out eo  in  in  pch w = 2u l = 1u
+Msn out en  in  in  nch w = 1u l = 1u
 .ends
 **************
 
@@ -149,7 +149,7 @@ Ma      vop vdd vinn vinn pch w = 1u l = 5u
 C1 vi  vinn 1p
 C2 vop vinn 90f
 C3 vinn  ci   9p
-ve  en vss dc = 3.3
+ve  en vss dc = 0
 Xsi vdd vss en vi ci switch
 
 .probe dc lx8(xsi.msp) lx8(xsi.msn)
