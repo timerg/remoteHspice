@@ -35,9 +35,9 @@ mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
 mc2 cp2 cn  cn2 vss nch w = 10u l = 0.4u   m = 3
 mc3 cn2 cn2 vss vss nch w = 20u   l = 0.5u m = 1
 *cc vop vss 10f
-CC2 1 vss 100f
+CC2 1 vinn 100f
 *Cc3 von vss 200f
-*Cc3 2 vss
+*Cc3 vop vss 200f
 .ends
 
 
@@ -87,8 +87,8 @@ Mb  b   cn2  vss vss nch w = 4u   L = 2u  m = 7
 .subckt switch vdd vss en in out
 Mip eo  en  vdd vdd pch w = 2.3u l = 0.35u
 Min eo  en  vss vss nch w = 1u l = 0.35u
-Msp in  en  out out pch w = 2.3u l = 5u
-Msn in  eo  out out nch w = 1u l = 5u
+Msp out en  in  in  pch w = 2.3u l = 0.35u
+Msn out eo  in  in  nch w = 1u l = 0.35u
 .ends
 
 **************
@@ -117,7 +117,7 @@ vin vi cn dc = 'diff' ac = 1  pulse(0.3 0.31 1ns 1us 1us 148us 300us)
 .ac dec 1000 0.1 1g
 .pz v(vop) vin
 .probe dc I(mr2) I(mr1)
-.tran 1us 40s
+*.tran 1us 400us
 .op
 ***sweep***
 .alter
@@ -128,12 +128,12 @@ vin vi cn dc = 'diff' ac = 1  pulse(0.3 0.31 1ns 1us 1us 148us 300us)
 *R1     vi vinn 1k
 *R2     vop vinn 100k
 C1      c1i c1o  10p
-ve1  en1 vss dc = 3.3
+ve1  en1 vss dc = 0
 Xs1i vdd vss en1 vi c1i switch
 Xs1o vdd vss en1 c1o vinn switch
 
 C2      c2i c2o   500f
-ve2  en2 vss dc = 0
+ve2  en2 vss dc = 3.3
 Xs2i vdd vss en2 vi c2i switch
 Xs2o vdd vss en2 c2o vinn switch
 
@@ -158,9 +158,9 @@ Xs4o vdd vss en2 c4o vop switch
 *Mr1     vss vss  vss vss pch w = 1u l = 0.4u
 *Mr2     vss vss vss vss pch w = 1u l = 0.4u m = 10
 v1      vi  vinn dc = 0
-C1      vss vss  200f
+C1      vss vss  100f
 Ma      vss vss vss vss pch w = 1u l = 1u
-C2      vop vss 100f
+C2      vop vss 90f
 .probe ac vp(vop)
 *
 *
