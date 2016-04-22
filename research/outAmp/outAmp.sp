@@ -1,6 +1,6 @@
 ***outputAmplifier
 .protect
-.lib 'mm0355v.l' sf
+.lib 'mm0355v.l' tt
 .unprotect
 .option post acout=0 accurate=1 dcon=1 CONVERGE=1 GMINDC=1.0000E-12 captab=1 unwrap=1
 + ingold=1
@@ -17,23 +17,29 @@
 ***netlist***
 
 
-.subckt OP_fc vdd vss vinp vinn vop cp cn cn2
+.subckt OP_fc vdd vss vinp vinn vop cp cn
+*vcp2 cp2 vss dc = 2.47
+*vcn2 cn2 vss dc = 0.373
 ***input stage***
-Mn	1	Vinp b	 vss	 nch W = 3u   L = 5u  m = 2
-Mp	2	Vinn b	 vss	 nch W = 3u   L = 5u  m = 2
-Mb 	b	cn2	 vss  vss nch W = 20u   L = 0.5u  m = 6
+Mn	1	cn b	 vss	 nch W = 5u   L = 1u  m = 4
+Mp	2	Vinn b	 vss	 nch W = 5u   L = 1u  m = 4
+Mb 	b	cn2	 vss  vss nch W = 10u   L = 0.5u  m = 6
+***Dummy
+*md1 vss vss vss vss pch w = 3u l = 5u m = 2
+*md2 vss vss vss vss pch w = 3u l = 5u m = 2
+*md3 b   b   b   vss nch w = 5u l = 0.5u m = 2
 ***output stage***
-m1  1   cp2 vdd vdd pch w = 3u   l = 5u m = 4
-m2  2   cp2 vdd vdd pch w = 3u   l = 5u m = 4
-M3	von cp	1   1   pch W = 2u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
-M4	vop	cp	2   2   pch W = 2u   L = 1u  m = 1
-M5  von	cn  5   vss nch W = 2u   L = 1u  m = 1
-M6  vop	cn  6   vss nch W = 2u   L = 1u  m = 1
-M7  5   von vss vss nch W = 3u   L = 5u  m = 1
-M8  6   von vss vss nch W = 3u   L = 5u  m = 1
-mc1 cp2 cp2 vdd vdd pch w = 1u   l = 5u m = 1
+m1  1   cp2 vdd vdd pch w = 3u   l = 1u m = 4
+m2  2   cp2 vdd vdd pch w = 3u   l = 1u m = 4
+M3	von cp	1   1   pch W = 3u   L = 1u  m = 1      * gm*rds = 50 (id = 200n)
+M4	vop	cp	2   2   pch W = 3u   L = 1u  m = 1
+M5  von	cn  5   vss nch W = 3u   L = 1u  m = 1
+M6  vop	cn  6   vss nch W = 3u   L = 1u  m = 1
+M7  5   von vss vss nch W = 3u   L = 1u  m = 1
+M8  6   von vss vss nch W = 3u   L = 1u  m = 1
+mc1 cp2 cp2 vdd vdd pch w = 3u   l = 1u m = 1
 mc2 cp2 cn  cn2 vss nch w = 10u l = 0.4u   m = 3
-mc3 cn2 cn2 vss vss nch w = 20u   l = 0.5u m = 1
+mc3 cn2 cn2 vss vss nch w = 10u   l = 0.5u m = 1
 *cc vop vss 10f
 CC2 1 vinn 100f
 *Cc3 von vss 200f
@@ -43,7 +49,7 @@ CC2 1 vinn 100f
 
 
 
-.subckt CMB_bete5 vdd vss cp cn cn2 cp2
+.subckt CMB_bete5 vdd vss cp cn
 Iin cp  vss dc = 1u
 mc0 cp  cp  vdd vdd pch w = 1.5u l = 1u m = 1
 mc1 cn  cp  vdd vdd pch w = 1.5u l = 1u m = 4
@@ -88,19 +94,21 @@ Mb  b   cn2  vss vss nch w = 4u   L = 2u  m = 7
 Mip eo  en  vdd vdd pch w = 2.3u l = 0.35u
 Min eo  en  vss vss nch w = 1u l = 0.35u
 Msp out eo  in  in  pch w = 2u l = 1u
-Msn out en  in  in  nch w = 1u l = 1u
+Msn out en  in  vss  nch w = 1u l = 1u
 .ends
 **************
 
 
-Xcmb   vdd vss cp cn cn2 cp2 CMB_bete5
+Xcmb   vdd vss cp cn  CMB_bete5
+
+*vcn cn vss = 0.797
+*vcp cp vss = 2.39
 
 
 
 *XOP_b  vdd vss cn vinn vop cp Tr
 *XOP_b  vdd vss cn vinn vop cn cn2 cp TrA
-XOP_fb vdd vss cn vinn vop cp cn cn2 OP_fc
-
+XOP_fb vdd vss vinp vinn vop cp cn  OP_fc
 
 
 ***source***
@@ -109,13 +117,13 @@ vs		vss 	gnd dc supplyn
 
 ***input***
 vin vi cn dc = 'diff' ac = 1  pulse(0.3 0.31 1ns 1us 1us 148us 300us)
-
+vip vinp cn dc = 'diff'
 
 
 .dc diff -1 1 0.001
-.ac dec 1000 0.1 1g
-.pz v(vop) vin
-.probe dc I(mr2) I(mr1)
+.ac dec 1000 0.1 1g *sweep diff -0.2  0.2 0.1
+*.pz v(vop) vin
+*.noise v(vop) vin
 *.tran 1us 400us
 .op
 ***sweep***
@@ -136,7 +144,9 @@ vin vi cn dc = 'diff' ac = 1  pulse(0.3 0.31 1ns 1us 1us 148us 300us)
 *****Xs2i vdd vss en2 vi c2i switch
 *****Xs2o vdd vss en2 c2o vinn switch
 *****
-Ma      vop vdd vinn vinn pch w = 1u l = 5u
+Ma1      ax  ax  vop  vop  pch w = 1u l = 15u
+Ma2      ax  ax  vinn vinn pch w = 1u l = 15u
+
 *****
 *****C3      c3i c3o 90f    *10f
 *****Xs3i vdd vss en1 vinn c3i switch
@@ -147,13 +157,17 @@ Ma      vop vdd vinn vinn pch w = 1u l = 5u
 *****Xs4o vdd vss en2 c4o vop switch
 
 C1 vi  vinn 1p
-C2 vop vinn 90f
+C2 vop vinn 75f
 C3 vinn  ci   9p
-ve  en vss dc = 0
+ve  en vss dc = 3.3
 Xsi vdd vss en vi ci switch
 
-.probe dc lx8(xsi.msp) lx8(xsi.msn)
 .alter
+*Ma1      ax  ax  vop  vop  pch w = 1u l = 15u
+*Ma2      ax  ax  vinn vinn pch w = 1u l = 15u
+C1 vi  vinn 1p
+C2 vss vinn 90f
+C3 vinn  ci   9p
 *R1     vss vss 1k
 **R2     vss vss 10k
 *R2     vop vss 10k
@@ -163,9 +177,6 @@ Xsi vdd vss en vi ci switch
 *Mr1     vss vss  vss vss pch w = 1u l = 0.4u
 *Mr2     vss vss vss vss pch w = 1u l = 0.4u m = 10
 v1      vi  vinn dc = 0
-C1      vss vss  100f
-Ma      vss vss vss vss pch w = 1u l = 1u
-C2      vop vss 90f
 .probe ac vp(vop)
 *
 *
