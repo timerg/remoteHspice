@@ -150,10 +150,10 @@
 
 .lib Loop
     .op
-    .ac  dec 1000 1 100g *sweep pbI dec 1 100n 10u
+    .ac  dec 1000 1 100g sweep pbI dec 3 100n 10u
     *vc4  to_in  opb1 dc = 0 ac = 1
     *vb  cz vss dc = 2.3552 *ac = 1
-    .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(to_out) i(mnw)
+    .probe ac vp(ti_out) lx7(mnw) lx9(mnw) vp(to_out) vp(to_out0) i(mnw)
     vfc vnw vss dc = 1.794e-01 ac = 1       * (10u, 1u, 100n, 10n) = (6.756e-01, 4.166e-01, 2.800e-01, 1.794e-01)
     .pz v(to_out) vfc
     *.ic I(mnw) = pbI
