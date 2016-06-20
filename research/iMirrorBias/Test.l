@@ -25,7 +25,7 @@
 
     .ac dec 1000 1 1000g sweep rr dec 1 1k 1x
     .dc rr dec 100 1k 10000k
-    .probe dc i(xib.mp) i(xib.rio) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')  gainib=par('gmp*rdsp') par'1/lx8(xop1.mr1)'
+    .probe dc i(xib.mp) i(xib.r1) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')  gainib=par('gmp*rdsp') par'1/lx8(xop1.mr1)'
     + lx2(xop1.mr1) i(xib.eio)
     .probe ac i(xib.rio) rdsp=par('1/(lx8(xib.mp) + lx8(xib.mn))') gmp=par('lx7(xib.mp)')  gainib=par('gmp*rdsp')  i(xib.eio)
 

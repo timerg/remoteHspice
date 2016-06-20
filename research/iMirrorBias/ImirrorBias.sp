@@ -81,8 +81,8 @@ mpb io  mpx vdd vdd pch w = 1u   l =  0.5u m = 1
 Eio io gnd OPAMP io cn
 *(id, vgs, gm, rds): (10n, -0.5423, 2.363e-07, 574x); (10u, -0.9871,  7.141e-05, 1.67x)
 mn  mpy cn rx vss nch w = 5u l =  0.5u m = 3
-*r1  rx  vss rin
-Iin rx vss '0.1/rin'
+r1  rx  vss rin
+*Iin rx vss '0.1/rin'
 .ends
 
 .subckt OPnw vdd vss vinp vinn vop cz
