@@ -22,11 +22,11 @@
 ***netlist***
 ***1st stage***
 .subckt fstStage_a vdd vss vinn vinp 1 2 cp cn
-Mb	b	cp	vdd	vdd	pch	W = 31u  L = 1u	  m = 2
-M1	1	Vinn	b		b		pch	W = 10u L = 0.4u m = 1
-M2	2	Vinp	b		b		pch	W = 10u L = 0.4u m = 1
-M3	1	cn		vss	vss	nch	W = 4.2u L = 0.4u m = 2
-M4	2	cn		vss	vss	nch	W = 4.2u L = 0.4u m = 2
+Mb	b	cp	 vdd vdd pch	W = 31u  L = 1u	  m = 2
+M1	1	Vinn b	 b	 pch	W = 10u L = 0.4u m = 1
+M2	2	Vinp b	 b	 pch	W = 10u L = 0.4u m = 1
+M3	1	cn	 vss vss nch	W = 4.2u L = 0.4u m = 2
+M4	2	cn	 vss vss nch	W = 4.2u L = 0.4u m = 2
 .ends
 .subckt fstStage_b vdd vss vinn vinp 2 cp
 .ends
