@@ -44,14 +44,15 @@ Ri  vi  vinn 10k
 
 .ends
 
-*.subckt Buf vdd vss vin out c1 c2
-*m4 ot  op  vdd vdd pch w = 5u l = 3u m = 1
-*m3 op  op  vdd vdd pch w = 5u l = 3u m = 1
-*m2 ot  vin  o1  vss nch w = 5u l = 3u m = 2
-*m1 op  out o1  vss nch w = 5u l = 3u m = 2
-*Mb o1  c1  vss vss nch w = 5u l = 3u m = 4
-*map out c2  vdd vdd pch w = 5u l = 3u m = 4
-*man out ot  vss vss nch w = 5u l = 3u m = 2
+*.subckt Buf vdd vss vin out c1 c2 vz
+*m4  o1  op  vdd vdd pch w = 5u l = 3u m = 1
+*m3  op  op  vdd vdd pch w = 5u l = 3u m = 1
+*m2  o1  vin b   vss nch w = 5u l = 3u m = 2
+*m1  op  out b   vss nch w = 5u l = 3u m = 2
+*Mb  b   c1  vss vss nch w = 5u l = 3u m = 4
+*map out o1  vdd vdd pch w = 5u l = 3u m = 4
+*man out c2  vss vss nch w = 5u l = 3u m = 2
+*Ro out vz 10k
 *.ends
 
 .subckt Buf vdd vss vin out c1 c2 vz
@@ -61,9 +62,8 @@ m2 o1  vin b   b   pch w = 5u l = 3u m = 4
 m3 op  op  vss vss nch w = 5u l = 3u m = 1
 m4 o1  op  vss vss nch w = 5u l = 3u m = 1
 map out c2  vdd vdd pch w = 5u l = 3u m = 4
-man out o1  vss vss nch w = 5u l = 3u m = 2
+man out o1  vss vss nch w = 5u l = 3u m = 1
 Ro out vz 10k
-
 .ends
 
 *.subckt Buf vdd vss vin out c1
