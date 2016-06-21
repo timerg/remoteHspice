@@ -1,0 +1,352 @@
+ ****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+  Copyright (C) 2008 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the 
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the 
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: c:\users\timer\documents\github\remotehspice\resamp\resamp.sp     
+ Init: read install configuration file: C:\synopsys\Hspice_B-2008.09\meta.cfg
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini
+
+
+
+
+ .options abstol=1e-7 reltol=1e-7
+ + post=1 captab=1 accurate=1 ingold=1 unwrap = 1
+
+ mc0 cp cp vdd vdd pch w = 1.5u l = 1u m = 1
+ mc1 cn cp vdd vdd pch w = 1.5u l = 1u m = 4
+ mc2 cn cn vss vss nch w = 3.5u l = 5u m = 1
+ iin cp vss 1u
+
+ md1 c1  cp  vdd vdd pch w = 1.5u l = 1u m = 1
+ md2 c1  c1  vss vss nch w = 5u   l = 3u m = 3
+ md3 c2  c1  vss vss nch w = 5u   l = 3u m = 1
+ md4 c2  c2  vdd vdd pch w = 5u   l = 3u m = 2
+
+
+
+ *.subckt op vdd vss vip vi out c2
+ *mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
+ *m1 op  vin b   b   pch w = 5u l = 3u m = 4
+ *m2 o1  vip b   b   pch w = 5u l = 3u m = 4
+ *m3 op  op  vss vss nch w = 5u l = 3u m = 1
+ *m4 o1  op  vss vss nch w = 5u l = 3u m = 1
+ *
+ *map out c2  vdd vdd pch w = 5u l = 3u m = 4
+ *man out o1  vss vss nch w = 5u l = 3u m = 2
+ *ro  out vin 1000k
+ *ri  vi  vin 10k
+ **mo  vin c1 out out pch w = 1u l = 5u
+ **mi  vin c1  vi  vi  pch w = 1u l = 5u m = 100
+ *.ends
+
+ .subckt op vdd vss vip vi out c2 en
+ mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
+ m1 op  vi b   b   pch w = 5u l = 3u m = 4
+ m2 o1  vip b   b   pch w = 5u l = 3u m = 4
+ m3 op  op  vss vss nch w = 5u l = 3u m = 1
+ m4 o1  op  vss vss nch w = 5u l = 3u m = 1
+ map out c2  vdd vdd pch w = 5u l = 3u m = 4
+ man out o1  vss vss nch w = 5u l = 3u m = 3
+ ro  xx  out 1000k
+ ri1 xx  vip 100k
+ ri2 sw   vip 10k
+ cc  out c   350f
+ rc o1  c   50k
+ xs1 vdd vss en sw xx switch
+ .ends
+
+ .subckt switch vdd vss en in out
+ mip eo  en  vdd vdd pch w = 2.3u l = 0.35u
+ min eo  en  vss vss nch w = 1u l = 0.35u
+ msp in  eo  out vdd pch w = 2.3u l = 0.35u m = 2
+ msn in  en  out vss nch w = 1u l = 0.35u m = 2
+ .ends
+
+
+ xop vdd vss vip vi vop c2 en op
+
+
+ vd vdd vss dc = 3.3
+ vs vss gnd dc = 0
+ vip vip gnd dc = 1v
+ ven en vss dc = 3.3 pulse(0 3.3 1us 1us 1us 988us 2ms)
+ vin vi vss dc = 1 ac = 1
+
+ .op
+ .dc vin 0 3.3 0.001
+ .probe i(xop.ri)
+ .ac dec 1000 10 1g
+ .pz v(vop) vin
+ .meas ac phaseatdb	find par('vp(vop)') when par('vdb(vop)-vdb(vi)') = 0
+ .meas ac maxgain    find vdb(vop) at 10
+ .meas ac bandwidth  when vdb(vop) = 'maxgain - 3'
+ .end
+
+
+ **warning**  the accurate option increases  the cpu time but the results
+                are more accurate.
+ ***accurate option sets default value of the options: 
+ lvltim= 4         dvdt= 3       relvar= 200.00m absvar= 200.00m
+     ft= 200.00m relmos=  10.00m
+ (used for FFT control ) fft_accurate= 1
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *resamp
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xop.                            op                 1.00 
+        2 xop.xs1.                        switch             1.00 
+ 
+
+ **warning** could not find branch element     1:ri              
+      branch - output ignored
+ 
+      
+  Opening plot unit= 79
+ file=c:\users\timer\documents\github\remotehspice\resamp\resamp.pa0           
+
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *resamp
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:c1      =   0.5284  0:c2      =   2.5517  0:cn      =   0.7967 
+ +0:cp      =   2.3955  0:en      =   3.3000  0:vdd     =   3.3000 
+ +0:vi      =   1.0000  0:vip     =   1.0000  0:vop     =   0.9062 
+ +0:vss     =   0.      1:b       =   1.6908  1:c       =   0.5209 
+ +1:o1      =   0.5209  1:op      =   0.5209  1:sw      =   0.9992 
+ +1:xx      =   0.9991  2:eo      = 1.039e-08
+
+
+ maximum nodal capacitance=   4.365E-13         on node     0:vss             
+
+    nodal  capacitance table 
+
+    node    =    cap      node    =    cap      node    =    cap
+
+ +0:c1      = 9.416e-14 0:c2      = 1.583e-13 0:cn      = 7.321e-14
+ +0:cp      = 3.407e-14 0:en      = 7.959e-15 0:vdd     = 4.275e-13
+ +0:vi      = 6.294e-14 0:vip     = 6.294e-14 0:vop     = 3.896e-13
+ +0:vss     = 4.365e-13 1:b       = 3.077e-13 1:c       = 3.500e-13
+ +1:o1      = 8.637e-14 1:op      = 6.822e-14 1:sw      = 1.120e-14
+ +1:xx      = 1.128e-14 2:eo      = 8.261e-15
+
+ 
+
+ ****  voltage sources
+
+ subckt                                                         
+ element  0:vd       0:vs       0:vip      0:ven      0:vin     
+  volts      3.3000     0.         1.0000     3.3000     1.0000 
+  current -8.838e-06  9.286e-08 -9.286e-08    0.         0.     
+  power    2.916e-05    0.       9.286e-08    0.         0.     
+
+     total voltage source power dissipation=  2.926e-05       watts
+
+
+
+ ***** current sources
+
+ subckt             
+ element  0:iin     
+  volts      2.3955 
+  current  1.000e-06
+  power   -2.396e-06
+
+
+     total current source power dissipation=-2.396e-06       watts
+
+ **** resistors
+
+ subckt   xop        xop        xop        xop       
+ element  1:ro       1:ri1      1:ri2      1:rc      
+  r value  1.000e+06  1.000e+05  1.000e+04  5.000e+04
+  v drop   9.287e-02 -9.229e-04 -8.363e-04    0.     
+  current  9.287e-08 -9.229e-09 -8.363e-08    0.     
+  power    8.624e-09  8.517e-12  6.995e-11    0.     
+
+
+
+ **** mosfets
+
+
+ subckt                                                                    
+ element  0:mc0      0:mc1      0:mc2      0:md1      0:md2      0:md3     
+ model    0:pch.2    0:pch.2    0:nch.1    0:pch.2    0:nch.1    0:nch.1   
+ region     Saturati   Saturati   Saturati   Saturati     Cutoff     Cutoff
+  id      -1.000e-06 -4.612e-06  4.612e-06 -1.177e-06  1.177e-06  4.306e-07
+  ibs      2.118e-19  9.769e-19 -7.736e-18  2.494e-19 -1.883e-18 -6.888e-19
+  ibd      1.610e-16  3.871e-11 -5.247e-15  2.459e-11 -2.116e-14 -2.129e-10
+  vgs       -0.9045    -0.9045     0.7967    -0.9045     0.5284     0.5284 
+  vds       -0.9045    -2.5033     0.7967    -2.7716     0.5284     2.5517 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth       -0.7709    -0.7603     0.5355    -0.7585     0.5422     0.5400 
+  vdsat     -0.1795    -0.1881     0.2588    -0.1895   6.945e-02  7.028e-02
+  vod       -0.1336    -0.1441     0.2612    -0.1459  -1.382e-02 -1.162e-02
+  beta     7.484e-05  2.998e-04  1.363e-04  7.497e-05  1.028e-03  3.427e-04
+  gam eff    0.3947     0.3947     0.4573     0.3947     0.4619     0.4619 
+  gm       1.056e-05  4.685e-05  3.155e-05  1.188e-05  2.269e-05  8.179e-06
+  gds      1.076e-07  3.645e-07  4.928e-08  9.095e-08  4.918e-08  3.965e-08
+  gmb      2.295e-06  1.016e-05  9.246e-06  2.577e-06  6.825e-06  2.462e-06
+  cdtot    2.444e-15  7.463e-15  4.630e-15  1.807e-15  1.991e-14  5.506e-15
+  cgtot    5.271e-15  2.109e-14  6.111e-14  5.271e-15  5.433e-14  1.811e-14
+  cstot    8.097e-15  3.239e-14  7.412e-14  8.097e-15  2.234e-14  7.445e-15
+  cbtot    6.878e-15  2.520e-14  3.130e-14  6.241e-15  8.402e-14  2.688e-14
+  cgs      4.109e-15  1.644e-14  5.240e-14  4.109e-15  3.138e-15  1.046e-15
+  cgd      2.837e-16  1.135e-15  7.365e-16  2.837e-16  3.138e-15  1.046e-15
+
+
+
+ subckt              xop        xop        xop        xop        xop       
+ element  0:md4      1:mb       1:m1       1:m2       1:m3       1:m4      
+ model    0:pch.1    0:pch.1    0:pch.1    0:pch.1    0:nch.1    0:nch.1   
+ region       Cutoff     Cutoff     Cutoff     Cutoff     Cutoff     Cutoff
+  id      -4.308e-07 -6.777e-07 -3.388e-07 -3.388e-07  3.388e-07  3.388e-07
+  ibs      8.653e-20  1.361e-19  6.806e-20  6.806e-20 -5.420e-19 -5.420e-19
+  ibd      9.518e-16  2.176e-14  1.987e-15  1.987e-15 -7.055e-15 -7.055e-15
+  vgs       -0.7483    -0.7483    -0.6908    -0.6908     0.5209     0.5209 
+  vds       -0.7483    -1.6092    -1.1700    -1.1700     0.5209     0.5209 
+  vbs        0.         0.         0.         0.         0.         0.     
+  vth       -0.7532    -0.7508    -0.7520    -0.7520     0.5422     0.5422 
+  vdsat   -8.813e-02 -8.919e-02 -6.785e-02 -6.785e-02  6.671e-02  6.671e-02
+  vod      4.855e-03  2.526e-03  6.120e-02  6.120e-02 -2.137e-02 -2.137e-02
+  beta     2.137e-04  3.207e-04  4.290e-04  4.290e-04  3.427e-04  3.427e-04
+  gam eff    0.4071     0.4071     0.4071     0.4071     0.4619     0.4619 
+  gm       6.869e-06  1.076e-05  5.858e-06  5.858e-06  6.649e-06  6.649e-06
+  gds      2.621e-08  3.504e-08  1.990e-08  1.990e-08  1.450e-08  1.450e-08
+  gmb      1.657e-06  2.593e-06  1.436e-06  1.436e-06  2.002e-06  2.002e-06
+  cdtot    1.392e-14  1.747e-14  2.528e-14  2.528e-14  6.644e-15  6.644e-15
+  cgtot    3.087e-14  4.630e-14  6.294e-14  6.294e-14  1.815e-14  1.815e-14
+  cstot    1.792e-14  2.688e-14  3.584e-14  3.584e-14  7.445e-15  7.445e-15
+  cbtot    5.531e-14  7.956e-14  1.093e-13  1.093e-13  2.806e-14  2.806e-14
+  cgs      1.848e-15  2.772e-15  3.697e-15  3.697e-15  1.046e-15  1.046e-15
+  cgd      1.848e-15  2.772e-15  3.697e-15  3.697e-15  1.046e-15  1.046e-15
+
+
+
+ subckt   xop        xop        xop.xs1    xop.xs1    xop.xs1    xop.xs1   
+ element  1:map      1:man      2:mip      2:min      2:msp      2:msn     
+ model    0:pch.1    0:nch.1    0:pch.3    0:nch.6    0:pch.3    0:nch.6   
+ region       Cutoff     Cutoff     Cutoff     Linear     Cutoff     Linear
+  id      -9.398e-07  1.033e-06 -1.067e-13  6.707e-12  5.999e-10  8.304e-08
+  ibs      1.888e-19 -1.652e-18  7.039e-25 -1.521e-23  4.658e-16 -4.466e-15
+  ibd      2.394e-12 -2.118e-14  2.723e-16 -8.875e-22  4.658e-16 -4.466e-15
+  vgs       -0.7483     0.5209     0.         3.3000    -0.9991     2.3009 
+  vds       -2.3938     0.9062    -3.3000   1.039e-08  8.656e-05  8.656e-05
+  vbs        0.         0.         0.         0.         2.3009    -0.9991 
+  vth       -0.7487     0.5418    -0.6277     0.5694    -1.0602     0.7853 
+  vdsat   -9.016e-02  6.686e-02 -4.432e-02    1.3801  -6.377e-02    0.8900 
+  vod      4.033e-04 -2.095e-02    0.6277     2.7306   6.110e-02    1.5156 
+  beta     4.278e-04  1.028e-03  3.024e-04  4.667e-04  5.223e-04  1.008e-03
+  gam eff    0.4071     0.4619     0.4509     0.5187     0.4828     0.5236 
+  gm       1.485e-05  2.022e-05  2.843e-12  9.507e-13  1.070e-08  3.203e-08
+  gds      4.609e-08  4.154e-08  1.003e-13  6.683e-04  6.928e-06  9.839e-04
+  gmb      3.579e-06  6.086e-06  8.824e-13  4.193e-13  1.109e-09  6.928e-09
+  cdtot    2.076e-14  1.888e-14  2.389e-15  3.268e-15  5.356e-15  5.845e-15
+  cgtot    6.173e-14  5.445e-14  1.869e-15  2.030e-15  2.605e-15  4.060e-15
+  cstot    3.584e-14  2.234e-14  4.566e-15  3.350e-15  5.356e-15  5.928e-15
+  cbtot    1.035e-13  8.312e-14  7.104e-15  4.031e-15  9.876e-15  6.569e-15
+  cgs      3.697e-15  3.138e-15  4.300e-16  9.597e-16  8.601e-16  1.919e-15
+  cgd      3.697e-15  3.138e-15  4.300e-16  9.597e-16  8.601e-16  1.919e-15
+
+
+
+ ***************************************************
+   ******   pole/zero analysis  
+ 
+ 
+    input =  0:vin          output = v(vop)
+ 
+       poles (rad/sec)                 poles ( hertz)
+ real            imag            real            imag            
+ -4.85647k       0.              -772.931        0.              
+ -42.8136x       0.              -6.81399x       0.              
+ -85.6963x       -1.56527x       -13.6390x       -249.121k       
+ -85.6963x       1.56527x        -13.6390x       249.121k        
+ -218.029x       0.              -34.7004x       0.              
+ -252.664x       0.              -40.2127x       0.              
+ -288.942x       0.              -45.9865x       0.              
+ -506.554x       0.              -80.6206x       0.              
+ -596.116x       0.              -94.8747x       0.              
+ -5.20436g       0.              -828.300x       0.              
+ -80.4988g       0.              -12.8118g       0.              
+ -167.881g       0.              -26.7192g       0.              
+ 
+       zeros (rad/sec)                 zeros ( hertz)
+ real            imag            real            imag            
+ -43.5414x       0.              -6.92982x       0.              
+ -67.8149x       0.              -10.7931x       0.              
+ -75.3370x       -247.236x       -11.9903x       -39.3489x       
+ -75.3370x       247.236x        -11.9903x       39.3489x        
+ -252.615x       0.              -40.2049x       0.              
+ -288.941x       0.              -45.9864x       0.              
+ -506.562x       0.              -80.6219x       0.              
+ -520.770x       0.              -82.8830x       0.              
+ 770.532x        0.              122.634x        0.              
+ -5.20409g       0.              -828.257x       0.              
+ -80.4988g       0.              -12.8118g       0.              
+ -167.881g       0.              -26.7192g       0.              
+ 
+  ***** constant factor = 28.2569m
+ ******  
+ *resamp
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+   phaseatdb=  7.9244E+01
+   maxgain=  7.0075E+01
+   bandwidth=  7.7123E+02
+
+          ***** job concluded
+1****** HSPICE -- B-2008.09 32-BIT (Aug 26 2008) winnt ******                   
+ ******  
+ *resamp
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+
+  ******  HSPICE Threads Information  ******
+  Command Line Threads Count:                      0
+  Available CPU Count:                             4
+  Actual Model Evaluation(Load) Threads Count:     1
+  Actual Solver Threads Count:                     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      54  # elements   =      29
+  # resistors   =       4  # capacitors =       1  # inductors   =       0
+  # mutual_inds =       0  # vccs       =       0  # vcvs        =       0
+  # cccs        =       0  # ccvs       =       0  # volt_srcs   =       5
+  # curr_srcs   =       1  # diodes     =       0  # bjts        =       0
+  # jfets       =       0  # mosfets    =      18  # U elements  =       0
+  # T elements  =       0  # W elements =       0  # B elements  =       0
+  # S elements  =       0  # P elements =       0  # va device   =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.02           1          19
+  dc sweep           0.35        3301        6674
+  ac analysis        0.30        8001        8001
+  readin             0.11
+  errchk             0.01
+  setup              0.05
+  output             0.00
+
+
+           total memory used          549  kbytes
+           total cpu time            0.89 seconds
+           total elapsed time           1 seconds
+           job started at     21:11:34 06/21/2016
+           job ended   at     21:11:34 06/21/2016
+
+
+ Init: hspice initialization file: C:\synopsys\Hspice_B-2008.09\hspice.ini

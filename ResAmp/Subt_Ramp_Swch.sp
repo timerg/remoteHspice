@@ -30,65 +30,44 @@ m5 d3  vb2 d6  vss nch w = 5u l = 3u m = 8
 m6 vg  vb2 d7  vss nch w = 5u l = 3u m = 8
 .ends
 
-.subckt RP vdd vss vip vi out c2
+.subckt RP vdd vss vip vi out c2 en
 Mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
-m1 op  vin b   b   pch w = 5u l = 3u m = 1
-m2 o1  vip b   b   pch w = 5u l = 3u m = 1
-m3 op  op  vss vss nch w = 5u l = 3u m = 1
-m4 o1  op  vss vss nch w = 5u l = 3u m = 1
-
-map out c2  vdd vdd pch w = 5u l = 3u m = 4
-man out o1  vss vss nch w = 5u l = 3u m = 2
-Ro  out vinn 1000k
-Ri  vi  vinn 10k
-
-.ends
-
-*.subckt Buf vdd vss vin out c1 c2 vz
-*m4  o1  op  vdd vdd pch w = 5u l = 3u m = 1
-*m3  op  op  vdd vdd pch w = 5u l = 3u m = 1
-*m2  o1  vin b   vss nch w = 5u l = 3u m = 2
-*m1  op  out b   vss nch w = 5u l = 3u m = 2
-*Mb  b   c1  vss vss nch w = 5u l = 3u m = 4
-*map out o1  vdd vdd pch w = 5u l = 3u m = 4
-*man out c2  vss vss nch w = 5u l = 3u m = 2
-*Ro out vz 10k
-*.ends
-
-.subckt Buf vdd vss vin out c1 c2 vz
-Mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
-m1 op  out b   b   pch w = 5u l = 3u m = 4
-m2 o1  vin b   b   pch w = 5u l = 3u m = 4
+m1 op  vin b   b   pch w = 5u l = 3u m = 4
+m2 o1  vi b   b   pch w = 5u l = 3u m = 4
 m3 op  op  vss vss nch w = 5u l = 3u m = 1
 m4 o1  op  vss vss nch w = 5u l = 3u m = 1
 map out c2  vdd vdd pch w = 5u l = 3u m = 4
-man out o1  vss vss nch w = 5u l = 3u m = 1
-Ro out vz 10k
+man out o1  vss vss nch w = 5u l = 3u m = 3
+Ro  vin  out 1000k
+Ri1 vin  vip 100k
+Ri2 sw   vip 10k
+Cc  out c   350f
+Rc o1  c   50k
+XS1 vdd vss en sw vin switch
 .ends
 
-*.subckt Buf vdd vss vin out c1
-*mr vss vin out out pch w = 1u l = 20u m = 1
-*mp out out vdd vdd pch w = 1u l = 20u m = 1
-*.ends
+.subckt switch vdd vss en in out
+Mip eo  en  vdd vdd pch w = 2.3u l = 0.35u
+Min eo  en  vss vss nch w = 1u l = 0.35u
+Msp in  eo  out vdd pch w = 2.3u l = 0.35u m = 2
+Msn in  en  out vss nch w = 1u l = 0.35u m = 2
+.ends
+
 
 XBS vdd vss c1 c2 cp cn Bias
 Xsub0 vdd vss c2 c1 in cn vz sout subtractor
-Xbuf vdd vss sout bout c1 c2 vz Buf
-XRP vdd vss vz bout out c2 RP
-*Xbuf_ref vdd vss vz rp_ref c1 Buf
+XRP vdd vss vz sout out c2 en RP
 
-Vd vdd vss dc = 3.3
+Vd vdd vss dc = 0
 Vs vss gnd dc = 0
 
-Vin in vss dc = 0.797 ac = 1
+ven en vss dc = 3.3 pulse(0 3.3 1us 1us 1us 988us 2ms)
+Vin in cn dc = 0 ac = 1
 Vb  vz vss dc = 1
 
-Xbuf_test vdd vss bin_t bout_t c1 c2 vz Buf
-Vt in bin_t dc = 0
-
-
 .op
-.dc vin 0 3.3 0.001
+.dc vin -1 2.3 0.001
+.ac dec 1000 10 1g
 .probe i(xrp.ri) v(xrp.vinn)
 
 .end
