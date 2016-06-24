@@ -1,0 +1,30 @@
+* "simulator" "HSPICE" 
+* "version" "B-2008.09 32-BIT"
+* "format" "HSP"
+* "rundate" "13:48:06 06/24/2016 "
+* "netlist" "c:\users\timer\documents\github\remotehspice\resamp\resamp.sp "
+* "runtitle" "*resamp"
+* time =    0.            
+* temperature =   25.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ c1 =   0.5284        
++ c2 =   2.5517        
++ cn =   0.7967        
++ cp =   2.3955        
++ en =   3.3000        
++ vdd =   3.3000        
++ vi =   1.0000        
++ vip =   1.0000        
++ vop =   0.9985        
++ vss =   0.            
++ xop.b =   1.6908        
++ xop.c =   0.5157        
++ xop.o1 =   0.5157        
++ xop.op =   0.5209        
++ xop.sw =   1.0000        
++ xop.vin =   1.0000        
++ xop.xs1.eo = 1.039e-08       
+***   END: Saved Operating Point ***                     

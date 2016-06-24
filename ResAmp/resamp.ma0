@@ -1,0 +1,6 @@
+$DATA1 SOURCE='HSPICE' VERSION='B-2008.09 32-BIT'
+.TITLE '*resamp'
+ phaseatdb        maxgain          bandwidth        temper            
+ alter#            
+ -101.9459          34.0033         4.905e+04         25.0000         
+    1.0000         

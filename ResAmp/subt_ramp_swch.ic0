@@ -1,0 +1,39 @@
+* "simulator" "HSPICE" 
+* "version" "B-2008.09 32-BIT"
+* "format" "HSP"
+* "rundate" "13:33:08 06/24/2016 "
+* "netlist" "c:\users\timer\documents\github\remotehspice\resamp\subt_ramp_swch.sp "
+* "runtitle" "***subtractor + switch + resamp"
+* time =    0.            
+* temperature =   25.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ c1 =   0.5284        
++ c2 =   2.5517        
++ cn =   0.7967        
++ cp =   2.3955        
++ en =   3.3000        
++ en2 =   3.3000        
++ in =   0.            
++ out = 1.371e-03       
++ sout =   0.3881        
++ vdd =   3.3000        
++ vss =   0.            
++ vz =   1.1000        
++ xsub0.b =   0.8884        
++ xsub0.d3 =   0.4628        
++ xsub0.d6 = 5.512e-02       
++ xsub0.d7 = 5.457e-02       
++ xsub0.vg =   0.2131        
++ xrp.b =   1.7779        
++ xrp.c =   1.7765        
++ xrp.m =   0.5193        
++ xrp.o1 =   1.7765        
++ xrp.sw1 =   1.0893        
++ xrp.sw2 =   1.0902        
++ xrp.vin =   1.0892        
++ xrp.xs1.eo = 1.039e-08       
++ xrp.xs2.eo = 1.039e-08       
+***   END: Saved Operating Point ***                     

@@ -18,32 +18,33 @@ md3 c2  c1  vss vss nch w = 5u   l = 3u m = 1
 md4 c2  c2  vdd vdd pch w = 5u   l = 3u m = 2
 .ends
 
-.subckt subtractor vdd vss vb1 vb2 vx vy vz out
-mb d2  vb1 vdd vdd pch w = 5u l = 3u m = 3
-m1 d3  vx  d2  d2  pch w = 5u l = 3u m = 1
-m2 out vy  d2  d2  pch w = 5u l = 3u m = 1
-m3 vg  vg  vz  vz  pch w = 5u l = 3u m = 1
-m4 vss vg  out out pch w = 5u l = 3u m = 1
+.subckt subtractor vdd vss c1 c2 vx vy vz out
+mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
+m1 d3  vx  b   b   pch w = 5u l = 6u m = 1
+m2 out vy  b   b   pch w = 5u l = 6u m = 1
+m3 vg  vg  vz  vz  pch w = 5u l = 6u m = 1
+m4 vss vg  out out pch w = 5u l = 6u m = 1
 m7 d6  d3  vss vss nch w = 5u l = 3u m = 8
 m8 d7  d3  vss vss nch w = 5u l = 3u m = 8
-m5 d3  vb2 d6  vss nch w = 5u l = 3u m = 8
-m6 vg  vb2 d7  vss nch w = 5u l = 3u m = 8
+m5 d3  c1  d6  vss nch w = 5u l = 3u m = 8
+m6 vg  c1  d7  vss nch w = 5u l = 3u m = 8
 .ends
 
-.subckt RP vdd vss vip vi out c2 en
+.subckt RP vdd vss vip vi out c2 en en2
 Mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
-m1 op  vin b   b   pch w = 5u l = 3u m = 4
-m2 o1  vi b   b   pch w = 5u l = 3u m = 4
-m3 op  op  vss vss nch w = 5u l = 3u m = 1
-m4 o1  op  vss vss nch w = 5u l = 3u m = 1
+m1 m   vin b   b   pch w = 5u l = 3u m = 4
+m2 o1  vi  b   b   pch w = 5u l = 3u m = 4
+m3 m   m   vss vss nch w = 5u l = 3u m = 1
+m4 o1  m   vss vss nch w = 5u l = 3u m = 1
 map out c2  vdd vdd pch w = 5u l = 3u m = 4
 man out o1  vss vss nch w = 5u l = 3u m = 3
 Ro  vin  out 1000k
-Ri1 vin  vip 100k
-Ri2 sw   vip 10k
+Ri2 sw1   vip 100k
+Ri3 sw2  vip 10k
 Cc  out c   350f
 Rc o1  c   50k
-XS1 vdd vss en sw vin switch
+XS1 vdd vss en sw1 vin switch
+XS2 vdd vss en2 sw2 vin switch
 .ends
 
 .subckt switch vdd vss en in out
@@ -52,21 +53,29 @@ Min eo  en  vss vss nch w = 1u l = 0.35u
 Msp in  eo  out vdd pch w = 2.3u l = 0.35u m = 2
 Msn in  en  out vss nch w = 1u l = 0.35u m = 2
 .ends
+.subckt switch2 vdd vss en in out
+Mip en  eo  vdd vdd pch w = 2.3u l = 0.35u
+Min en  eo  vss vss nch w = 1u l = 0.35u
+Msp in  eo  out vdd pch w = 2.3u l = 0.35u m = 2
+Msn in  en  out vss nch w = 1u l = 0.35u m = 2
+.ends
 
 
 XBS vdd vss c1 c2 cp cn Bias
-Xsub0 vdd vss c2 c1 in cn vz sout subtractor
-XRP vdd vss vz sout out c2 en RP
+Xsub0 vdd vss c1 c2 in cn vz sout subtractor
+XRP vdd vss vz sout out c2 en en2 RP
+*XS2 vdd vss en2 out sout switch
 
-Vd vdd vss dc = 0
+Vd vdd vss dc = 3.3
 Vs vss gnd dc = 0
 
-ven en vss dc = 3.3 pulse(0 3.3 1us 1us 1us 988us 2ms)
-Vin in cn dc = 0 ac = 1
-Vb  vz vss dc = 1
+ven en vss dc = 3.3 *pulse(0 3.3 1us 1us 1us 988us 2ms)
+ven2 en2 vss dc = 3.3
+Vin in vss dc = 0 ac = 1
+Vb  vz vss dc = 1.1
 
 .op
-.dc vin -1 2.3 0.001
+.dc vin 0 2.3 0.001
 .ac dec 1000 10 1g
 .probe i(xrp.ri) v(xrp.vinn)
 

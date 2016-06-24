@@ -35,14 +35,14 @@ md4 c2  c2  vdd vdd pch w = 5u   l = 3u m = 2
 .subckt OP vdd vss vip vi out c2 en
 Mb b   c2  vdd vdd pch w = 5u l = 3u m = 3
 m1 op  vin b   b   pch w = 5u l = 3u m = 4
-m2 o1  vi b   b   pch w = 5u l = 3u m = 4
+m2 o1  vi  b   b   pch w = 5u l = 3u m = 4
 m3 op  op  vss vss nch w = 5u l = 3u m = 1
 m4 o1  op  vss vss nch w = 5u l = 3u m = 1
 map out c2  vdd vdd pch w = 5u l = 3u m = 4
 man out o1  vss vss nch w = 5u l = 3u m = 3
 Ro  vin  out 1000k
-Ri1 vin  vip 100k
-Ri2 sw   vip 10k
+Ri1 vin  vip 20k
+*Ri2 sw   vip 10k
 Cc  out c   350f
 Rc o1  c   50k
 XS1 vdd vss en sw vin switch
@@ -66,7 +66,7 @@ ven en vss dc = 3.3 pulse(0 3.3 1us 1us 1us 988us 2ms)
 Vin vi vss dc = 1 ac = 1
 
 .op
-.dc Vin 0 3.3 0.001
+.dc Vin 0.5 1.5 0.0001
 .probe i(xop.ri)
 .ac dec 1000 10 1g
 .pz v(vop) vin
